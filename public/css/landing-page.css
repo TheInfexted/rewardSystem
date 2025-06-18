@@ -1,0 +1,343 @@
+/* ===================================
+   Landing Page Styles - Black & Gold Theme with Bootstrap
+   =================================== */
+
+/* Variables */
+:root {
+    --primary-gold: #FFD700;
+    --secondary-gold: #FFA500;
+    --dark-gold: #B8860B;
+    --primary-black: #000000;
+    --secondary-black: #1a1a1a;
+    --text-light: #ffffff;
+    --text-dark: #333333;
+    --border-gold: #DAA520;
+}
+
+/* Prevent zooming on mobile devices */
+* {
+    touch-action: manipulation;
+}
+
+/* Prevent zooming on input focus (iOS) */
+input, textarea, select {
+    font-size: 16px !important;
+}
+
+/* Base Overrides for Bootstrap */
+body {
+    background-color: var(--primary-black);
+    color: var(--text-light);
+}
+
+/* Text Colors */
+.text-gold {
+    color: var(--primary-gold) !important;
+}
+
+/* Background Colors */
+.bg-black {
+    background-color: var(--primary-black) !important;
+}
+
+.bg-dark {
+    background-color: var(--secondary-black) !important;
+}
+
+/* Border Colors */
+.border-gold {
+    border-color: var(--primary-gold) !important;
+}
+
+/* Button Styles */
+.btn-gold {
+    background-color: var(--primary-gold);
+    border-color: var(--primary-gold);
+    color: var(--primary-black);
+    font-weight: bold;
+}
+
+.btn-gold:hover {
+    background-color: var(--secondary-gold);
+    border-color: var(--secondary-gold);
+    color: var(--primary-black);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+}
+
+/* Form Controls */
+.form-control,
+.form-select {
+    background-color: var(--secondary-black);
+    border: 1px solid #6c757d;
+    color: var(--text-light);
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--secondary-black);
+    border-color: #6c757d;
+    color: var(--text-light);
+    box-shadow: 0 0 0 0.25rem rgba(108, 117, 125, 0.25);
+}
+
+.form-label {
+    font-weight: 600;
+}
+
+/* Card Styles */
+.card {
+    background-color: var(--secondary-black);
+    border: 1px solid #6c757d;
+}
+
+.card-header {
+    background-color: var(--primary-black);
+    border-bottom: 1px solid #6c757d;
+}
+
+/* Landing Page Specific Styles */
+
+.shake-icon {
+    animation: shake 0.5s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); -webkit-transform: translate(1px, 1px) rotate(0deg); -moz-transform: translate(1px, 1px) rotate(0deg); -ms-transform: translate(1px, 1px) rotate(0deg); -o-transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); -webkit-transform: translate(-1px, -2px) rotate(-1deg); -moz-transform: translate(-1px, -2px) rotate(-1deg); -ms-transform: translate(-1px, -2px) rotate(-1deg); -o-transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); -webkit-transform: translate(-3px, 0px) rotate(1deg); -moz-transform: translate(-3px, 0px) rotate(1deg); -ms-transform: translate(-3px, 0px) rotate(1deg); -o-transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); -webkit-transform: translate(3px, 2px) rotate(0deg); -moz-transform: translate(3px, 2px) rotate(0deg); -ms-transform: translate(3px, 2px) rotate(0deg); -o-transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); -webkit-transform: translate(1px, -1px) rotate(1deg); -moz-transform: translate(1px, -1px) rotate(1deg); -ms-transform: translate(1px, -1px) rotate(1deg); -o-transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); -webkit-transform: translate(-1px, 2px) rotate(-1deg); -moz-transform: translate(-1px, 2px) rotate(-1deg); -ms-transform: translate(-1px, 2px) rotate(-1deg); -o-transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); -webkit-transform: translate(-3px, 1px) rotate(0deg); -moz-transform: translate(-3px, 1px) rotate(0deg); -ms-transform: translate(-3px, 1px) rotate(0deg); -o-transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); -webkit-transform: translate(3px, 1px) rotate(-1deg); -moz-transform: translate(3px, 1px) rotate(-1deg); -ms-transform: translate(3px, 1px) rotate(-1deg); -o-transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); -webkit-transform: translate(-1px, -1px) rotate(1deg); -moz-transform: translate(-1px, -1px) rotate(1deg); -ms-transform: translate(-1px, -1px) rotate(1deg); -o-transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); -webkit-transform: translate(1px, 2px) rotate(0deg); -moz-transform: translate(1px, 2px) rotate(0deg); -ms-transform: translate(1px, 2px) rotate(0deg); -o-transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); -webkit-transform: translate(1px, -2px) rotate(-1deg); -moz-transform: translate(1px, -2px) rotate(-1deg); -ms-transform: translate(1px, -2px) rotate(-1deg); -o-transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.glow {
+    color: #fff;
+    -webkit-animation: glow 1s ease-in-out infinite alternate;
+    -moz-animation: glow 1s ease-in-out infinite alternate;
+    animation: glow 1s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 1px #fff, 0 0 5px #fff, 0 0 10px #e60073, 0 0 20px #e60073, 0 0 30px #e60073;
+  }
+  to {
+    text-shadow: 0 0 1px #fff, 0 0 10px #ff4da6, 0 0 20px #ff4da6, 0 0 30px #ff4da6, 0 0 50px #ff4da6;
+  }
+}
+
+.blinking {
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Header Section */
+.landing-header {
+    background: linear-gradient(135deg, var(--primary-black) 0%, var(--secondary-black) 100%);
+    border-bottom: 3px solid var(--primary-gold);
+}
+
+.header-image-wrapper img {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 2px solid var(--primary-gold);
+}
+
+.header-image-wrapper img:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
+}
+
+.header-text {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Content Section */
+.landing-content {
+    background-color: var(--secondary-black);
+    min-height: 300px;
+}
+
+.content-wrapper {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 215, 0, 0.02) 100%);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.content-text h1, 
+.content-text h2, 
+.content-text h3,
+.content-text h4,
+.content-text h5,
+.content-text h6 {
+    color: var(--primary-gold);
+    margin-bottom: 1rem;
+}
+
+.content-image-item {
+    overflow: hidden;
+    border: 2px solid var(--dark-gold);
+    border-radius: 0.375rem;
+    transition: all 0.3s ease;
+}
+
+.content-image-item:hover {
+    border-color: var(--primary-gold);
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+}
+
+/* Footer Section */
+.landing-footer {
+    background: linear-gradient(135deg, var(--secondary-black) 0%, var(--primary-black) 100%);
+    border-top: 3px solid var(--primary-gold);
+}
+
+.footer-image-wrapper img {
+    opacity: 0.9;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    border: 2px solid var(--border-gold);
+}
+
+.footer-image-wrapper img:hover {
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+}
+
+/* Admin Panel Styles */
+#sidebar-wrapper {
+    min-height: 100vh;
+    width: 250px;
+    transition: margin 0.25s ease-out;
+}
+
+#wrapper.toggled #sidebar-wrapper {
+    margin-left: -250px;
+}
+
+.list-group-item {
+    border: none;
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+    background-color: rgba(255, 215, 0, 0.1) !important;
+    padding-left: 25px;
+}
+
+.list-group-item.active {
+    background-color: rgba(255, 215, 0, 0.2) !important;
+    border-left: 3px solid var(--primary-gold);
+}
+
+/* Image Upload Areas */
+.image-upload-area {
+    border: 2px dashed var(--dark-gold);
+    border-radius: 0.375rem;
+    padding: 1rem;
+    background-color: rgba(255, 215, 0, 0.05);
+    text-align: center;
+}
+
+.preview-image {
+    max-width: 100%;
+    max-height: 200px;
+    border: 2px solid var(--primary-gold);
+}
+
+/* Dropdown Menus */
+.dropdown-menu {
+    background-color: var(--secondary-black);
+    border: 1px solid var(--dark-gold);
+}
+
+.dropdown-item {
+    color: var(--text-light);
+}
+
+.dropdown-item:hover {
+    background-color: rgba(255, 215, 0, 0.2);
+    color: var(--primary-gold);
+}
+
+/* Alert Styles */
+.alert-success {
+    background-color: rgba(255, 215, 0, 0.2);
+    border: 1px solid var(--primary-gold);
+    color: var(--primary-gold);
+}
+
+.alert-danger {
+    background-color: rgba(220, 53, 69, 0.2);
+    border: 1px solid #dc3545;
+    color: #ff6b6b;
+}
+
+/* Thumbnail Override */
+.img-thumbnail {
+    background-color: var(--secondary-black);
+    border: 2px solid var(--dark-gold);
+    padding: 0.25rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    #sidebar-wrapper {
+        margin-left: -250px;
+    }
+    
+    #wrapper.toggled #sidebar-wrapper {
+        margin-left: 0;
+    }
+    
+    .header-image-wrapper,
+    .footer-image-wrapper {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--secondary-black);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--dark-gold);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-gold);
+}
+
+/* Input File Styling */
+input[type="file"]::-webkit-file-upload-button {
+    background-color: var(--dark-gold);
+    color: var(--primary-black);
+    border: none;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.25rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+input[type="file"]::-webkit-file-upload-button:hover {
+    background-color: var(--primary-gold);
+}

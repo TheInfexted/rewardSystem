@@ -1,0 +1,13 @@
+CRITICAL - 2025-06-17 17:07:05 --> Error: Call to undefined function format_datetime()
+[Method: GET, Route: admin/wheel/edit/1]
+in APPPATH/Views/admin/wheel/edit.php on line 142.
+ 1 SYSTEMPATH/View/View.php(224): include()
+ 2 SYSTEMPATH/View/View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 3 SYSTEMPATH/Common.php(1173): CodeIgniter\View\View->render()
+ 4 APPPATH/Controllers/Admin/WheelController.php(126): view()
+ 5 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\WheelController->edit()
+ 6 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 7 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 8 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+10 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
