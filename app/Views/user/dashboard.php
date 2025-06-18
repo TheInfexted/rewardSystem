@@ -237,7 +237,7 @@
 <?= $this->section('scripts') ?>
 <script>
 // WhatsApp redirect URL (you can change this)
-const WHATSAPP_URL = 'https://wa.me/601159599022?text=Hello%20My%20user%20ID%20is%20'; 
+const WHATSAPP_URL = 'https://wa.me/601159599022?text=Hello%20my%20user%20ID%20is%20'; 
 
 // Background change functionality
 document.querySelectorAll('.bg-option').forEach(option => {
