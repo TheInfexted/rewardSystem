@@ -1,0 +1,284 @@
+/* Wheel Fortune CSS - Fixed Version */
+
+/* Wheel Container */
+.wheel-container {
+    padding: 20px 0;
+    background: transparent;
+}
+
+.wheel-center {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* SVG Wheel Styling */
+.wheel-svg {
+    width: 100%;
+    height: 100%;
+    max-width: 300px;
+    max-height: 300px;
+    transform-origin: center center;
+    transition: transform 4s cubic-bezier(0.23, 1, 0.32, 1);
+    border-radius: 50%;
+    box-shadow: 
+        0 0 30px rgba(255, 215, 0, 0.5),
+        inset 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Wheel Pointer */
+.wheel-pointer {
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 25px solid #FFD700;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.5));
+    z-index: 10;
+}
+
+/* Spin Button */
+.spin-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #FFD700 0%, #FFA500 70%, #B8860B 100%);
+    border: 4px solid #8B4513;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 
+        0 5px 15px rgba(0, 0, 0, 0.4),
+        inset 0 2px 5px rgba(255, 255, 255, 0.3);
+}
+
+.spin-button:hover:not(:disabled) {
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.5),
+        0 0 25px rgba(255, 215, 0, 0.4),
+        inset 0 2px 5px rgba(255, 255, 255, 0.3);
+}
+
+.spin-button:active:not(:disabled) {
+    transform: translate(-50%, -50%) scale(0.98);
+}
+
+.spin-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: linear-gradient(135deg, #666 0%, #333 100%);
+}
+
+.spin-text {
+    color: #000;
+    font-weight: bold;
+    font-size: 11px;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+    line-height: 1.1;
+    padding: 0 5px;
+}
+
+/* Bonus Banner */
+.bonus-banner {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 165, 0, 0.1) 100%);
+    border: 2px solid #FFD700;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.bonus-title {
+    color: #FFD700;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.bonus-subtitle {
+    color: #FFA500;
+}
+
+/* Wheel Wrapper */
+.wheel-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    max-width: 350px;
+}
+
+/* Winners Ticker */
+.winners-ticker {
+    background: linear-gradient(90deg, #000 0%, #1a1a1a 50%, #000 100%);
+    border-top: 1px solid #FFD700;
+    border-bottom: 1px solid #FFD700;
+    padding: 10px 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.ticker-content {
+    display: inline-block;
+    padding-left: 100%;
+    animation: ticker 30s linear infinite;
+}
+
+.ticker-label {
+    color: #FFD700;
+    font-weight: bold;
+    margin-right: 20px;
+}
+
+.ticker-item {
+    color: #FFA500;
+    margin-right: 50px;
+}
+
+.ticker-item strong {
+    color: #FFD700;
+}
+
+@keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+
+/* Spins Counter */
+.spins-counter {
+    margin-top: 20px;
+}
+
+.badge.bg-gold {
+    background-color: #FFD700 !important;
+    color: #000 !important;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 8px 16px;
+    border: 2px solid #B8860B;
+}
+
+/* Win Modal */
+.win-animation {
+    animation: celebrate 0.5s ease-in-out;
+}
+
+@keyframes celebrate {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.win-title {
+    color: #FFD700;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+}
+
+.win-prize {
+    font-size: 1.4rem;
+    color: #FFA500;
+    font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 576px) {
+    .wheel-center {
+        width: 280px;
+        height: 280px;
+    }
+    
+    .wheel-svg {
+        max-width: 280px;
+        max-height: 280px;
+    }
+    
+    .spin-button {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .spin-text {
+        font-size: 10px;
+    }
+    
+    .bonus-banner {
+        margin: 0 10px 15px 10px;
+        padding: 12px;
+    }
+    
+    .bonus-title {
+        font-size: 1rem;
+    }
+    
+    .bonus-subtitle {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 375px) {
+    .wheel-center {
+        width: 260px;
+        height: 260px;
+    }
+    
+    .wheel-svg {
+        max-width: 260px;
+        max-height: 260px;
+    }
+    
+    .spin-button {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .spin-text {
+        font-size: 9px;
+    }
+}
+
+/* Fix for SVG text positioning */
+.wheel-svg text {
+    pointer-events: none;
+    user-select: none;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    text-anchor: middle;
+    dominant-baseline: central;
+}
+
+/* Force proper rendering */
+.wheel-svg * {
+    vector-effect: non-scaling-stroke;
+}
+
+/* Button Gold Style Override */
+.btn-gold {
+    background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
+    border: 2px solid #8B4513;
+    color: #000;
+    font-weight: bold;
+    padding: 10px 30px;
+    transition: all 0.3s;
+}
+
+.btn-gold:hover {
+    background: linear-gradient(135deg, #FFA500 0%, #FFD700 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255, 215, 0, 0.5);
+}

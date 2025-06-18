@@ -1,0 +1,274 @@
+CRITICAL - 2025-06-15 01:58:27 --> ErrorException: Undefined property: App\Controllers\AuthController::$userModel
+[Method: POST, Route: login]
+in APPPATH/Controllers/AuthController.php on line 51.
+ 1 APPPATH/Controllers/AuthController.php(51): CodeIgniter\Debug\Exceptions->errorHandler()
+ 2 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\AuthController->attemptLogin()
+ 3 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 4 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 5 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 7 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+DEBUG - 2025-06-15 01:58:41 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2025-06-15 01:58:41 --> ErrorException: Undefined property: App\Controllers\AuthController::$userModel
+[Method: POST, Route: login]
+in APPPATH/Controllers/AuthController.php on line 51.
+ 1 APPPATH/Controllers/AuthController.php(51): CodeIgniter\Debug\Exceptions->errorHandler()
+ 2 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\AuthController->attemptLogin()
+ 3 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 4 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 5 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 7 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-15 01:59:23 --> ErrorException: Undefined property: App\Controllers\AuthController::$userModel
+[Method: POST, Route: login]
+in APPPATH/Controllers/AuthController.php on line 51.
+ 1 APPPATH/Controllers/AuthController.php(51): CodeIgniter\Debug\Exceptions->errorHandler()
+ 2 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\AuthController->attemptLogin()
+ 3 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 4 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 5 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 7 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-15 02:00:58 --> ErrorException: Undefined property: App\Controllers\AuthController::$userModel
+[Method: POST, Route: login]
+in APPPATH/Controllers/AuthController.php on line 51.
+ 1 APPPATH/Controllers/AuthController.php(51): CodeIgniter\Debug\Exceptions->errorHandler()
+ 2 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\AuthController->attemptLogin()
+ 3 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 4 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 5 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 7 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-15 02:07:49 --> TypeError: CodeIgniter\Database\BaseResult::getFirstRow(): Argument #1 ($type) must be of type string, null given, called in /www/wwwroot/landing/vendor/codeigniter4/framework/system/Model.php on line 330
+[Method: POST, Route: login]
+in SYSTEMPATH/Database/BaseResult.php on line 401.
+ 1 SYSTEMPATH/Model.php(330): CodeIgniter\Database\BaseResult->getFirstRow()
+ 2 SYSTEMPATH/BaseModel.php(717): CodeIgniter\Model->doFirst()
+ 3 APPPATH/Models/UserModel.php(33): CodeIgniter\BaseModel->first()
+ 4 APPPATH/Controllers/AuthController.php(52): App\Models\UserModel->getUserByEmail()
+ 5 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\AuthController->attemptLogin()
+ 6 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 7 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 8 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+10 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+DEBUG - 2025-06-15 02:09:51 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2025-06-15 02:09:51 --> TypeError: CodeIgniter\Database\BaseResult::getFirstRow(): Argument #1 ($type) must be of type string, null given, called in /www/wwwroot/landing/vendor/codeigniter4/framework/system/Model.php on line 330
+[Method: POST, Route: login]
+in SYSTEMPATH/Database/BaseResult.php on line 401.
+ 1 SYSTEMPATH/Model.php(330): CodeIgniter\Database\BaseResult->getFirstRow()
+ 2 SYSTEMPATH/BaseModel.php(717): CodeIgniter\Model->doFirst()
+ 3 APPPATH/Models/UserModel.php(33): CodeIgniter\BaseModel->first()
+ 4 APPPATH/Controllers/AuthController.php(52): App\Models\UserModel->getUserByEmail()
+ 5 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\AuthController->attemptLogin()
+ 6 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 7 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 8 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+10 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+DEBUG - 2025-06-15 02:10:44 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2025-06-15 02:10:45 --> TypeError: CodeIgniter\Database\BaseResult::getFirstRow(): Argument #1 ($type) must be of type string, null given, called in /www/wwwroot/landing/vendor/codeigniter4/framework/system/Model.php on line 330
+[Method: POST, Route: login]
+in SYSTEMPATH/Database/BaseResult.php on line 401.
+ 1 SYSTEMPATH/Model.php(330): CodeIgniter\Database\BaseResult->getFirstRow()
+ 2 SYSTEMPATH/BaseModel.php(717): CodeIgniter\Model->doFirst()
+ 3 APPPATH/Models/UserModel.php(33): CodeIgniter\BaseModel->first()
+ 4 APPPATH/Controllers/AuthController.php(52): App\Models\UserModel->getUserByEmail()
+ 5 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\AuthController->attemptLogin()
+ 6 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 7 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 8 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+10 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+DEBUG - 2025-06-15 02:10:58 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2025-06-15 02:19:20 --> ErrorException: Undefined array key "password"
+[Method: POST, Route: login]
+in APPPATH/Controllers/AuthController.php on line 59.
+ 1 APPPATH/Controllers/AuthController.php(59): CodeIgniter\Debug\Exceptions->errorHandler()
+ 2 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\AuthController->attemptLogin()
+ 3 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 4 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 5 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 7 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-15 02:27:37 --> CodeIgniter\Validation\Exceptions\ValidationException: "required|valid_email" is not a valid rule.
+[Method: POST, Route: login]
+in SYSTEMPATH/Validation/Validation.php on line 345.
+ 1 SYSTEMPATH/Validation/Validation.php(345): CodeIgniter\Validation\Exceptions\ValidationException::forRuleNotFound()
+ 2 SYSTEMPATH/Validation/Validation.php(201): CodeIgniter\Validation\Validation->processRules()
+ 3 APPPATH/Controllers/AuthController.php(64): CodeIgniter\Validation\Validation->run()
+ 4 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\AuthController->attemptLogin()
+ 5 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 6 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 7 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 9 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+DEBUG - 2025-06-15 02:28:23 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-06-15 02:28:24 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-06-15 02:28:27 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2025-06-15 02:28:27 --> CodeIgniter\Validation\Exceptions\ValidationException: "required|valid_email" is not a valid rule.
+[Method: POST, Route: login]
+in SYSTEMPATH/Validation/Validation.php on line 345.
+ 1 SYSTEMPATH/Validation/Validation.php(345): CodeIgniter\Validation\Exceptions\ValidationException::forRuleNotFound()
+ 2 SYSTEMPATH/Validation/Validation.php(201): CodeIgniter\Validation\Validation->processRules()
+ 3 APPPATH/Controllers/AuthController.php(64): CodeIgniter\Validation\Validation->run()
+ 4 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\AuthController->attemptLogin()
+ 5 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 6 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 7 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 9 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+DEBUG - 2025-06-15 02:29:14 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-06-15 02:29:16 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2025-06-15 02:29:16 --> CodeIgniter\Validation\Exceptions\ValidationException: "required|valid_email" is not a valid rule.
+[Method: POST, Route: login]
+in SYSTEMPATH/Validation/Validation.php on line 345.
+ 1 SYSTEMPATH/Validation/Validation.php(345): CodeIgniter\Validation\Exceptions\ValidationException::forRuleNotFound()
+ 2 SYSTEMPATH/Validation/Validation.php(201): CodeIgniter\Validation\Validation->processRules()
+ 3 APPPATH/Controllers/AuthController.php(64): CodeIgniter\Validation\Validation->run()
+ 4 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\AuthController->attemptLogin()
+ 5 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 6 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 7 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 9 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+DEBUG - 2025-06-15 02:31:49 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2025-06-15 02:34:28 --> ErrorException: Undefined array key "user_token"
+[Method: POST, Route: login]
+in APPPATH/Controllers/AuthController.php on line 109.
+ 1 APPPATH/Controllers/AuthController.php(109): CodeIgniter\Debug\Exceptions->errorHandler()
+ 2 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\AuthController->attemptLogin()
+ 3 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 4 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 5 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 7 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+DEBUG - 2025-06-15 02:34:40 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2025-06-15 02:34:41 --> ErrorException: Undefined array key "user_token"
+[Method: POST, Route: login]
+in APPPATH/Controllers/AuthController.php on line 109.
+ 1 APPPATH/Controllers/AuthController.php(109): CodeIgniter\Debug\Exceptions->errorHandler()
+ 2 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\AuthController->attemptLogin()
+ 3 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 4 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 5 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 7 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+DEBUG - 2025-06-15 02:35:09 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-06-15 02:35:46 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2025-06-15 02:35:47 --> ErrorException: Undefined array key "user_token"
+[Method: POST, Route: login]
+in APPPATH/Controllers/AuthController.php on line 104.
+ 1 APPPATH/Controllers/AuthController.php(104): CodeIgniter\Debug\Exceptions->errorHandler()
+ 2 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\AuthController->attemptLogin()
+ 3 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 4 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 5 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 7 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+DEBUG - 2025-06-15 02:36:32 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2025-06-15 02:36:33 --> ErrorException: Attempt to read property "user_token" on array
+[Method: POST, Route: login]
+in APPPATH/Controllers/AuthController.php on line 104.
+ 1 APPPATH/Controllers/AuthController.php(104): CodeIgniter\Debug\Exceptions->errorHandler()
+ 2 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\AuthController->attemptLogin()
+ 3 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 4 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 5 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 7 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+DEBUG - 2025-06-15 02:37:17 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-06-15 02:37:17 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-06-15 02:37:19 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-06-15 02:38:09 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-06-15 02:38:11 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2025-06-15 02:38:12 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2025-06-15 02:38:57 --> ErrorException: Undefined variable $redirectUrl
+[Method: POST, Route: login]
+in APPPATH/Controllers/AuthController.php on line 121.
+ 1 APPPATH/Controllers/AuthController.php(121): CodeIgniter\Debug\Exceptions->errorHandler()
+ 2 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\AuthController->attemptLogin()
+ 3 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 4 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 5 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 7 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-15 02:43:46 --> ErrorException: Undefined array key "email"
+[Method: GET, Route: admin/dashboard]
+in APPPATH/Views/admin/layouts/main.php on line 142.
+ 1 APPPATH/Views/admin/layouts/main.php(142): CodeIgniter\Debug\Exceptions->errorHandler()
+ 2 SYSTEMPATH/View/View.php(224): include('/www/wwwroot/landing/app/Views/admin/layouts/main.php')
+ 3 SYSTEMPATH/View/View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH/View/View.php(240): CodeIgniter\View\View->render()
+ 5 SYSTEMPATH/Common.php(1173): CodeIgniter\View\View->render()
+ 6 APPPATH/Controllers/Admin/DashboardController.php(61): view()
+ 7 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\DashboardController->index()
+ 8 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 9 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+10 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+12 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-15 02:43:49 --> ErrorException: Undefined array key "email"
+[Method: GET, Route: admin/dashboard]
+in APPPATH/Views/admin/layouts/main.php on line 142.
+ 1 APPPATH/Views/admin/layouts/main.php(142): CodeIgniter\Debug\Exceptions->errorHandler()
+ 2 SYSTEMPATH/View/View.php(224): include('/www/wwwroot/landing/app/Views/admin/layouts/main.php')
+ 3 SYSTEMPATH/View/View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH/View/View.php(240): CodeIgniter\View\View->render()
+ 5 SYSTEMPATH/Common.php(1173): CodeIgniter\View\View->render()
+ 6 APPPATH/Controllers/Admin/DashboardController.php(61): view()
+ 7 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\DashboardController->index()
+ 8 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 9 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+10 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+12 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-15 02:46:30 --> TypeError: CodeIgniter\Database\BaseResult::getFirstRow(): Argument #1 ($type) must be of type string, null given, called in /www/wwwroot/landing/vendor/codeigniter4/framework/system/Model.php on line 211
+[Method: GET, Route: admin/settings]
+in SYSTEMPATH/Database/BaseResult.php on line 401.
+ 1 SYSTEMPATH/Model.php(211): CodeIgniter\Database\BaseResult->getFirstRow()
+ 2 SYSTEMPATH/BaseModel.php(613): CodeIgniter\Model->doFind()
+ 3 APPPATH/Controllers/Admin/SettingsController.php(23): CodeIgniter\BaseModel->find()
+ 4 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\SettingsController->index()
+ 5 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 6 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 7 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 9 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-15 02:46:37 --> TypeError: CodeIgniter\Database\BaseResult::getFirstRow(): Argument #1 ($type) must be of type string, null given, called in /www/wwwroot/landing/vendor/codeigniter4/framework/system/Model.php on line 211
+[Method: GET, Route: admin/settings]
+in SYSTEMPATH/Database/BaseResult.php on line 401.
+ 1 SYSTEMPATH/Model.php(211): CodeIgniter\Database\BaseResult->getFirstRow()
+ 2 SYSTEMPATH/BaseModel.php(613): CodeIgniter\Model->doFind()
+ 3 APPPATH/Controllers/Admin/SettingsController.php(23): CodeIgniter\BaseModel->find()
+ 4 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\SettingsController->index()
+ 5 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 6 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 7 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 9 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+DEBUG - 2025-06-15 02:46:51 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+CRITICAL - 2025-06-15 02:46:51 --> TypeError: CodeIgniter\Database\BaseResult::getFirstRow(): Argument #1 ($type) must be of type string, null given, called in /www/wwwroot/landing/vendor/codeigniter4/framework/system/Model.php on line 211
+[Method: GET, Route: admin/settings]
+in SYSTEMPATH/Database/BaseResult.php on line 401.
+ 1 SYSTEMPATH/Model.php(211): CodeIgniter\Database\BaseResult->getFirstRow()
+ 2 SYSTEMPATH/BaseModel.php(613): CodeIgniter\Model->doFind()
+ 3 APPPATH/Controllers/Admin/SettingsController.php(23): CodeIgniter\BaseModel->find()
+ 4 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\SettingsController->index()
+ 5 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 6 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 7 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 9 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-15 17:50:13 --> TypeError: CodeIgniter\Database\BaseResult::getFirstRow(): Argument #1 ($type) must be of type string, null given, called in /www/wwwroot/landing/vendor/codeigniter4/framework/system/Model.php on line 211
+[Method: GET, Route: admin/settings]
+in SYSTEMPATH/Database/BaseResult.php on line 401.
+ 1 SYSTEMPATH/Model.php(211): CodeIgniter\Database\BaseResult->getFirstRow()
+ 2 SYSTEMPATH/BaseModel.php(613): CodeIgniter\Model->doFind()
+ 3 APPPATH/Controllers/Admin/SettingsController.php(23): CodeIgniter\BaseModel->find()
+ 4 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\SettingsController->index()
+ 5 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 6 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 7 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 9 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()

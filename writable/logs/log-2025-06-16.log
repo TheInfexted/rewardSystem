@@ -1,0 +1,220 @@
+CRITICAL - 2025-06-16 10:13:54 --> TypeError: CodeIgniter\Database\BaseResult::getFirstRow(): Argument #1 ($type) must be of type string, null given, called in /www/wwwroot/landing/vendor/codeigniter4/framework/system/Model.php on line 211
+[Method: GET, Route: admin/settings]
+in SYSTEMPATH/Database/BaseResult.php on line 401.
+ 1 SYSTEMPATH/Model.php(211): CodeIgniter\Database\BaseResult->getFirstRow()
+ 2 SYSTEMPATH/BaseModel.php(613): CodeIgniter\Model->doFind()
+ 3 APPPATH/Controllers/Admin/SettingsController.php(23): CodeIgniter\BaseModel->find()
+ 4 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\SettingsController->index()
+ 5 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 6 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 7 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 9 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-16 13:23:36 --> Error: Call to undefined function t()
+[Method: GET, Route: admin/bonus]
+in APPPATH/Views/admin/bonus/index.php on line 7.
+ 1 SYSTEMPATH/View/View.php(224): include()
+ 2 SYSTEMPATH/View/View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 3 SYSTEMPATH/Common.php(1173): CodeIgniter\View\View->render()
+ 4 APPPATH/Controllers/Admin/BonusController.php(62): view()
+ 5 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 6 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 7 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 8 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+10 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-16 13:24:13 --> Error: Call to undefined function t()
+[Method: GET, Route: admin/bonus]
+in APPPATH/Views/admin/bonus/index.php on line 7.
+ 1 SYSTEMPATH/View/View.php(224): include()
+ 2 SYSTEMPATH/View/View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 3 SYSTEMPATH/Common.php(1173): CodeIgniter\View\View->render()
+ 4 APPPATH/Controllers/Admin/BonusController.php(62): view()
+ 5 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 6 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 7 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 8 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+10 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-16 13:26:09 --> Error: Call to undefined function format_date()
+[Method: GET, Route: admin/bonus]
+in APPPATH/Views/admin/bonus/index.php on line 119.
+ 1 SYSTEMPATH/View/View.php(224): include()
+ 2 SYSTEMPATH/View/View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 3 SYSTEMPATH/Common.php(1173): CodeIgniter\View\View->render()
+ 4 APPPATH/Controllers/Admin/BonusController.php(62): view()
+ 5 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 6 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 7 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 8 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+10 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-16 13:26:10 --> Error: Call to undefined function format_date()
+[Method: GET, Route: admin/bonus]
+in APPPATH/Views/admin/bonus/index.php on line 119.
+ 1 SYSTEMPATH/View/View.php(224): include()
+ 2 SYSTEMPATH/View/View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 3 SYSTEMPATH/Common.php(1173): CodeIgniter\View\View->render()
+ 4 APPPATH/Controllers/Admin/BonusController.php(62): view()
+ 5 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 6 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 7 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 8 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+10 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-16 13:26:37 --> Error: Call to undefined function format_date()
+[Method: GET, Route: admin/bonus]
+in APPPATH/Views/admin/bonus/index.php on line 119.
+ 1 SYSTEMPATH/View/View.php(224): include()
+ 2 SYSTEMPATH/View/View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 3 SYSTEMPATH/Common.php(1173): CodeIgniter\View\View->render()
+ 4 APPPATH/Controllers/Admin/BonusController.php(62): view()
+ 5 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 6 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 7 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 8 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+10 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-16 13:28:33 --> TypeError: CodeIgniter\Database\BaseResult::getFirstRow(): Argument #1 ($type) must be of type string, null given, called in /www/wwwroot/landing/vendor/codeigniter4/framework/system/Model.php on line 211
+[Method: GET, Route: admin/settings]
+in SYSTEMPATH/Database/BaseResult.php on line 401.
+ 1 SYSTEMPATH/Model.php(211): CodeIgniter\Database\BaseResult->getFirstRow()
+ 2 SYSTEMPATH/BaseModel.php(613): CodeIgniter\Model->doFind()
+ 3 APPPATH/Controllers/Admin/SettingsController.php(23): CodeIgniter\BaseModel->find()
+ 4 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\SettingsController->index()
+ 5 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 6 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 7 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 9 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-16 13:28:42 --> TypeError: CodeIgniter\Database\BaseResult::getFirstRow(): Argument #1 ($type) must be of type string, null given, called in /www/wwwroot/landing/vendor/codeigniter4/framework/system/Model.php on line 211
+[Method: GET, Route: admin/settings]
+in SYSTEMPATH/Database/BaseResult.php on line 401.
+ 1 SYSTEMPATH/Model.php(211): CodeIgniter\Database\BaseResult->getFirstRow()
+ 2 SYSTEMPATH/BaseModel.php(613): CodeIgniter\Model->doFind()
+ 3 APPPATH/Controllers/Admin/SettingsController.php(23): CodeIgniter\BaseModel->find()
+ 4 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\SettingsController->index()
+ 5 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 6 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 7 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 9 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-16 13:30:23 --> TypeError: CodeIgniter\Database\BaseResult::getFirstRow(): Argument #1 ($type) must be of type string, null given, called in /www/wwwroot/landing/vendor/codeigniter4/framework/system/Model.php on line 211
+[Method: GET, Route: admin/settings]
+in SYSTEMPATH/Database/BaseResult.php on line 401.
+ 1 SYSTEMPATH/Model.php(211): CodeIgniter\Database\BaseResult->getFirstRow()
+ 2 SYSTEMPATH/BaseModel.php(613): CodeIgniter\Model->doFind()
+ 3 APPPATH/Controllers/Admin/SettingsController.php(28): CodeIgniter\BaseModel->find()
+ 4 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\SettingsController->index()
+ 5 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 6 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 7 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 9 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-16 13:30:24 --> TypeError: CodeIgniter\Database\BaseResult::getFirstRow(): Argument #1 ($type) must be of type string, null given, called in /www/wwwroot/landing/vendor/codeigniter4/framework/system/Model.php on line 211
+[Method: GET, Route: admin/settings]
+in SYSTEMPATH/Database/BaseResult.php on line 401.
+ 1 SYSTEMPATH/Model.php(211): CodeIgniter\Database\BaseResult->getFirstRow()
+ 2 SYSTEMPATH/BaseModel.php(613): CodeIgniter\Model->doFind()
+ 3 APPPATH/Controllers/Admin/SettingsController.php(28): CodeIgniter\BaseModel->find()
+ 4 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\SettingsController->index()
+ 5 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 6 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 7 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 9 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-16 13:31:52 --> TypeError: CodeIgniter\Database\BaseResult::getFirstRow(): Argument #1 ($type) must be of type string, null given, called in /www/wwwroot/landing/vendor/codeigniter4/framework/system/Model.php on line 211
+[Method: GET, Route: admin/settings]
+in SYSTEMPATH/Database/BaseResult.php on line 401.
+ 1 SYSTEMPATH/Model.php(211): CodeIgniter\Database\BaseResult->getFirstRow()
+ 2 SYSTEMPATH/BaseModel.php(613): CodeIgniter\Model->doFind()
+ 3 APPPATH/Controllers/Admin/SettingsController.php(28): CodeIgniter\BaseModel->find()
+ 4 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\SettingsController->index()
+ 5 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 6 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 7 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 9 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-16 14:02:12 --> Exception: ✅ LocaleFilter is running
+[Method: GET, Route: admin/dashboard]
+in APPPATH/Filters/LocaleFilter.php on line 13.
+ 1 SYSTEMPATH/Filters/Filters.php(241): App\Filters\LocaleFilter->before()
+ 2 SYSTEMPATH/Filters/Filters.php(221): CodeIgniter\Filters\Filters->runBefore()
+ 3 SYSTEMPATH/CodeIgniter.php(479): CodeIgniter\Filters\Filters->run()
+ 4 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 5 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 7 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-16 14:19:21 --> Error: Call to a member function setLocale() on null
+[Method: GET, Route: admin/dashboard]
+in APPPATH/Controllers/BaseController.php on line 68.
+ 1 SYSTEMPATH/CodeIgniter.php(904): App\Controllers\BaseController->initController()
+ 2 SYSTEMPATH/CodeIgniter.php(498): CodeIgniter\CodeIgniter->createController()
+ 3 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+ 4 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+ 6 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-16 17:32:26 --> ParseError: syntax error, unexpected token "=>", expecting "]"
+[Method: GET, Route: admin/bonus]
+in APPPATH/Language/zh/Admin.php on line 200.
+ 1 SYSTEMPATH/Language/Language.php(258): CodeIgniter\Language\Language->requireFile()
+ 2 SYSTEMPATH/Language/Language.php(168): CodeIgniter\Language\Language->load()
+ 3 SYSTEMPATH/Language/Language.php(103): CodeIgniter\Language\Language->parseLine()
+ 4 SYSTEMPATH/Common.php(748): CodeIgniter\Language\Language->getLine()
+ 5 APPPATH/Helpers/translation_helper.php(17): lang()
+ 6 APPPATH/Controllers/Admin/BonusController.php(51): t()
+ 7 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 8 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 9 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+10 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+12 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-16 17:32:27 --> ParseError: syntax error, unexpected token "=>", expecting "]"
+[Method: GET, Route: admin/bonus]
+in APPPATH/Language/zh/Admin.php on line 200.
+ 1 SYSTEMPATH/Language/Language.php(258): CodeIgniter\Language\Language->requireFile()
+ 2 SYSTEMPATH/Language/Language.php(168): CodeIgniter\Language\Language->load()
+ 3 SYSTEMPATH/Language/Language.php(103): CodeIgniter\Language\Language->parseLine()
+ 4 SYSTEMPATH/Common.php(748): CodeIgniter\Language\Language->getLine()
+ 5 APPPATH/Helpers/translation_helper.php(17): lang()
+ 6 APPPATH/Controllers/Admin/BonusController.php(51): t()
+ 7 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 8 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 9 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+10 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+12 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-16 17:36:41 --> ParseError: syntax error, unexpected token ",", expecting ";"
+[Method: GET, Route: admin/bonus]
+in APPPATH/Language/zh/Admin.php on line 206.
+ 1 SYSTEMPATH/Language/Language.php(258): CodeIgniter\Language\Language->requireFile()
+ 2 SYSTEMPATH/Language/Language.php(168): CodeIgniter\Language\Language->load()
+ 3 SYSTEMPATH/Language/Language.php(103): CodeIgniter\Language\Language->parseLine()
+ 4 SYSTEMPATH/Common.php(748): CodeIgniter\Language\Language->getLine()
+ 5 APPPATH/Helpers/translation_helper.php(17): lang()
+ 6 APPPATH/Controllers/Admin/BonusController.php(51): t()
+ 7 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 8 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+ 9 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+10 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+12 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
+CRITICAL - 2025-06-16 17:41:09 --> ParseError: syntax error, unexpected token ",", expecting ";"
+[Method: GET, Route: admin/landing-page]
+in APPPATH/Language/en/Admin.php on line 207.
+ 1 SYSTEMPATH/Language/Language.php(258): CodeIgniter\Language\Language->requireFile()
+ 2 SYSTEMPATH/Language/Language.php(168): CodeIgniter\Language\Language->load()
+ 3 SYSTEMPATH/Language/Language.php(117): CodeIgniter\Language\Language->parseLine()
+ 4 SYSTEMPATH/Common.php(748): CodeIgniter\Language\Language->getLine()
+ 5 APPPATH/Helpers/translation_helper.php(17): lang()
+ 6 APPPATH/Views/admin/landing_page/builder.php(44): t()
+ 7 SYSTEMPATH/View/View.php(224): include('/www/wwwroot/landing/app/Views/admin/landing_page/builder.php')
+ 8 SYSTEMPATH/View/View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 9 SYSTEMPATH/Common.php(1173): CodeIgniter\View\View->render()
+10 APPPATH/Controllers/Admin/LandingPageController.php(52): view()
+11 SYSTEMPATH/CodeIgniter.php(933): App\Controllers\Admin\LandingPageController->index()
+12 SYSTEMPATH/CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController()
+13 SYSTEMPATH/CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest()
+14 SYSTEMPATH/Boot.php(334): CodeIgniter\CodeIgniter->run()
+15 SYSTEMPATH/Boot.php(67): CodeIgniter\Boot::runCodeIgniter()
+16 FCPATH/index.php(59): CodeIgniter\Boot::bootWeb()
