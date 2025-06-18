@@ -469,11 +469,17 @@
         </div>
         <?php endif; ?>
         
-        <!-- Spin Sound Plauer -->
+        <!-- Tick & Win Sounds -->
         <?php if (!empty($spin_sound['spin_sound'])): ?>
-            <audio id="spinSound" preload="auto">
-                <source src="<?= base_url('uploads/sounds/' . $spin_sound['spin_sound']) ?>" type="audio/mpeg">
-            </audio>
+        <audio id="spinAudio" preload="auto">
+            <source src="<?= base_url('uploads/sounds/' . $spin_sound['spin_sound']) ?>" type="audio/mpeg">
+        </audio>
+        <?php endif; ?>
+
+        <?php if (!empty($win_sound['sound_file'])): ?>
+        <audio id="winAudio" preload="auto">
+            <source src="<?= base_url('uploads/sounds/' . $win_sound['sound_file']) ?>" type="audio/mpeg">
+        </audio>
         <?php endif; ?>
 
 

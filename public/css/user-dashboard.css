@@ -1,0 +1,518 @@
+/* User Dashboard CSS */
+
+/* Base styles */
+.user-body {
+    margin: 0;
+    padding: 0;
+    background: #1a1a1a;
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.portrait-container {
+    width: 100vw;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    padding-bottom: 80px; /* Space for bottom nav */
+}
+
+.main-content {
+    min-height: calc(100vh - 80px);
+    background: linear-gradient(180deg, #2c3e50 0%, #1a1a1a 100%);
+}
+
+/* Profile Header */
+.profile-header {
+    padding: 20px 0 30px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.1;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="white" stroke-width="0.5"/></svg>');
+    background-size: 50px 50px;
+}
+
+/* Background themes */
+.default-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.blue-bg {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+}
+
+.purple-bg {
+    background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+}
+
+.green-bg {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+}
+
+.red-bg {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.orange-bg {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.username {
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.user-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.btn-deposit {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    color: #000;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 3px 10px rgba(255, 215, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-deposit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.5);
+    color: #000;
+}
+
+.btn-settings {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.btn-settings:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+/* Background Options */
+.bg-options {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    display: flex;
+    gap: 8px;
+}
+
+.bg-option {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.bg-option:hover {
+    transform: scale(1.1);
+    border-color: white;
+}
+
+/* Section Styling */
+.checkin-section,
+.quick-actions,
+.recent-activity {
+    background: #2c3e50;
+    margin: 15px 0;
+    border-radius: 15px;
+    padding: 20px 0;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    color: #ffffff;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+}
+
+.streak-badge {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Check-in Grid */
+.checkin-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.checkin-day {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 10px 5px;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.checkin-day.checked {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    box-shadow: 0 3px 10px rgba(39, 174, 96, 0.3);
+}
+
+.checkin-day.available {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    color: #000;
+    animation: pulse 2s infinite;
+}
+
+.day-number {
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.reward-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.coin-icon {
+    color: #FFD700;
+    font-size: 1.2rem;
+}
+
+.reward-text {
+    font-size: 0.6rem;
+    font-weight: 500;
+}
+
+.check-mark {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    color: white;
+    font-size: 0.8rem;
+}
+
+.checkin-btn {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.6rem;
+    font-weight: 600;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px 6px;
+    border-radius: 8px;
+}
+
+/* Check-in Stats */
+.checkin-stats {
+    display: flex;
+    justify-content: space-around;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #FFD700;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Quick Actions */
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.action-item {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.action-item:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.action-icon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+    color: #FFD700;
+}
+
+.action-text {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: white;
+}
+
+/* Recent Activity */
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-title {
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.activity-time {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.activity-reward {
+    font-weight: 700;
+    color: #FFD700;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    z-index: 1000;
+}
+
+.nav-item {
+    flex: 1;
+    text-align: center;
+}
+
+.nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    font-size: 0.7rem;
+    transition: all 0.3s ease;
+}
+
+.nav-item.active .nav-link,
+.nav-link:hover {
+    color: #FFD700;
+}
+
+.nav-link i {
+    font-size: 1.2rem;
+}
+
+/* Win Modal - Fixed Black and Yellow Theme */
+.win-modal-content {
+    background: linear-gradient(135deg, #000000 0%, #2c2c2c 100%) !important;
+    border: 3px solid #FFD700 !important;
+    border-radius: 15px !important;
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3) !important;
+}
+
+.win-title {
+    color: #FFD700 !important;
+    font-size: 1.8rem !important;
+    font-weight: 700 !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+}
+
+.win-prize {
+    color: #FFD700 !important;
+    font-size: 1.4rem !important;
+    font-weight: 600 !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+.btn-win {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%) !important;
+    color: #000000 !important;
+    border: 2px solid #B8860B !important;
+    border-radius: 20px !important;
+    padding: 10px 25px !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4) !important;
+}
+
+.btn-win:hover {
+    background: linear-gradient(135deg, #FFA500 0%, #FFD700 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.6) !important;
+    color: #000000 !important;
+}
+
+.win-animation {
+    animation: winPulse 0.6s ease-in-out;
+}
+
+@keyframes winPulse {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Pulse animation for check-in button */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 375px) {
+    .checkin-grid {
+        gap: 5px;
+    }
+    
+    .checkin-day {
+        padding: 8px 3px;
+    }
+    
+    .day-number {
+        font-size: 0.6rem;
+    }
+    
+    .reward-text {
+        font-size: 0.5rem;
+    }
+    
+    .action-grid {
+        gap: 10px;
+    }
+    
+    .action-item {
+        padding: 15px 5px;
+    }
+    
+    .action-icon {
+        font-size: 1.5rem;
+    }
+}
+
+/* Fix for modal z-index */
+.modal {
+    z-index: 1060;
+}
+
+.modal-backdrop {
+    z-index: 1055;
+}

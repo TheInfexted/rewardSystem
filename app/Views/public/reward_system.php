@@ -174,20 +174,6 @@
 <body>
     <div class="reward-container">
         <div class="reward-card">
-<!-- TEMPORARY DEBUG INFO - REMOVE AFTER TESTING -->
-<div style="background: #000; color: #0f0; padding: 10px; font-family: monospace; font-size: 12px; margin: 10px;">
-    DEBUG INFO:<br>
-    logged_in: <?= var_export($logged_in, true) ?><br>
-    winner_data exists: <?= var_export(!empty($winner_data), true) ?><br>
-    user_data exists: <?= var_export(!empty($user_data), true) ?><br>
-    session user_id: <?= var_export(session()->get('user_id'), true) ?><br>
-    session logged_in: <?= var_export(session()->get('logged_in'), true) ?><br>
-    session_id: <?= session_id() ?><br>
-    <?php if (!empty($winner_data)): ?>
-    winner_name: <?= htmlspecialchars($winner_data['name'] ?? 'N/A') ?><br>
-    <?php endif; ?>
-</div>
-
             <!-- Prize Display -->
             <?php if (isset($winner_data) && !empty($winner_data)): ?>
                 <div class="prize-display">
@@ -245,7 +231,7 @@
                     <p class="text-muted mb-4">You need to spin the wheel and win a prize first before accessing this page.</p>
                     
                     <div class="d-grid gap-2">
-                        <a href="<?= base_url('/') ?>" class="btn btn-warning btn-lg">
+                        <a href="<?= base_url('dashboard') ?>" class="btn btn-warning btn-lg">
                             <i class="bi bi-arrow-left"></i> Go Back to Game
                         </a>
                     </div>
@@ -323,7 +309,7 @@
             
             <!-- Back to Game -->
             <div class="mt-4">
-                <a href="<?= base_url('/') ?>" class="btn btn-outline-secondary">
+                <a href="<?= base_url('user/dashboard') ?>" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-left"></i> Back to Game
                 </a>
             </div>

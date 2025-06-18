@@ -14,7 +14,7 @@ $routes->post('spin', 'LandingController::spin');
 $routes->post('claim-bonus', 'LandingController::claimBonus');
 $routes->post('store-winner', 'LandingController::storeWinner'); 
 
-// NEW: Reward System routes
+//Reward System routes
 $routes->group('reward', function($routes) {
     $routes->get('/', 'RewardController::index');
     $routes->post('auto-register', 'RewardController::autoRegister');
@@ -30,6 +30,14 @@ $routes->get('logout', 'AuthController::logout');
 $routes->get('register', 'AuthController::register');
 $routes->post('register', 'AuthController::attemptRegister');
 
+//User Dashboard routes (protected by auth filter)
+$routes->group('user', ['filter' => 'auth'], function($routes) {
+    $routes->get('dashboard', 'UserController::dashboard');
+    $routes->post('checkin', 'UserController::checkin');
+    $routes->post('update-background', 'UserController::updateBackground');
+    $routes->get('wheel-data', 'UserController::getWheelData');
+});
+
 // Admin routes group (protected by auth filter)
 $routes->group('admin', ['filter' => 'auth'], function($routes) {
     // Dashboard
@@ -41,63 +49,62 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
         $routes->get('/', 'Admin\LandingPageController::index');
         $routes->post('save', 'Admin\LandingPageController::save');
         $routes->get('preview', 'Admin\LandingPageController::preview');
-        $routes->post('upload/image', 'Admin\UploadController::image');
-        $routes->post('upload/remove', 'Admin\UploadController::remove');
         $routes->get('edit/(:num)', 'Admin\LandingPageController::edit/$1');
+        
+        // Upload routes
+        $routes->group('upload', function($routes) {
+            $routes->post('image', 'Admin\UploadController::image');
+            $routes->post('remove', 'Admin\UploadController::remove');
+        });
+        
+        // Music routes
         $routes->post('save-music', 'Admin\LandingPageController::saveMusic');
         $routes->post('delete-music', 'Admin\LandingPageController::deleteMusic');
+        
+        // Sound routes
         $routes->post('save-spin-sound', 'Admin\LandingPageController::saveSpinSound');
         $routes->post('delete-spin-sound', 'Admin\LandingPageController::deleteSpinSound');
         $routes->post('save-win-sound', 'Admin\LandingPageController::saveWinSound');
         $routes->post('delete-win-sound', 'Admin\LandingPageController::deleteWinSound');
     });
     
-    // Media Library routes
+    // Media routes
     $routes->group('media', function($routes) {
         $routes->get('/', 'Admin\MediaController::index');
         $routes->post('upload', 'Admin\MediaController::upload');
-        $routes->get('delete/(:any)', 'Admin\MediaController::delete/$1');
+        $routes->get('delete/(:segment)', 'Admin\MediaController::delete/$1');
     });
-
     
-    // Wheel management
+    // Wheel management routes
     $routes->group('wheel', function($routes) {
         $routes->get('/', 'Admin\WheelController::index');
-        $routes->get('add', 'Admin\WheelController::add');
         $routes->post('add', 'Admin\WheelController::add');
         $routes->get('edit/(:num)', 'Admin\WheelController::edit/$1');
         $routes->post('edit/(:num)', 'Admin\WheelController::edit/$1');
         $routes->get('delete/(:num)', 'Admin\WheelController::delete/$1');
-        $routes->get('check-rates', 'Admin\WheelController::checkRates');
     });
     
-    // Bonus Claims Management
+    // Bonus management routes
     $routes->group('bonus', function($routes) {
         $routes->get('/', 'Admin\BonusController::index');
-        $routes->get('view/(:num)', 'Admin\BonusController::view/$1');
-        $routes->get('export', 'Admin\BonusController::export');
-        $routes->get('stats', 'Admin\BonusController::getStats');
         $routes->post('settings', 'Admin\BonusController::updateSettings');
         $routes->post('status/(:num)', 'Admin\BonusController::updateStatus/$1');
+        $routes->get('stats', 'Admin\BonusController::getStats');
     });
     
-    // Reports and Analytics
-    $routes->group('reports', function($routes) {
-        $routes->get('/', 'Admin\ReportsController::index');
-        $routes->get('view/(:num)', 'Admin\ReportsController::view/$1');
-        $routes->get('export', 'Admin\ReportsController::export');
-        $routes->get('analytics', 'Admin\ReportsController::analytics');
-    });
-    
-    // System Settings
+    // Settings routes
     $routes->group('settings', function($routes) {
         $routes->get('/', 'Admin\SettingsController::index');
         $routes->post('profile', 'Admin\SettingsController::updateProfile');
         $routes->post('password', 'Admin\SettingsController::updatePassword');
-        $routes->post('system', 'Admin\SettingsController::updateSystem');
+        $routes->post('general', 'Admin\SettingsController::updateGeneral');
+    });
+    
+    // Language management
+    $routes->group('language', function($routes) {
+        $routes->get('/', 'Admin\LanguageController::index');
+        $routes->post('update', 'Admin\LanguageController::update');
+        $routes->get('export', 'Admin\LanguageController::export');
+        $routes->post('import', 'Admin\LanguageController::import');
     });
 });
-
-// API routes for AJAX calls
-$routes->get('api/recent-wins', 'LandingController::getRecentWins');
-$routes->get('api/user-stats', 'LandingController::getUserStats');
