@@ -16,6 +16,7 @@ return [
         'settings' => 'Settings',
         'view_site' => 'View Site',
         'logout' => 'Logout',
+        'language' => 'Language',
     ],
 
     // Dashboard
@@ -192,7 +193,7 @@ return [
         'removing' => 'Removing...',
         'failed_to_remove' => 'Failed to remove image',
         'failed_to_cleanup' => 'Failed to cleanup images',
-    ], 
+    ],
 
     // Media Library
     'media' => [
@@ -204,6 +205,8 @@ return [
         'upload_first' => 'Upload your first image to get started',
         'view' => 'View',
         'delete' => 'Delete',
+        'size' => 'Size',
+        'date' => 'Date',
         'upload_modal' => [
             'title' => 'Upload Image',
             'select_image' => 'Select Image',
@@ -302,6 +305,7 @@ return [
         'rate_help' => 'Total winning rate should equal 100% for balanced odds',
         'no_items' => 'No wheel items found. Add your first item!',
         'confirm_delete' => 'Are you sure you want to delete this wheel item?',
+        'total_rate_warning' => 'Total winning rate is {rate}%. Should be 100% for balanced odds.',
         'table' => [
             'order' => 'Order',
             'name' => 'Name',
@@ -323,6 +327,7 @@ return [
             'product' => 'Product',
             'winning_rate' => 'Winning Rate (%)',
             'rate_help' => 'Percentage chance of winning this item',
+            'rate_help_special' => 'Percentage chance of winning this item (0 for special items)',
             'order' => 'Order',
             'order_help' => 'Position on wheel (1-8)',
             'active' => 'Active (Show on wheel)',
@@ -377,5 +382,8 @@ return [
         'previous' => 'Previous',
         'next' => 'Next',
         'language' => 'Language',
+        'saving' => 'Saving...',
+        'network_error' => 'Network error occurred. Please try again.',
+        'language_changed' => 'Language changed successfully!',
     ],
 ];
