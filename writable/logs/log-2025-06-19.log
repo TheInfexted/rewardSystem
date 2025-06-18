@@ -49,3 +49,56 @@ Stack trace:
 #12 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
 #13 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
 #14 {main}
+CRITICAL - 2025-06-19 01:12:52 --> CodeIgniter\Exceptions\BadMethodCallException: Call to undefined method App\Models\BonusClaimModel::getClaimsWithPagination
+[Method: GET, Route: admin/bonus]
+in SYSTEMPATH\Model.php on line 930.
+ 1 APPPATH\Controllers\Admin\BonusController.php(40): CodeIgniter\Model->__call('getClaimsWithPagination', [...])
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\BonusController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-19 01:12:57 --> CodeIgniter\Exceptions\BadMethodCallException: Call to undefined method App\Models\BonusClaimModel::getClaimsWithPagination
+[Method: GET, Route: admin/bonus]
+in SYSTEMPATH\Model.php on line 930.
+ 1 APPPATH\Controllers\Admin\BonusController.php(40): CodeIgniter\Model->__call('getClaimsWithPagination', [...])
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\BonusController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-19 01:14:26 --> TypeError: CodeIgniter\Database\BaseBuilder::like(): Argument #2 ($match) must be of type string, array given, called in C:\xampp\htdocs\rewardSystem\app\Models\BonusClaimModel.php on line 104
+[Method: GET, Route: admin/bonus]
+in SYSTEMPATH\Database\BaseBuilder.php on line 1008.
+ 1 APPPATH\Models\BonusClaimModel.php(104): CodeIgniter\Database\BaseBuilder->like('bonus_claims.user_name', [...])
+ 2 APPPATH\Controllers\Admin\BonusController.php(40): App\Models\BonusClaimModel->getClaimsWithPagination(20, 0, [...])
+ 3 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 4 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\BonusController))
+ 5 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 7 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-19 01:14:27 --> TypeError: CodeIgniter\Database\BaseBuilder::like(): Argument #2 ($match) must be of type string, array given, called in C:\xampp\htdocs\rewardSystem\app\Models\BonusClaimModel.php on line 104
+[Method: GET, Route: admin/bonus]
+in SYSTEMPATH\Database\BaseBuilder.php on line 1008.
+ 1 APPPATH\Models\BonusClaimModel.php(104): CodeIgniter\Database\BaseBuilder->like('bonus_claims.user_name', [...])
+ 2 APPPATH\Controllers\Admin\BonusController.php(40): App\Models\BonusClaimModel->getClaimsWithPagination(20, 0, [...])
+ 3 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 4 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\BonusController))
+ 5 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 7 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-19 01:14:42 --> TypeError: CodeIgniter\Database\BaseBuilder::like(): Argument #2 ($match) must be of type string, array given, called in C:\xampp\htdocs\rewardSystem\app\Models\BonusClaimModel.php on line 104
+[Method: GET, Route: admin/bonus]
+in SYSTEMPATH\Database\BaseBuilder.php on line 1008.
+ 1 APPPATH\Models\BonusClaimModel.php(104): CodeIgniter\Database\BaseBuilder->like('bonus_claims.user_name', [...])
+ 2 APPPATH\Controllers\Admin\BonusController.php(40): App\Models\BonusClaimModel->getClaimsWithPagination(20, 0, [...])
+ 3 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 4 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\BonusController))
+ 5 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 7 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
