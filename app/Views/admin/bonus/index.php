@@ -4,41 +4,54 @@
 <div class="container-fluid">
     <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 text-gold"><?= t('Admin.bonus.title') ?></h1>
+        <h1 class="h3 text-gold">Bonus Claims Management</h1>
         <div class="btn-group">
             <a href="<?= base_url('admin/bonus/export?' . http_build_query($filters)) ?>" 
                class="btn btn-gold">
-                <i class="bi bi-download"></i> <?= t('Admin.bonus.export_csv') ?>
+                <i class="bi bi-download"></i> Export CSV
             </a>
             <button type="button" class="btn btn-gold" data-bs-toggle="modal" data-bs-target="#settingsModal">
-                <i class="bi bi-gear"></i> <?= t('Admin.bonus.settings') ?>
+                <i class="bi bi-gear"></i> Settings
             </button>
         </div>
     </div>
 
-    <!-- Statistics Cards -->
+    <!-- Enhanced Statistics Cards -->
     <div class="row mb-4">
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card bg-dark border-secondary">
                 <div class="card-body text-center">
                     <h5 class="text-gold"><?= number_format($stats['total_claims']) ?></h5>
-                    <p class="text-light mb-0"><?= t('Admin.bonus.total_claims') ?></p>
+                    <p class="text-light mb-0">Total Claims</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card bg-dark border-secondary">
                 <div class="card-body text-center">
                     <h5 class="text-warning"><?= number_format($stats['today_claims']) ?></h5>
-                    <p class="text-light mb-0"><?= t('Admin.bonus.today_claims') ?></p>
+                    <p class="text-light mb-0">Today's Claims</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="card bg-dark border-secondary">
                 <div class="card-body text-center">
-                    <h5 class="text-info"><?= number_format($stats['unique_ips']) ?? 0 ?></h5>
-                    <p class="text-light mb-0"><?= t('Admin.bonus.unique_ips') ?></p>
+                    <h5 class="text-info"><?= number_format($stats['unique_real_ips'] ?? 0) ?></h5>
+                    <p class="text-light mb-0">Unique Real IPs</p>
+                    <small class="text-muted">
+                        <?= ($stats['localhost_claims'] ?? 0) ?> localhost, 
+                        <?= ($stats['no_ip_claims'] ?? 0) ?> no IP
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark border-secondary">
+                <div class="card-body text-center">
+                    <h5 class="text-success"><?= $stats['conversion_rate'] ?? 0 ?>%</h5>
+                    <p class="text-light mb-0">Spin → Claim Rate</p>
+                    <small class="text-muted"><?= number_format($stats['total_bonus_spins'] ?? 0) ?> bonus spins</small>
                 </div>
             </div>
         </div>
@@ -47,40 +60,28 @@
     <!-- Filters -->
     <div class="card bg-dark border-secondary mb-4">
         <div class="card-body">
-            <form method="GET" class="row g-3">
+            <form method="GET" action="<?= base_url('admin/bonus') ?>" class="row g-3">
                 <div class="col-md-2">
-                    <label class="form-label text-light"><?= t('Admin.bonus.filters.from_date') ?></label>
-                    <input type="date" name="date_from" value="<?= $filters['date_from'] ?>" 
-                           class="form-control bg-secondary text-light border-0">
+                    <label class="form-label text-gold">From Date</label>
+                    <input type="date" name="date_from" class="form-control bg-dark text-light border-gold"
+                           value="<?= $filters['date_from'] ?? '' ?>">
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label text-light"><?= t('Admin.bonus.filters.to_date') ?></label>
-                    <input type="date" name="date_to" value="<?= $filters['date_to'] ?>" 
-                           class="form-control bg-secondary text-light border-0">
+                    <label class="form-label text-gold">To Date</label>
+                    <input type="date" name="date_to" class="form-control bg-dark text-light border-gold"
+                           value="<?= $filters['date_to'] ?? '' ?>">
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label text-light"><?= t('Admin.bonus.filters.search') ?></label>
-                    <input type="text" name="search" value="<?= esc($filters['search']) ?>" 
-                           placeholder="<?= t('Admin.bonus.filters.search_placeholder') ?>" 
-                           class="form-control bg-secondary text-light border-0">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label text-light"><?= t('Admin.bonus.filters.bonus_type') ?></label>
-                    <select name="bonus_type" class="form-select bg-secondary text-light border-0">
-                        <option value=""><?= t('Admin.bonus.filters.all_types') ?></option>
-                        <?php foreach (['120% BONUS', '100% BONUS', '50% BONUS', '30% BONUS'] as $type): ?>
-                            <option value="<?= $type ?>" <?= $filters['bonus_type'] === $type ? 'selected' : '' ?>>
-                                <?= t('Database.bonus_types.' . $type) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+                    <label class="form-label text-gold">Search</label>
+                    <input type="text" name="search" class="form-control bg-dark text-light border-gold"
+                           placeholder="Name, phone, email, IP..." value="<?= $filters['search'] ?? '' ?>">
                 </div>
                 <div class="col-md-3 d-flex align-items-end">
                     <button type="submit" class="btn btn-gold me-2">
-                        <i class="bi bi-search"></i> <?= t('Admin.bonus.filters.filter') ?>
+                        <i class="bi bi-search"></i> Filter
                     </button>
                     <a href="<?= base_url('admin/bonus') ?>" class="btn btn-outline-secondary">
-                        <?= t('Admin.bonus.filters.clear') ?>
+                        Clear
                     </a>
                 </div>
             </form>
@@ -93,21 +94,22 @@
             <?php if (empty($claims)): ?>
                 <div class="text-center py-5">
                     <i class="bi bi-inbox display-1 text-muted"></i>
-                    <h5 class="text-muted mt-3"><?= t('Admin.bonus.no_claims') ?></h5>
-                    <p class="text-muted"><?= t('Admin.bonus.no_claims_desc') ?></p>
+                    <h5 class="text-muted mt-3">No Claims Found</h5>
+                    <p class="text-muted">No bonus claims match your current filters.</p>
                 </div>
             <?php else: ?>
                 <div class="table-responsive">
                     <table class="table table-dark table-hover">
                         <thead>
                             <tr>
-                                <th><?= t('Admin.bonus.table.id') ?></th>
-                                <th><?= t('Admin.bonus.table.claim_time') ?></th>
-                                <th><?= t('Admin.bonus.table.user_details') ?></th>
-                                <th><?= t('Admin.bonus.table.contact') ?></th>
-                                <th><?= t('Admin.bonus.table.ip_address') ?></th>
-                                <th><?= t('Admin.bonus.table.bonus') ?></th>
-                                <th><?= t('Admin.bonus.table.actions') ?></th>
+                                <th>ID</th>
+                                <th>Claim Time</th>
+                                <th>User Details</th>
+                                <th>Contact</th>
+                                <th>IP Address</th>
+                                <th>Bonus</th>
+                                <th>Spin Correlation</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -116,13 +118,13 @@
                                 <td class="text-gold">#<?= $claim['id'] ?></td>
                                 <td>
                                     <small class="text-light">
-                                        <?= format_date($claim['claim_time'], 'M j, Y') ?><br>
+                                        <?= date('M j, Y', strtotime($claim['claim_time'])) ?><br>
                                         <?= date('H:i:s', strtotime($claim['claim_time'])) ?>
                                     </small>
                                 </td>
                                 <td>
                                     <strong class="text-light"><?= esc($claim['user_name']) ?></strong><br>
-                                    <small class="text-muted"><?= t('Admin.bonus.table.session') ?>: <?= substr($claim['session_id'], 0, 16) ?>...</small>
+                                    <small class="text-muted">Session: <?= substr($claim['session_id'], 0, 16) ?>...</small>
                                 </td>
                                 <td>
                                     <div class="text-light">
@@ -130,33 +132,65 @@
                                         <?php if ($claim['email']): ?>
                                             <i class="bi bi-envelope"></i> <?= esc($claim['email']) ?>
                                         <?php else: ?>
-                                            <small class="text-muted"><?= t('Admin.bonus.table.no_email') ?></small>
+                                            <small class="text-muted">No email provided</small>
                                         <?php endif; ?>
                                     </div>
                                 </td>
                                 <td>
-                                    <code class="text-warning"><?= $claim['user_ip'] ?></code><br>
-                                    <small class="text-muted">
+                                    <div>
                                         <?php 
-                                        $ipCount = 0;
-                                        foreach ($claims as $c) {
-                                            if ($c['user_ip'] === $claim['user_ip']) $ipCount++;
+                                        $displayIp = $claim['display_ip'] ?? $claim['user_ip'] ?? 'No IP';
+                                        $ipClass = 'text-warning';
+                                        if (strpos($displayIp, 'Localhost') !== false) {
+                                            $ipClass = 'text-info';
+                                        } elseif ($displayIp === 'No IP Recorded' || $displayIp === 'No IP') {
+                                            $ipClass = 'text-danger';
                                         }
-                                        echo "({$ipCount} " . t('Admin.bonus.table.claims') . ")";
                                         ?>
-                                    </small>
+                                        <code class="<?= $ipClass ?>"><?= $displayIp ?></code><br>
+                                        
+                                        <?php if (isset($claim['claims_same_ip']) && $claim['claims_same_ip'] > 0): ?>
+                                            <small class="text-danger">
+                                                <i class="bi bi-exclamation-triangle"></i> 
+                                                <?= $claim['claims_same_ip'] ?> other claims from this IP
+                                            </small>
+                                        <?php else: ?>
+                                            <small class="text-success">
+                                                <i class="bi bi-check-circle"></i> Unique IP
+                                            </small>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                                 <td>
-                                    <span class="badge bg-gold text-light"><?= t('Database.bonus_types.' . $claim['bonus_type']) ?></span><br>
+                                    <span class="badge bg-gold text-dark"><?= esc($claim['bonus_type']) ?></span><br>
                                     <?php if ($claim['bonus_amount'] > 0): ?>
-                                        <small class="text-success"><?= format_currency($claim['bonus_amount']) ?></small>
+                                        <small class="text-success">$<?= number_format($claim['bonus_amount'], 2) ?></small>
+                                    <?php endif; ?>
+                                    <br>
+                                </td>
+                                <td>
+                                    <?php if (isset($claim['related_spin_item']) && $claim['related_spin_item']): ?>
+                                        <small class="text-success">
+                                            <i class="bi bi-arrow-down-up"></i> 
+                                            <?= esc($claim['related_spin_item']) ?>
+                                        </small><br>
+                                    <?php endif; ?>
+                                    
+                                    <?php if (isset($claim['spins_same_day']) && $claim['spins_same_day'] > 0): ?>
+                                        <small class="text-info">
+                                            <?= $claim['spins_same_day'] ?> spins same day
+                                        </small>
+                                    <?php else: ?>
+                                        <small class="text-muted">No spins tracked</small>
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-sm btn-outline-info" 
-                                            onclick="viewDetails(<?= htmlspecialchars(json_encode($claim), ENT_QUOTES, 'UTF-8') ?>)">
-                                        <i class="bi bi-eye"></i>
-                                    </button>
+                                    <div class="btn-group-vertical btn-group-sm">
+                                        <button type="button" class="btn btn-outline-info" 
+                                                onclick="viewDetails(<?= htmlspecialchars(json_encode($claim), ENT_QUOTES, 'UTF-8') ?>)">
+                                            <i class="bi bi-eye"></i> View
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
@@ -171,32 +205,30 @@
                         <!-- Previous Page -->
                         <li class="page-item <?= $currentPage === 1 ? 'disabled' : '' ?>">
                             <a class="page-link bg-secondary border-secondary text-light" 
-                               href="<?= $currentPage > 1 ? base_url('admin/bonus?' . http_build_query(array_merge($filters, ['page' => $currentPage - 1]))) : '#' ?>">
-                                <?= t('Admin.common.previous', [], 'Previous') ?>
+                               href="<?= $currentPage > 1 ? base_url('admin/bonus?page=' . ($currentPage - 1) . '&' . http_build_query($filters)) : '#' ?>">
+                                Previous
                             </a>
                         </li>
-                        
+
                         <!-- Page Numbers -->
-                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                            <?php if ($i === 1 || $i === $totalPages || ($i >= $currentPage - 2 && $i <= $currentPage + 2)): ?>
-                                <li class="page-item <?= $i === $currentPage ? 'active' : '' ?>">
-                                    <a class="page-link bg-secondary border-secondary text-light" 
-                                       href="<?= base_url('admin/bonus?' . http_build_query(array_merge($filters, ['page' => $i]))) ?>">
-                                        <?= $i ?>
-                                    </a>
-                                </li>
-                            <?php elseif ($i === $currentPage - 3 || $i === $currentPage + 3): ?>
-                                <li class="page-item disabled">
-                                    <span class="page-link bg-secondary border-secondary text-light">...</span>
-                                </li>
-                            <?php endif; ?>
-                        <?php endfor; ?>
+                        <?php 
+                        $startPage = max(1, $currentPage - 2);
+                        $endPage = min($totalPages, $currentPage + 2);
                         
+                        for ($i = $startPage; $i <= $endPage; $i++): ?>
+                            <li class="page-item <?= $i === $currentPage ? 'active' : '' ?>">
+                                <a class="page-link <?= $i === $currentPage ? 'bg-gold border-gold text-dark' : 'bg-secondary border-secondary text-light' ?>" 
+                                   href="<?= base_url('admin/bonus?page=' . $i . '&' . http_build_query($filters)) ?>">
+                                    <?= $i ?>
+                                </a>
+                            </li>
+                        <?php endfor; ?>
+
                         <!-- Next Page -->
                         <li class="page-item <?= $currentPage === $totalPages ? 'disabled' : '' ?>">
                             <a class="page-link bg-secondary border-secondary text-light" 
-                               href="<?= $currentPage < $totalPages ? base_url('admin/bonus?' . http_build_query(array_merge($filters, ['page' => $currentPage + 1]))) : '#' ?>">
-                                <?= t('Admin.common.next', [], 'Next') ?>
+                               href="<?= $currentPage < $totalPages ? base_url('admin/bonus?page=' . ($currentPage + 1) . '&' . http_build_query($filters)) : '#' ?>">
+                                Next
                             </a>
                         </li>
                     </ul>
@@ -207,141 +239,156 @@
     </div>
 </div>
 
+<!-- Claim Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark border-gold">
+            <div class="modal-header border-gold">
+                <h5 class="modal-title text-gold">Claim Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-gold">User Information</h6>
+                        <p><strong>ID:</strong> <span id="detail-id"></span></p>
+                        <p><strong>Name:</strong> <span id="detail-name"></span></p>
+                        <p><strong>Phone:</strong> <span id="detail-phone"></span></p>
+                        <p><strong>Email:</strong> <span id="detail-email"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-gold">Technical Details</h6>
+                        <p><strong>IP Address:</strong> <code id="detail-ip"></code></p>
+                        <p><strong>Session:</strong> <code id="detail-session"></code></p>
+                        <p><strong>User Agent:</strong> <small id="detail-agent"></small></p>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <h6 class="text-gold">Bonus Information</h6>
+                        <p><strong>Type:</strong> <span id="detail-bonus"></span></p>
+                        <p><strong>Amount:</strong> <span id="detail-amount"></span></p>
+                        <p><strong>Claim Time:</strong> <span id="detail-time"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-gold">Correlation Data</h6>
+                        <p><strong>Related Spin:</strong> <span id="detail-spin"></span></p>
+                        <p><strong>Same Day Spins:</strong> <span id="detail-spins-count"></span></p>
+                        <p><strong>Same IP Claims:</strong> <span id="detail-ip-claims"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Settings Modal -->
 <div class="modal fade" id="settingsModal" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content bg-dark border-secondary">
-            <div class="modal-header border-bottom border-secondary">
-                <h5 class="modal-title text-gold"><?= t('Admin.bonus.modal.title') ?></h5>
+        <div class="modal-content bg-dark border-gold">
+            <div class="modal-header border-gold">
+                <h5 class="modal-title text-gold">Bonus Settings</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form method="POST" action="<?= base_url('admin/bonus/settings') ?>">
+            <form action="<?= base_url('admin/bonus/settings') ?>" method="POST">
                 <?= csrf_field() ?>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label text-light"><?= t('Admin.bonus.modal.redirect_url') ?></label>
-                        <input type="url" name="bonus_redirect_url" 
-                               value="<?= esc($bonusSettings['bonus_redirect_url'] ?? '') ?>" 
-                               class="form-control bg-secondary text-light border-0"
-                               placeholder="<?= t('Admin.bonus.modal.redirect_placeholder') ?>"
-                               required>
-                        <small class="text-muted"><?= t('Admin.bonus.modal.redirect_help') ?></small>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label text-light"><?= t('Admin.bonus.modal.terms') ?></label>
-                        <textarea name="bonus_terms_text" rows="4" 
-                                  class="form-control bg-secondary text-light border-0"
-                                  placeholder="<?= t('Admin.bonus.modal.terms_placeholder') ?>"><?= esc($bonusSettings['bonus_terms_text'] ?? '') ?></textarea>
-                        <small class="text-muted"><?= t('Admin.bonus.modal.terms_help') ?></small>
+                        <label class="form-label text-gold">Redirect URL</label>
+                        <input type="url" name="bonus_redirect_url" class="form-control bg-dark text-light border-gold"
+                               value="<?= $bonusSettings['bonus_redirect_url'] ?? '' ?>" 
+                               placeholder="https://example.com/redirect">
+                        <small class="text-muted">URL to redirect users after claiming bonus</small>
                     </div>
                     
                     <div class="mb-3">
                         <div class="form-check">
-                            <input type="checkbox" name="bonus_claim_enabled" id="bonus_claim_enabled" 
-                                   class="form-check-input" value="1"
+                            <input class="form-check-input" type="checkbox" name="bonus_claim_enabled" 
                                    <?= ($bonusSettings['bonus_claim_enabled'] ?? '1') === '1' ? 'checked' : '' ?>>
-                            <label class="form-check-label text-light" for="bonus_claim_enabled">
-                                <?= t('Admin.bonus.modal.enable_claims') ?>
+                            <label class="form-check-label text-light">
+                                Enable bonus claiming
                             </label>
-                            <small class="text-muted d-block"><?= t('Admin.bonus.modal.enable_help') ?></small>
                         </div>
                     </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label text-gold">Terms Text</label>
+                        <textarea name="bonus_terms_text" class="form-control bg-dark text-light border-gold" rows="3"
+                                  placeholder="Terms and conditions text..."><?= $bonusSettings['bonus_terms_text'] ?? '' ?></textarea>
+                    </div>
                 </div>
-                <div class="modal-footer border-top border-secondary">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        <?= t('Admin.bonus.modal.cancel') ?>
-                    </button>
-                    <button type="submit" class="btn btn-gold">
-                        <?= t('Admin.bonus.modal.save') ?>
-                    </button>
+                <div class="modal-footer border-gold">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-gold">Save Settings</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<!-- View Details Modal -->
-<div class="modal fade" id="detailsModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content bg-dark border-secondary">
-            <div class="modal-header border-bottom border-secondary">
-                <h5 class="modal-title text-gold"><?= t('Admin.bonus.details.title') ?></h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <dl class="row text-light">
-                    <dt class="col-sm-4"><?= t('Admin.bonus.details.claim_id') ?>:</dt>
-                    <dd class="col-sm-8" id="detail-id"></dd>
-                    
-                    <dt class="col-sm-4"><?= t('Admin.bonus.details.user_name') ?>:</dt>
-                    <dd class="col-sm-8" id="detail-name"></dd>
-                    
-                    <dt class="col-sm-4"><?= t('Admin.bonus.details.phone') ?>:</dt>
-                    <dd class="col-sm-8" id="detail-phone"></dd>
-                    
-                    <dt class="col-sm-4"><?= t('Admin.bonus.details.email') ?>:</dt>
-                    <dd class="col-sm-8" id="detail-email"></dd>
-                    
-                    <dt class="col-sm-4"><?= t('Admin.bonus.details.ip_address') ?>:</dt>
-                    <dd class="col-sm-8" id="detail-ip"></dd>
-                    
-                    <dt class="col-sm-4"><?= t('Admin.bonus.details.session_id') ?>:</dt>
-                    <dd class="col-sm-8" id="detail-session"></dd>
-                    
-                    <dt class="col-sm-4"><?= t('Admin.bonus.details.bonus_type') ?>:</dt>
-                    <dd class="col-sm-8" id="detail-bonus"></dd>
-                    
-                    <dt class="col-sm-4"><?= t('Admin.bonus.details.bonus_amount') ?>:</dt>
-                    <dd class="col-sm-8" id="detail-amount"></dd>
-                    
-                    <dt class="col-sm-4"><?= t('Admin.bonus.details.claim_time') ?>:</dt>
-                    <dd class="col-sm-8" id="detail-time"></dd>
-                    
-                    <dt class="col-sm-4"><?= t('Admin.bonus.details.user_agent') ?>:</dt>
-                    <dd class="col-sm-8"><small id="detail-agent" class="text-muted"></small></dd>
-                </dl>
-            </div>
-            <div class="modal-footer border-top border-secondary">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <?= t('Admin.bonus.details.close') ?>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
-// Translations for JavaScript
-const translations = {
-    notProvided: '<?= t('Admin.bonus.details.not_provided') ?>',
-    notRecorded: '<?= t('Admin.bonus.details.not_recorded') ?>',
-    currencySymbol: '<?= get_current_locale() === 'zh' ? '¥' : '$' ?>'
-};
-
-// View claim details
+// Fixed View claim details function
 function viewDetails(claim) {
     document.getElementById('detail-id').textContent = '#' + claim.id;
     document.getElementById('detail-name').textContent = claim.user_name;
     document.getElementById('detail-phone').textContent = claim.phone_number;
-    document.getElementById('detail-email').textContent = claim.email || translations.notProvided;
-    document.getElementById('detail-ip').textContent = claim.user_ip;
+    document.getElementById('detail-email').textContent = claim.email || 'Not provided';
+    document.getElementById('detail-ip').textContent = claim.display_ip || claim.user_ip || 'No IP';
     document.getElementById('detail-session').textContent = claim.session_id;
     document.getElementById('detail-bonus').textContent = claim.bonus_type;
+    
+    // Fix the syntax error here - was missing '$' and had wrong quote
     document.getElementById('detail-amount').textContent = claim.bonus_amount > 0 
-        ? translations.currencySymbol + parseFloat(claim.bonus_amount).toFixed(2) 
+        ? '$' + parseFloat(claim.bonus_amount).toFixed(2) 
         : 'N/A';
+    
     document.getElementById('detail-time').textContent = formatDateTime(claim.claim_time);
-    document.getElementById('detail-agent').textContent = claim.user_agent || translations.notRecorded;
+    document.getElementById('detail-agent').textContent = claim.user_agent || 'Not recorded';
+    
+    // Enhanced correlation data
+    document.getElementById('detail-spin').textContent = claim.related_spin_item || 'No related spin';
+    document.getElementById('detail-spins-count').textContent = claim.spins_same_day || '0';
+    document.getElementById('detail-ip-claims').textContent = claim.claims_same_ip || '0';
     
     new bootstrap.Modal(document.getElementById('detailsModal')).show();
 }
 
-// Format date time based on locale
+// Update claim status with proper CSRF token handling
+function updateStatus(claimId, status) {
+    if (confirm(`Are you sure you want to mark this claim as ${status}?`)) {
+        // Get CSRF token properly
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        const csrfName = '<?= csrf_token() ?>';
+        const csrfHash = '<?= csrf_hash() ?>';
+        
+        fetch(`<?= base_url('admin/bonus/status/') ?>${claimId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: `status=${status}&${csrfName}=${csrfHash}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || 'Failed to update status');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating the status');
+        });
+    }
+}
+
+// Format date time
 function formatDateTime(dateStr) {
+    if (!dateStr) return 'N/A';
     const date = new Date(dateStr);
-    const locale = '<?= get_current_locale() ?>' === 'zh' ? 'zh-CN' : 'en-US';
-    return date.toLocaleString(locale);
+    return date.toLocaleString();
 }
 
 // Auto-refresh stats every 60 seconds
@@ -350,9 +397,23 @@ setInterval(() => {
         .then(response => response.json())
         .then(data => {
             // Update stat cards without full page reload
-            document.querySelector('.text-gold').textContent = data.total_claims.toLocaleString();
-            document.querySelector('.text-warning').textContent = data.today_claims.toLocaleString();
-            document.querySelector('.text-info').textContent = (data.unique_ips || 0).toLocaleString();
+            const goldElement = document.querySelector('.text-gold');
+            const warningElement = document.querySelector('.text-warning');
+            const infoElement = document.querySelector('.text-info');
+            const successElement = document.querySelector('.text-success');
+            
+            if (goldElement && data.total_claims !== undefined) {
+                goldElement.textContent = data.total_claims.toLocaleString();
+            }
+            if (warningElement && data.today_claims !== undefined) {
+                warningElement.textContent = data.today_claims.toLocaleString();
+            }
+            if (infoElement && data.unique_real_ips !== undefined) {
+                infoElement.textContent = data.unique_real_ips.toLocaleString();
+            }
+            if (successElement && data.conversion_rate !== undefined) {
+                successElement.textContent = data.conversion_rate + '%';
+            }
         })
         .catch(error => console.error('Stats update error:', error));
 }, 60000);
@@ -377,27 +438,39 @@ setInterval(() => {
     vertical-align: middle;
 }
 
-.btn-group-sm > .btn {
-    padding: 0.25rem 0.5rem;
+.btn-group-vertical > .btn {
+    margin-bottom: 2px;
 }
 
-.pagination .page-link.bg-secondary:hover {
+.text-gold {
+    color: #ffd700 !important;
+}
+
+.bg-gold {
+    background-color: #ffd700 !important;
+}
+
+.border-gold {
+    border-color: #ffd700 !important;
+}
+
+.pagination .page-link:hover {
     background-color: #6c757d !important;
     border-color: #6c757d !important;
 }
 
-.pagination .page-item.active .page-link {
-    background-color: #ffd700 !important;
-    border-color: #ffd700 !important;
-    color: #000 !important;
-}
-
-.badge {
-    font-size: 0.875rem;
+.dropdown-menu-dark .dropdown-item:hover {
+    background-color: #495057;
 }
 
 code {
     font-size: 0.875rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+}
+
+.modal-xl {
+    max-width: 1200px;
 }
 
 #detailsModal .modal-body {

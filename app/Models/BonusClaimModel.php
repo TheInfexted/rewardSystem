@@ -22,8 +22,8 @@ class BonusClaimModel extends Model
         'admin_notes',
         'user_account',
         'account_type',
-        'customer_id',        // Added for customer relationship
-        'platform_selected'   // Added to track WhatsApp/Telegram selection
+        'customer_id',
+        'platform_selected'
     ];
     protected $useTimestamps = true;
     protected $createdField = 'created_at';
@@ -38,6 +38,138 @@ class BonusClaimModel extends Model
         'user_ip' => 'required|valid_ip',
         'session_id' => 'required|max_length[128]'
     ];
+
+    /**
+     * Get claims with pagination and filters
+     */
+    public function getClaimsWithPagination($perPage = 20, $offset = 0, $filters = [])
+    {
+        $builder = $this->db->table($this->table);
+        
+        // Select fields with customer join
+        $builder->select('bonus_claims.*, customers.username as customer_username')
+                ->join('customers', 'customers.id = bonus_claims.customer_id', 'left');
+        
+        // Apply filters
+        if (!empty($filters['status']) && $filters['status'] !== 'all') {
+            $builder->where('bonus_claims.status', $filters['status']);
+        }
+        
+        if (!empty($filters['bonus_type']) && $filters['bonus_type'] !== 'all') {
+            $builder->where('bonus_claims.bonus_type', $filters['bonus_type']);
+        }
+        
+        if (!empty($filters['date_from'])) {
+            $builder->where('bonus_claims.claim_time >=', $filters['date_from'] . ' 00:00:00');
+        }
+        
+        if (!empty($filters['date_to'])) {
+            $builder->where('bonus_claims.claim_time <=', $filters['date_to'] . ' 23:59:59');
+        }
+        
+        // Search functionality - fix the array issue
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $builder->groupStart()
+                    ->like('bonus_claims.user_name', $search)
+                    ->orLike('bonus_claims.phone_number', $search)
+                    ->orLike('bonus_claims.email', $search)
+                    ->orLike('bonus_claims.bonus_type', $search)
+                    ->orLike('bonus_claims.user_ip', $search)
+                    ->orLike('customers.username', $search)
+                    ->groupEnd();
+        }
+        
+        // Order and pagination
+        $builder->orderBy('bonus_claims.claim_time', 'DESC')
+                ->limit($perPage, $offset);
+        
+        return $builder->get()->getResultArray();
+    }
+
+    /**
+     * Get total count of claims with filters
+     */
+    public function getClaimsCount($filters = [])
+    {
+        $builder = $this->db->table($this->table);
+        
+        // Join if needed for search
+        if (!empty($filters['search'])) {
+            $builder->join('customers', 'customers.id = bonus_claims.customer_id', 'left');
+        }
+        
+        // Apply same filters as pagination
+        if (!empty($filters['status']) && $filters['status'] !== 'all') {
+            $builder->where('bonus_claims.status', $filters['status']);
+        }
+        
+        if (!empty($filters['bonus_type']) && $filters['bonus_type'] !== 'all') {
+            $builder->where('bonus_claims.bonus_type', $filters['bonus_type']);
+        }
+        
+        if (!empty($filters['date_from'])) {
+            $builder->where('bonus_claims.claim_time >=', $filters['date_from'] . ' 00:00:00');
+        }
+        
+        if (!empty($filters['date_to'])) {
+            $builder->where('bonus_claims.claim_time <=', $filters['date_to'] . ' 23:59:59');
+        }
+        
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $builder->groupStart()
+                    ->like('bonus_claims.user_name', $search)
+                    ->orLike('bonus_claims.phone_number', $search)
+                    ->orLike('bonus_claims.email', $search)
+                    ->orLike('bonus_claims.bonus_type', $search)
+                    ->orLike('bonus_claims.user_ip', $search)
+                    ->orLike('customers.username', $search)
+                    ->groupEnd();
+        }
+        
+        return $builder->countAllResults();
+    }
+
+    /**
+     * Get statistics for dashboard
+     */
+    public function getClaimsStats()
+    {
+        $today = date('Y-m-d'); // Fix the undefined variable issue
+        
+        // Get basic counts
+        $totalClaims = $this->countAllResults();
+        $todayClaims = $this->where('DATE(claim_time)', $today)->countAllResults(false);
+        $pendingClaims = $this->where('status', 'pending')->countAllResults(false);
+        $processedClaims = $this->where('status', 'processed')->countAllResults(false);
+        $cancelledClaims = $this->where('status', 'cancelled')->countAllResults(false);
+        
+        // Get unique IPs count
+        $uniqueIps = $this->db->table($this->table)
+                             ->select('COUNT(DISTINCT user_ip) as count')
+                             ->get()
+                             ->getRow()
+                             ->count ?? 0;
+        
+        // Get total amount processed
+        $totalAmount = $this->db->table($this->table)
+                               ->selectSum('bonus_amount')
+                               ->where('status', 'processed')
+                               ->get()
+                               ->getRow()
+                               ->bonus_amount ?? 0;
+        
+        return [
+            'total_claims' => $totalClaims,
+            'today_claims' => $todayClaims,
+            'pending_claims' => $pendingClaims,
+            'processed_claims' => $processedClaims,
+            'cancelled_claims' => $cancelledClaims,
+            'unique_ips' => $uniqueIps,
+            'total_amount' => $totalAmount
+        ];
+    }
 
     /**
      * Get active claims (pending status)
@@ -83,63 +215,6 @@ class BonusClaimModel extends Model
     }
 
     /**
-     * Get claims with pagination
-     */
-    public function getClaimsWithPagination($perPage = 20, $status = null, $search = null)
-    {
-        $builder = $this->builder();
-        
-        // Join with customers table for additional info
-        $builder->select('bonus_claims.*, customers.username as customer_username')
-                ->join('customers', 'customers.id = bonus_claims.customer_id', 'left');
-        
-        // Filter by status if provided
-        if ($status && $status !== 'all') {
-            $builder->where('bonus_claims.status', $status);
-        }
-        
-        // Search functionality
-        if ($search) {
-            $builder->groupStart()
-                    ->like('bonus_claims.user_name', $search)
-                    ->orLike('bonus_claims.phone_number', $search)
-                    ->orLike('bonus_claims.email', $search)
-                    ->orLike('bonus_claims.bonus_type', $search)
-                    ->orLike('bonus_claims.user_ip', $search)
-                    ->orLike('customers.username', $search)
-                    ->groupEnd();
-        }
-        
-        // Order by claim time
-        $builder->orderBy('bonus_claims.claim_time', 'DESC');
-        
-        // Return paginated results
-        return $this->paginate($perPage);
-    }
-
-    /**
-     * Get statistics for dashboard
-     */
-    public function getStatistics()
-    {
-        $db = \Config\Database::connect();
-        
-        return [
-            'total_claims' => $this->countAllResults(),
-            'pending_claims' => $this->where('status', 'pending')->countAllResults(false),
-            'processed_claims' => $this->where('status', 'processed')->countAllResults(false),
-            'cancelled_claims' => $this->where('status', 'cancelled')->countAllResults(false),
-            'today_claims' => $this->where('DATE(claim_time)', date('Y-m-d'))->countAllResults(false),
-            'total_amount' => $db->table($this->table)
-                                 ->selectSum('bonus_amount')
-                                 ->where('status', 'processed')
-                                 ->get()
-                                 ->getRow()
-                                 ->bonus_amount ?? 0
-        ];
-    }
-
-    /**
      * Get recent claims for dashboard
      */
     public function getRecentClaims($limit = 10)
@@ -148,7 +223,7 @@ class BonusClaimModel extends Model
                     ->join('customers', 'customers.id = bonus_claims.customer_id', 'left')
                     ->orderBy('claim_time', 'DESC')
                     ->limit($limit)
-                    ->find();
+                    ->findAll();
     }
 
     /**

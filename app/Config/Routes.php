@@ -92,12 +92,20 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
         $routes->get('delete/(:num)', 'Admin\WheelController::delete/$1');
     });
     
-    // Bonus management routes
+    // Bonus management routes - FIXED AND EXPANDED
     $routes->group('bonus', function($routes) {
         $routes->get('/', 'Admin\BonusController::index');
         $routes->post('settings', 'Admin\BonusController::updateSettings');
+        $routes->post('update-settings', 'Admin\BonusController::updateSettings'); 
         $routes->post('status/(:num)', 'Admin\BonusController::updateStatus/$1');
-        $routes->get('stats', 'Admin\BonusController::getStats');
+        $routes->post('update-status/(:num)', 'Admin\BonusController::updateStatus/$1'); 
+        $routes->get('stats', 'Admin\BonusController::stats'); 
+        $routes->get('statistics', 'Admin\BonusController::stats'); 
+        $routes->get('ip-analysis', 'Admin\BonusController::ipAnalysis');
+        $routes->get('view/(:num)', 'Admin\BonusController::view/$1');
+        $routes->get('details/(:num)', 'Admin\BonusController::view/$1'); 
+        $routes->get('export', 'Admin\BonusController::export');
+        $routes->post('export', 'Admin\BonusController::export'); 
     });
 
     // Reports routes
