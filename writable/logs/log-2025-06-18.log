@@ -44,3 +44,35 @@ WHERE `setting_key` = :setting_key:', [...], false)
  8 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
  9 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
 10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-18 14:15:42 --> ErrorException: Undefined variable $music_settings
+[Method: GET, Route: /]
+in APPPATH\Views\public\landing_page.php on line 693.
+ 1 APPPATH\Views\public\landing_page.php(693): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $music_settings', 'C:\\xampp\\htdocs\\rewardSystem\\app\\Views\\public\\landing_page.php', 693)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\xampp\\htdocs\\rewardSystem\\app\\Views\\public\\landing_page.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('public/landing_page', [], true)
+ 5 APPPATH\Controllers\LandingController.php(70): view('public/landing_page', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\LandingController->index()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\LandingController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))CRITICAL - 2025-06-18 14:27:41 --> ErrorException: Trying to access array offset on value of type null
+[Method: GET, Route: reward]
+in APPPATH\Views\public\reward_system.php on line 256.
+ 1 APPPATH\Views\public\reward_system.php(256): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Trying to access array offset on value of type null', 'C:\\xampp\\htdocs\\rewardSystem\\app\\Views\\public\\reward_system.php', 256)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\xampp\\htdocs\\rewardSystem\\app\\Views\\public\\reward_system.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('public/reward_system', [], true)
+ 5 APPPATH\Controllers\RewardController.php(43): view('public/reward_system', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\RewardController->index()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\RewardController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-06-18 15:05:10 --> processAutoClaim: Failed to insert claim into database
+ERROR - 2025-06-18 15:05:10 --> processAutoClaim: Model errors: {"phone_number":"Phone number must be at least 10 digits"}
+ERROR - 2025-06-18 15:05:13 --> processAutoClaim: Failed to insert claim into database
+ERROR - 2025-06-18 15:05:13 --> processAutoClaim: Model errors: {"phone_number":"Phone number must be at least 10 digits"}
+ERROR - 2025-06-18 15:06:46 --> Claim failed: No winner data

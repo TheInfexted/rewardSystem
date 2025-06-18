@@ -525,4 +525,65 @@ class LandingController extends BaseController
         
         return redirect()->to('/');
     }
+    public function storeWinner()
+    {
+        if ($this->request->isAJAX()) {
+            $session = session();
+            
+            // Get winner data from POST
+            $winnerDataJson = $this->request->getPost('winner_data');
+            
+            if (empty($winnerDataJson)) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'No winner data provided.'
+                ]);
+            }
+            
+            try {
+                // Decode winner data
+                $winnerData = json_decode($winnerDataJson, true);
+                
+                if (!$winnerData) {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'Invalid winner data format.'
+                    ]);
+                }
+                
+                // Validate required fields
+                if (!isset($winnerData['name']) || !isset($winnerData['type'])) {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'Incomplete winner data.'
+                    ]);
+                }
+                
+                // Store winner data in session for reward system access
+                $session->set('winner_data', [
+                    'name' => htmlspecialchars($winnerData['name']),
+                    'prize' => $winnerData['prize'] ?? 0.00,
+                    'type' => htmlspecialchars($winnerData['type']),
+                    'timestamp' => time(),
+                    'session_id' => $session->get('session_id') ?? session_id()
+                ]);
+                
+                log_message('info', 'Winner data stored in session: ' . $winnerData['name'] . ' for session ' . session_id());
+                
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Winner data stored successfully.'
+                ]);
+                
+            } catch (\Exception $e) {
+                log_message('error', 'Error storing winner data: ' . $e->getMessage());
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Failed to store winner data.'
+                ]);
+            }
+        }
+        
+        return redirect()->to('/');
+    }
 }

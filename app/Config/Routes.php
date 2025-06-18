@@ -12,6 +12,16 @@ $routes->get('device/check', 'General::checkDevice');
 $routes->get('/', 'LandingController::index');
 $routes->post('spin', 'LandingController::spin');
 $routes->post('claim-bonus', 'LandingController::claimBonus');
+$routes->post('store-winner', 'LandingController::storeWinner'); 
+
+// NEW: Reward System routes
+$routes->group('reward', function($routes) {
+    $routes->get('/', 'RewardController::index');
+    $routes->post('auto-register', 'RewardController::autoRegister');
+    $routes->post('auto-login', 'RewardController::autoLogin');
+    $routes->post('login', 'RewardController::login');
+    $routes->post('claim', 'RewardController::claim');
+});
 
 // Authentication routes
 $routes->get('login', 'General::index_login');
@@ -63,31 +73,31 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
     
     // Bonus Claims Management
     $routes->group('bonus', function($routes) {
-        $routes->get('/', 'Admin\BonusController::index');                   
-        $routes->post('settings', 'Admin\BonusController::updateSettings');   
-        $routes->get('view/(:num)', 'Admin\BonusController::view/$1');       
-        $routes->post('status/(:num)', 'Admin\BonusController::updateStatus/$1'); 
-        $routes->get('export', 'Admin\BonusController::export');            
-        $routes->get('stats', 'Admin\BonusController::getStats');            
-        $routes->delete('delete/(:num)', 'Admin\BonusController::delete/$1'); 
+        $routes->get('/', 'Admin\BonusController::index');
+        $routes->get('view/(:num)', 'Admin\BonusController::view/$1');
+        $routes->get('export', 'Admin\BonusController::export');
+        $routes->get('stats', 'Admin\BonusController::getStats');
+        $routes->post('settings', 'Admin\BonusController::updateSettings');
+        $routes->post('status/(:num)', 'Admin\BonusController::updateStatus/$1');
     });
     
-    // Reports routes
+    // Reports and Analytics
     $routes->group('reports', function($routes) {
-        $routes->get('/', 'Admin\ReportsController::index');                  
-        $routes->get('view/(:num)', 'Admin\ReportsController::view/$1');       
-        $routes->get('export', 'Admin\ReportsController::export');             
-        $routes->get('analytics', 'Admin\ReportsController::analytics');       
+        $routes->get('/', 'Admin\ReportsController::index');
+        $routes->get('view/(:num)', 'Admin\ReportsController::view/$1');
+        $routes->get('export', 'Admin\ReportsController::export');
+        $routes->get('analytics', 'Admin\ReportsController::analytics');
     });
     
-    // Settings routes
+    // System Settings
     $routes->group('settings', function($routes) {
         $routes->get('/', 'Admin\SettingsController::index');
         $routes->post('profile', 'Admin\SettingsController::updateProfile');
         $routes->post('password', 'Admin\SettingsController::updatePassword');
+        $routes->post('system', 'Admin\SettingsController::updateSystem');
     });
 });
 
-// API routes
+// API routes for AJAX calls
 $routes->get('api/recent-wins', 'LandingController::getRecentWins');
 $routes->get('api/user-stats', 'LandingController::getUserStats');
