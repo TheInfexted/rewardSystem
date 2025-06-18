@@ -20,7 +20,15 @@ $routes->group('reward', function($routes) {
     $routes->post('auto-register', 'RewardController::autoRegister');
     $routes->post('auto-login', 'RewardController::autoLogin');
     $routes->post('login', 'RewardController::login');
-    $routes->post('claim', 'RewardController::claim');
+    $routes->post('claim', 'RewardController::claim'); 
+    $routes->post('claim-reward', 'RewardController::claimReward'); 
+});
+
+// Customer routes
+$routes->group('customer', function($routes) {
+    $routes->get('dashboard', 'CustomerController::dashboard');
+    $routes->post('checkin', 'CustomerController::checkin');
+    $routes->post('update-background', 'CustomerController::updateBackground');
 });
 
 // Authentication routes
@@ -90,6 +98,14 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
         $routes->post('settings', 'Admin\BonusController::updateSettings');
         $routes->post('status/(:num)', 'Admin\BonusController::updateStatus/$1');
         $routes->get('stats', 'Admin\BonusController::getStats');
+    });
+
+    // Reports routes
+    $routes->group('reports', function($routes) {
+        $routes->get('/', 'Admin\ReportsController::index');                  
+        $routes->get('view/(:num)', 'Admin\ReportsController::view/$1');       
+        $routes->get('export', 'Admin\ReportsController::export');             
+        $routes->get('analytics', 'Admin\ReportsController::analytics');       
     });
     
     // Settings routes

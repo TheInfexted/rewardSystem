@@ -268,3 +268,120 @@ in SYSTEMPATH\BaseModel.php on line 1014.
  7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
  8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
  9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-18 18:39:14 --> CodeIgniter\Exceptions\BadMethodCallException: Call to undefined method App\Models\BonusClaimModel::getClaimsWithPagination
+[Method: GET, Route: admin/bonus]
+in SYSTEMPATH\Model.php on line 930.
+ 1 APPPATH\Controllers\Admin\BonusController.php(40): CodeIgniter\Model->__call('getClaimsWithPagination', [...])
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\BonusController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-18 18:41:35 --> CodeIgniter\Exceptions\BadMethodCallException: Call to undefined method App\Models\BonusClaimModel::getClaimsWithPagination
+[Method: GET, Route: admin/bonus]
+in SYSTEMPATH\Model.php on line 930.
+ 1 APPPATH\Controllers\Admin\BonusController.php(40): CodeIgniter\Model->__call('getClaimsWithPagination', [...])
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\BonusController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-18 18:42:46 --> CodeIgniter\Exceptions\BadMethodCallException: Call to undefined method App\Models\BonusClaimModel::getClaimsWithPagination
+[Method: GET, Route: admin/bonus]
+in SYSTEMPATH\Model.php on line 930.
+ 1 APPPATH\Controllers\Admin\BonusController.php(40): CodeIgniter\Model->__call('getClaimsWithPagination', [...])
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\BonusController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-18 18:45:13 --> CodeIgniter\Exceptions\BadMethodCallException: Call to undefined method App\Models\BonusClaimModel::getClaimsStats
+[Method: GET, Route: admin/bonus]
+in SYSTEMPATH\Model.php on line 930.
+ 1 APPPATH\Controllers\Admin\BonusController.php(45): CodeIgniter\Model->__call('getClaimsStats', [])
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\BonusController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-18 18:46:46 --> ErrorException: Undefined array key "total_claims"
+[Method: GET, Route: admin/bonus]
+in APPPATH\Views\admin\bonus\index.php on line 24.
+ 1 APPPATH\Views\admin\bonus\index.php(24): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "total_claims"', 'C:\\xampp\\htdocs\\rewardSystem\\app\\Views\\admin\\bonus\\index.php', 24)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\xampp\\htdocs\\rewardSystem\\app\\Views\\admin\\bonus\\index.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/bonus/index', [], true)
+ 5 APPPATH\Controllers\Admin\BonusController.php(62): view('admin/bonus/index', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\BonusController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-18 18:46:47 --> ErrorException: Undefined array key "total_claims"
+[Method: GET, Route: admin/bonus]
+in APPPATH\Views\admin\bonus\index.php on line 24.
+ 1 APPPATH\Views\admin\bonus\index.php(24): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "total_claims"', 'C:\\xampp\\htdocs\\rewardSystem\\app\\Views\\admin\\bonus\\index.php', 24)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\xampp\\htdocs\\rewardSystem\\app\\Views\\admin\\bonus\\index.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/bonus/index', [], true)
+ 5 APPPATH\Controllers\Admin\BonusController.php(62): view('admin/bonus/index', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\BonusController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-18 18:48:34 --> ErrorException: Undefined array key "today_claims"
+[Method: GET, Route: admin/bonus]
+in APPPATH\Views\admin\bonus\index.php on line 32.
+ 1 APPPATH\Views\admin\bonus\index.php(32): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "today_claims"', 'C:\\xampp\\htdocs\\rewardSystem\\app\\Views\\admin\\bonus\\index.php', 32)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\xampp\\htdocs\\rewardSystem\\app\\Views\\admin\\bonus\\index.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/bonus/index', [], true)
+ 5 APPPATH\Controllers\Admin\BonusController.php(62): view('admin/bonus/index', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\BonusController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-18 18:49:16 --> ErrorException: Undefined variable $today
+[Method: GET, Route: admin/bonus]
+in APPPATH\Models\BonusClaimModel.php on line 244.
+ 1 APPPATH\Models\BonusClaimModel.php(244): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $today', 'C:\\xampp\\htdocs\\rewardSystem\\app\\Models\\BonusClaimModel.php', 244)
+ 2 APPPATH\Controllers\Admin\BonusController.php(45): App\Models\BonusClaimModel->getClaimsStats()
+ 3 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 4 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\BonusController))
+ 5 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 7 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-18 18:50:07 --> ErrorException: Undefined array key "unique_ips"
+[Method: GET, Route: admin/bonus]
+in APPPATH\Views\admin\bonus\index.php on line 40.
+ 1 APPPATH\Views\admin\bonus\index.php(40): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "unique_ips"', 'C:\\xampp\\htdocs\\rewardSystem\\app\\Views\\admin\\bonus\\index.php', 40)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\xampp\\htdocs\\rewardSystem\\app\\Views\\admin\\bonus\\index.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/bonus/index', [], true)
+ 5 APPPATH\Controllers\Admin\BonusController.php(62): view('admin/bonus/index', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\BonusController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-18 18:51:06 --> CodeIgniter\Exceptions\BadMethodCallException: Call to undefined method App\Models\BonusClaimModel::getClaimsWithPagination
+[Method: GET, Route: admin/bonus]
+in SYSTEMPATH\Model.php on line 930.
+ 1 APPPATH\Controllers\Admin\BonusController.php(40): CodeIgniter\Model->__call('getClaimsWithPagination', [...])
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\BonusController->index()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\BonusController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
