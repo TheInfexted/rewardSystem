@@ -30,23 +30,101 @@ class RewardController extends BaseController
         // Check if user won a prize (from session)
         $winnerData = $session->get('winner_data');
         
-        // Check for customer login
+        // Debug logging
+        log_message('info', 'RewardController index - Winner data: ' . json_encode($winnerData));
+        log_message('info', 'RewardController index - Session data: ' . json_encode([
+            'customer_id' => $session->get('customer_id'),
+            'customer_logged_in' => $session->get('customer_logged_in'),
+            'session_id' => session_id()
+        ]));
+        
+        // Check for customer login - check both customer_id and customer_logged_in
         $customerId = $session->get('customer_id');
+        $customerLoggedIn = $session->get('customer_logged_in');
         $customerData = null;
         
-        if ($customerId) {
+        if ($customerId && $customerLoggedIn) {
             $customerData = $this->customerModel->find($customerId);
+            if (!$customerData) {
+                // Customer not found, clear session
+                $session->remove(['customer_id', 'customer_logged_in', 'customer_data']);
+                $customerLoggedIn = false;
+            }
         }
         
         $data = [
             'title' => 'Claim Your Reward',
             'winner_data' => $winnerData,
-            'logged_in' => !empty($customerData),
+            'logged_in' => $customerLoggedIn && !empty($customerData),
             'customer_data' => $customerData,
-            'no_prize_data' => empty($winnerData)
+            'has_prize_data' => !empty($winnerData) && is_array($winnerData) && isset($winnerData['name']),
+            'show_dashboard_access' => true // Always allow dashboard access
         ];
 
         return view('public/reward_system', $data);
+    }
+
+    /**
+     * Auto register new customer
+     */
+    public function autoRegister()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->to('/reward');
+        }
+
+        $session = session();
+        
+        // Check if winner data exists
+        $winnerData = $session->get('winner_data');
+        if (!$winnerData) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'No prize data found. Please spin the wheel first.'
+            ]);
+        }
+
+        try {
+            // Create auto customer
+            $result = $this->customerModel->createAutoCustomer();
+            
+            if ($result) {
+                // Set session data for the new customer
+                $session->set([
+                    'customer_id' => $result['id'],
+                    'customer_logged_in' => true,
+                    'customer_data' => [
+                        'id' => $result['id'],
+                        'username' => $result['username'],
+                        'name' => $result['username'],
+                        'phone' => $result['username']
+                    ]
+                ]);
+
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Account created successfully!',
+                    'customer_data' => [
+                        'username' => $result['username'],
+                        'password' => $result['password'],
+                        'id' => $result['id']
+                    ]
+                ]);
+            }
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to create account. Please try again.'
+            ]);
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Auto registration error: ' . $e->getMessage());
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Registration failed. Please try again.'
+            ]);
+        }
     }
 
     /**
@@ -85,91 +163,31 @@ class RewardController extends BaseController
                 // Set session data
                 session()->set([
                     'customer_id' => $customer['id'],
+                    'customer_logged_in' => true,
                     'customer_data' => [
                         'id' => $customer['id'],
                         'username' => $customer['username'],
                         'name' => $customer['name'] ?? $customer['username'],
-                        'points' => $customer['points']
-                    ],
-                    'customer_logged_in' => true
+                        'phone' => $customer['phone'] ?? $customer['username']
+                    ]
                 ]);
-                
+
                 return $this->response->setJSON([
                     'success' => true,
-                    'message' => 'Login successful! Welcome back, ' . $customer['username'] . '!',
-                    'customer_data' => [
-                        'username' => $customer['username'],
-                        'points' => $customer['points']
-                    ]
+                    'message' => 'Login successful!'
                 ]);
             }
             
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Invalid username or password. Please try again.'
+                'message' => 'Invalid username or password.'
             ]);
             
         } catch (\Exception $e) {
-            log_message('error', 'Customer login error: ' . $e->getMessage());
+            log_message('error', 'Login error: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Login failed. Please try again later.'
-            ]);
-        }
-    }
-
-    /**
-     * Auto-generate and register new customer
-     */
-    public function autoRegister()
-    {
-        if (!$this->request->isAJAX()) {
-            return redirect()->to('/');
-        }
-
-        try {
-            // Use the model's auto creation method
-            $result = $this->customerModel->createAutoCustomer();
-            
-            if ($result) {
-                // Set session data
-                session()->set([
-                    'customer_id' => $result['id'],
-                    'customer_data' => [
-                        'id' => $result['id'],
-                        'username' => $result['username'],
-                        'name' => $result['username'],
-                        'points' => 0
-                    ],
-                    'customer_logged_in' => true
-                ]);
-                
-                return $this->response->setJSON([
-                    'success' => true,
-                    'message' => 'Account created successfully!',
-                    'account_data' => [
-                        'username' => $result['username'],
-                        'password' => $result['password']
-                    ]
-                ]);
-            }
-            
-            throw new \Exception('Failed to create customer account');
-            
-        } catch (\Exception $e) {
-            log_message('error', 'Auto registration error: ' . $e->getMessage());
-            
-            // Get detailed error from model if available
-            $errors = $this->customerModel->errors();
-            $errorMessage = 'Registration failed. Please try again.';
-            
-            if (!empty($errors)) {
-                $errorMessage = 'Registration failed: ' . implode(', ', $errors);
-            }
-            
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => $errorMessage
+                'message' => 'Login failed. Please try again.'
             ]);
         }
     }
@@ -205,36 +223,49 @@ class RewardController extends BaseController
         $platform = $this->request->getPost('platform') ?: 'whatsapp';
         $customerData = $session->get('customer_data');
 
+        // Validate customer data
+        if (!$customerData || !isset($customerData['id'])) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Invalid customer session. Please login again.'
+            ]);
+        }
+
         try {
             // Insert bonus claim record
             $claimData = [
-                'session_id' => $session->get('session_id') ?: session_id(),
+                'session_id' => session_id(),
                 'user_ip' => $this->request->getIPAddress(),
                 'user_name' => $customerData['username'],
                 'customer_id' => $customerData['id'],
-                'phone_number' => $customerData['username'], // Using username as phone
+                'phone_number' => $customerData['phone'] ?? $customerData['username'],
                 'email' => null,
                 'bonus_type' => $winnerData['name'],
-                'bonus_amount' => $winnerData['prize'] ?? 0.00,
+                'bonus_amount' => isset($winnerData['prize']) ? floatval($winnerData['prize']) : 0.00,
                 'claim_time' => date('Y-m-d H:i:s'),
                 'user_agent' => $this->request->getUserAgent()->getAgentString(),
                 'status' => 'pending',
-                'platform_selected' => $platform
+                'platform_selected' => $platform,
+                'account_type' => 'manual'
             ];
 
             $claimId = $this->bonusClaimModel->insert($claimData);
 
             if ($claimId) {
-                // Clear winner data from session
+                // Clear winner data from session after successful claim
                 $session->remove('winner_data');
+
+                // Get platform settings
+                $whatsappNumber = $this->adminSettingsModel->getSetting('reward_whatsapp_number', '60102763672');
+                $telegramUsername = $this->adminSettingsModel->getSetting('reward_telegram_username', 'brendxn1127');
 
                 // Create message for platform
                 $message = "🎉 I just won {$winnerData['name']}! My User ID is: {$customerData['username']}. Claim ID: {$claimId}";
                 $encodedMessage = urlencode($message);
                 
-                // Platform URLs (these should be configurable in admin settings)
-                $whatsappUrl = "https://wa.me/60102763672?text={$encodedMessage}";
-                $telegramUrl = "https://t.me/brendxn1127?text={$encodedMessage}";
+                // Platform URLs
+                $whatsappUrl = "https://wa.me/{$whatsappNumber}?text={$encodedMessage}";
+                $telegramUrl = "https://t.me/{$telegramUsername}?text={$encodedMessage}";
                 
                 $redirectUrl = $platform === 'telegram' ? $telegramUrl : $whatsappUrl;
                 
@@ -242,7 +273,6 @@ class RewardController extends BaseController
                     'success' => true,
                     'message' => 'Claim submitted successfully! Redirecting to ' . ucfirst($platform) . '...',
                     'redirect_url' => $redirectUrl,
-                    'dashboard_url' => base_url('customer/dashboard'),
                     'claim_id' => $claimId
                 ]);
             }
@@ -265,12 +295,11 @@ class RewardController extends BaseController
     {
         $session = session();
         
-        // Clear customer session data
+        // Clear customer session data but keep winner_data for potential re-login
         $session->remove([
             'customer_id',
             'customer_data', 
-            'customer_logged_in',
-            'winner_data'
+            'customer_logged_in'
         ]);
         
         if ($this->request->isAJAX()) {
@@ -280,6 +309,29 @@ class RewardController extends BaseController
             ]);
         }
         
-        return redirect()->to('/')->with('success', 'Logged out successfully.');
+        return redirect()->to('/reward')->with('success', 'Logged out successfully.');
+    }
+
+    /**
+     * Test method to debug session data
+     */
+    public function test()
+    {
+        $session = session();
+        
+        $data = [
+            'session_id' => session_id(),
+            'winner_data' => $session->get('winner_data'),
+            'customer_id' => $session->get('customer_id'),
+            'customer_logged_in' => $session->get('customer_logged_in'),
+            'customer_data' => $session->get('customer_data'),
+            'all_session_data' => $session->get()
+        ];
+        
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON($data);
+        }
+        
+        echo '<pre>' . print_r($data, true) . '</pre>';
     }
 }

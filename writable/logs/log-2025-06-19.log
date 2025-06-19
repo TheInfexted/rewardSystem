@@ -116,3 +116,133 @@ ERROR - 2025-06-19 11:53:08 --> Customer dashboard error: Undefined variable $mo
 ERROR - 2025-06-19 11:53:41 --> Customer dashboard error: Undefined variable $monthly_checkins
 ERROR - 2025-06-19 11:54:23 --> Customer dashboard error: Undefined variable $monthly_checkins
 ERROR - 2025-06-19 11:55:29 --> Customer dashboard error: Undefined variable $monthly_checkins
+ERROR - 2025-06-19 12:13:51 --> Customer dashboard error: Undefined variable $monthly_checkins
+ERROR - 2025-06-19 12:16:37 --> Customer dashboard error: Undefined variable $monthly_checkins
+ERROR - 2025-06-19 12:16:43 --> Customer dashboard error: Undefined variable $monthly_checkins
+ERROR - 2025-06-19 12:16:45 --> Customer dashboard error: Undefined variable $monthly_checkins
+ERROR - 2025-06-19 12:16:47 --> Customer dashboard error: Undefined variable $monthly_checkins
+ERROR - 2025-06-19 12:18:43 --> Customer dashboard error: foreach() argument must be of type array|object, float given
+ERROR - 2025-06-19 12:18:44 --> Customer dashboard error: foreach() argument must be of type array|object, float given
+ERROR - 2025-06-19 12:18:44 --> Customer dashboard error: foreach() argument must be of type array|object, float given
+ERROR - 2025-06-19 12:18:44 --> Customer dashboard error: foreach() argument must be of type array|object, float given
+ERROR - 2025-06-19 12:19:54 --> Customer dashboard error: foreach() argument must be of type array|object, float given
+ERROR - 2025-06-19 12:19:57 --> Customer dashboard error: foreach() argument must be of type array|object, float given
+ERROR - 2025-06-19 12:21:55 --> Customer dashboard error: foreach() argument must be of type array|object, int given
+ERROR - 2025-06-19 12:21:57 --> Customer dashboard error: foreach() argument must be of type array|object, int given
+ERROR - 2025-06-19 12:22:36 --> Customer dashboard error: foreach() argument must be of type array|object, int given
+ERROR - 2025-06-19 12:23:37 --> Customer dashboard error: foreach() argument must be of type array|object, int given
+ERROR - 2025-06-19 12:28:51 --> Customer dashboard error: Undefined array key "type_color"
+ERROR - 2025-06-19 12:28:53 --> Customer dashboard error: Undefined array key "type_color"
+ERROR - 2025-06-19 12:37:08 --> Background update error: There is no data to update.
+ERROR - 2025-06-19 12:37:10 --> Background update error: There is no data to update.
+ERROR - 2025-06-19 12:37:11 --> Background update error: There is no data to update.
+ERROR - 2025-06-19 12:42:21 --> Background update error: There is no data to update.
+ERROR - 2025-06-19 12:42:22 --> Background update error: There is no data to update.
+ERROR - 2025-06-19 12:42:24 --> Background update error: There is no data to update.
+ERROR - 2025-06-19 12:42:25 --> Background update error: There is no data to update.
+ERROR - 2025-06-19 12:54:57 --> mysqli_sql_exception: Unknown column 'created_at' in 'where clause' in C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT COUNT(*)...', 0)
+#1 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*)...')
+#2 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*)...')
+#3 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*)...', Array, false)
+#4 C:\xampp\htdocs\rewardSystem\app\Controllers\CustomerController.php(487): CodeIgniter\Database\BaseBuilder->countAllResults()
+#5 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\CustomerController->getWheelData()
+#6 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\CustomerController))
+#7 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+ERROR - 2025-06-19 12:54:57 --> getWheelData error: Unknown column 'created_at' in 'where clause'
+ERROR - 2025-06-19 12:58:17 --> mysqli_sql_exception: Unknown column 'spinned_at' in 'where clause' in C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT COUNT(*)...', 0)
+#1 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*)...')
+#2 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*)...')
+#3 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*)...', Array, false)
+#4 C:\xampp\htdocs\rewardSystem\app\Controllers\CustomerController.php(487): CodeIgniter\Database\BaseBuilder->countAllResults()
+#5 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\CustomerController->getWheelData()
+#6 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\CustomerController))
+#7 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+ERROR - 2025-06-19 12:58:17 --> getWheelData error: Unknown column 'spinned_at' in 'where clause'
+ERROR - 2025-06-19 12:58:17 --> mysqli_sql_exception: Unknown column 'spinned_at' in 'where clause' in C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT COUNT(*)...', 0)
+#1 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*)...')
+#2 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*)...')
+#3 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*)...', Array, false)
+#4 C:\xampp\htdocs\rewardSystem\app\Controllers\CustomerController.php(487): CodeIgniter\Database\BaseBuilder->countAllResults()
+#5 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\CustomerController->getWheelData()
+#6 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\CustomerController))
+#7 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+ERROR - 2025-06-19 12:58:17 --> getWheelData error: Unknown column 'spinned_at' in 'where clause'
+ERROR - 2025-06-19 12:58:23 --> mysqli_sql_exception: Unknown column 'spinned_at' in 'where clause' in C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT COUNT(*)...', 0)
+#1 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*)...')
+#2 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*)...')
+#3 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*)...', Array, false)
+#4 C:\xampp\htdocs\rewardSystem\app\Controllers\CustomerController.php(487): CodeIgniter\Database\BaseBuilder->countAllResults()
+#5 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\CustomerController->getWheelData()
+#6 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\CustomerController))
+#7 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+ERROR - 2025-06-19 12:58:23 --> getWheelData error: Unknown column 'spinned_at' in 'where clause'
+ERROR - 2025-06-19 12:59:08 --> mysqli_sql_exception: Unknown column 'created_time' in 'where clause' in C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT COUNT(*)...', 0)
+#1 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*)...')
+#2 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*)...')
+#3 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*)...', Array, false)
+#4 C:\xampp\htdocs\rewardSystem\app\Controllers\CustomerController.php(487): CodeIgniter\Database\BaseBuilder->countAllResults()
+#5 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\CustomerController->getWheelData()
+#6 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\CustomerController))
+#7 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+ERROR - 2025-06-19 12:59:08 --> getWheelData error: Unknown column 'created_time' in 'where clause'
+ERROR - 2025-06-19 12:59:11 --> mysqli_sql_exception: Unknown column 'created_time' in 'where clause' in C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT COUNT(*)...', 0)
+#1 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*)...')
+#2 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*)...')
+#3 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*)...', Array, false)
+#4 C:\xampp\htdocs\rewardSystem\app\Controllers\CustomerController.php(487): CodeIgniter\Database\BaseBuilder->countAllResults()
+#5 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\CustomerController->getWheelData()
+#6 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\CustomerController))
+#7 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+ERROR - 2025-06-19 12:59:11 --> getWheelData error: Unknown column 'created_time' in 'where clause'
+ERROR - 2025-06-19 12:59:12 --> mysqli_sql_exception: Unknown column 'created_time' in 'where clause' in C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT COUNT(*)...', 0)
+#1 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('SELECT COUNT(*)...')
+#2 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT COUNT(*)...')
+#3 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(1733): CodeIgniter\Database\BaseConnection->query('SELECT COUNT(*)...', Array, false)
+#4 C:\xampp\htdocs\rewardSystem\app\Controllers\CustomerController.php(487): CodeIgniter\Database\BaseBuilder->countAllResults()
+#5 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\CustomerController->getWheelData()
+#6 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\CustomerController))
+#7 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+ERROR - 2025-06-19 12:59:12 --> getWheelData error: Unknown column 'created_time' in 'where clause'
+ERROR - 2025-06-19 13:16:53 --> Background update error: There is no data to update.

@@ -1,35 +1,7 @@
 <?php
 
 use CodeIgniter\Router\RouteCollection;
-// Add this temporarily to test registration in isolation
-$routes->get('test-registration', function() {
-    $customerModel = new \App\Models\CustomerModel();
-    
-    try {
-        // Test database connection
-        $count = $customerModel->countAllResults();
-        echo "Database connection OK. Current customers: $count<br>";
-        
-        // Test username generation
-        $username = $customerModel->generateUniqueUsername();
-        echo "Generated username: $username<br>";
-        
-        // Test actual registration
-        $result = $customerModel->createAutoCustomer();
-        
-        if ($result) {
-            echo "✅ Registration SUCCESS!<br>";
-            echo "Username: " . $result['username'] . "<br>";
-            echo "Password: " . $result['password'] . "<br>";
-            echo "Customer ID: " . $result['id'] . "<br>";
-        } else {
-            echo "❌ Registration FAILED<br>";
-        }
-        
-    } catch (\Exception $e) {
-        echo "❌ ERROR: " . $e->getMessage();
-    }
-});
+
 //Translation routes
 $routes->get('translate/(:segment)', 'TranslateController::index/$1');
 $routes->get('translate', 'TranslateController::getCurrentLanguage');
@@ -42,7 +14,9 @@ $routes->post('spin', 'LandingController::spin');
 $routes->post('claim-bonus', 'LandingController::claimBonus');
 $routes->post('store-winner', 'LandingController::storeWinner'); 
 
-//Reward System routes
+// API Routes
+$routes->get('api/wheel-data', 'CustomerController::getWheelData');
+
 //Reward System routes
 $routes->group('reward', function($routes) {
     $routes->get('/', 'RewardController::index');

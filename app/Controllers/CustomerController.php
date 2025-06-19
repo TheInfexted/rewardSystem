@@ -27,15 +27,19 @@ class CustomerController extends BaseController
     {
         $session = session();
         $customerId = $session->get('customer_id');
+        $customerLoggedIn = $session->get('customer_logged_in');
         
-        if (!$customerId) {
+        // Debug logging
+        log_message('info', 'Customer Dashboard Access - Customer ID: ' . $customerId . ', Logged In: ' . ($customerLoggedIn ? 'Yes' : 'No'));
+        
+        if (!$customerId || !$customerLoggedIn) {
             return redirect()->to('/reward')->with('error', 'Please login first');
         }
         
         try {
             $customer = $this->customerModel->find($customerId);
             if (!$customer) {
-                $session->destroy();
+                $session->remove(['customer_id', 'customer_logged_in', 'customer_data']);
                 return redirect()->to('/reward')->with('error', 'Invalid session');
             }
             
@@ -44,6 +48,9 @@ class CustomerController extends BaseController
             
             // Get recent activities
             $recentActivities = $this->getRecentActivities($customerId);
+            
+            // Get monthly checkins count
+            $monthlyCheckins = $this->getMonthlyCheckinsCount($customerId);
             
             $data = [
                 'title' => 'Customer Dashboard',
@@ -56,7 +63,8 @@ class CustomerController extends BaseController
                 'current_week_start' => $weekData['week_start'],
                 'current_week_end' => $weekData['week_end'],
                 'total_points' => $customer['points'] ?? 0,
-                'recent_activities' => $recentActivities
+                'recent_activities' => $recentActivities,
+                'monthly_checkins' => $monthlyCheckins
             ];
             
             return view('customer/dashboard', $data);
@@ -130,17 +138,29 @@ class CustomerController extends BaseController
             
             if ($inserted) {
                 // Add points to customer
-                $this->addPointsToCustomer($customerId, $rewardPoints);
+                $pointsAdded = $this->addPointsToCustomer($customerId, $rewardPoints);
                 
-                return $this->response->setJSON([
-                    'success' => true,
-                    'message' => 'Check-in successful!',
-                    'reward_points' => $rewardPoints,
-                    'week_progress' => $weekCheckins + 1,
-                    'bonus_message' => $this->getCheckinBonusMessage($weekCheckins + 1)
-                ]);
+                if ($pointsAdded) {
+                    return $this->response->setJSON([
+                        'success' => true,
+                        'message' => 'Check-in successful!',
+                        'points' => $rewardPoints,
+                        'day' => $weekCheckins + 1
+                    ]);
+                } else {
+                    log_message('error', 'Failed to add points after check-in');
+                    return $this->response->setJSON([
+                        'success' => true, // Still show success since check-in was recorded
+                        'message' => 'Check-in recorded but failed to add points',
+                        'points' => $rewardPoints,
+                        'day' => $weekCheckins + 1
+                    ]);
+                }
             } else {
-                throw new \Exception('Failed to insert check-in record');
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Failed to process check-in'
+                ]);
             }
             
         } catch (\Exception $e) {
@@ -153,7 +173,7 @@ class CustomerController extends BaseController
     }
 
     /**
-     * Update profile background
+     * Update customer background
      */
     public function updateBackground()
     {
@@ -170,81 +190,70 @@ class CustomerController extends BaseController
                 'message' => 'Please login first'
             ]);
         }
-        
+
         $background = $this->request->getPost('background');
-        $validBackgrounds = ['default', 'blue', 'purple', 'green', 'red', 'orange', 'gold'];
-        
-        // Debug logging
-        log_message('info', 'Background change request - Customer ID: ' . $customerId . ', Background: ' . $background);
         
         if (empty($background)) {
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'No background selected'
+                'message' => 'Background type is required'
             ]);
         }
-        
-        if (!in_array($background, $validBackgrounds)) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Invalid background selected. Valid options: ' . implode(', ', $validBackgrounds)
-            ]);
-        }
-        
+
         try {
-            $updated = $this->customerModel->update($customerId, [
-                'profile_background' => $background
-            ]);
+            $updateData = ['profile_background' => $background];
+            $updated = $this->customerModel->update($customerId, $updateData);
             
             if ($updated) {
-                log_message('info', 'Background updated successfully for customer ' . $customerId . ' to ' . $background);
-                
                 return $this->response->setJSON([
                     'success' => true,
-                    'message' => 'Background updated successfully',
-                    'new_background' => $background
+                    'message' => 'Background updated successfully'
                 ]);
-            } else {
-                throw new \Exception('Database update failed');
             }
             
-        } catch (\Exception $e) {
-            log_message('error', 'Update background error: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Failed to update background: ' . $e->getMessage()
+                'message' => 'Failed to update background'
+            ]);
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Background update error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Update failed. Please try again.'
             ]);
         }
     }
 
     /**
-     * Get current week check-in data (Monday to Sunday)
+     * Get current week check-in data
      */
     private function getCurrentWeekCheckins($customerId)
     {
         try {
             $db = \Config\Database::connect();
-            $builder = $db->table('customer_checkins');
-            
-            // Get current week dates (Monday to Sunday)
             $weekDates = $this->getCurrentWeekDates();
             $today = date('Y-m-d');
             
-            // Check if already checked in today
-            $todayCheckin = $builder->where([
-                'customer_id' => $customerId,
-                'checkin_date' => $today
-            ])->get()->getRow();
+            // Get week check-ins
+            $weekCheckins = $db->table('customer_checkins')
+                              ->where('customer_id', $customerId)
+                              ->where('checkin_date >=', $weekDates['week_start'])
+                              ->where('checkin_date <=', $weekDates['week_end'])
+                              ->orderBy('checkin_date', 'ASC')
+                              ->get()
+                              ->getResultArray();
             
-            // Get all check-ins for current week
-            $weekCheckins = $builder->where('customer_id', $customerId)
-                                  ->where('checkin_date >=', $weekDates['week_start'])
-                                  ->where('checkin_date <=', $weekDates['week_end'])
-                                  ->orderBy('checkin_date', 'ASC')
-                                  ->get()
-                                  ->getResult();
+            // Check if checked in today
+            $todayCheckin = false;
+            foreach ($weekCheckins as $checkin) {
+                if ($checkin['checkin_date'] === $today) {
+                    $todayCheckin = true;
+                    break;
+                }
+            }
             
-            // Create weekly progress array (Monday=1 to Sunday=7)
+            // Create weekly progress array (1=Monday to 7=Sunday)
             $weeklyProgress = [];
             for ($i = 1; $i <= 7; $i++) {
                 $date = date('Y-m-d', strtotime($weekDates['week_start'] . ' +' . ($i-1) . ' days'));
@@ -256,21 +265,22 @@ class CustomerController extends BaseController
                     'checked_in' => false,
                     'is_today' => $date === $today,
                     'is_future' => $date > $today,
-                    'points' => $this->calculateWeeklyReward($i, $i)
+                    'points' => $this->calculateWeeklyReward($i, $i),
+                    'actual_points' => 0
                 ];
             }
             
             // Mark checked-in days
             foreach ($weekCheckins as $checkin) {
-                $dayOfWeek = date('N', strtotime($checkin->checkin_date)); // 1=Monday, 7=Sunday
+                $dayOfWeek = date('N', strtotime($checkin['checkin_date'])); // 1=Monday, 7=Sunday
                 if (isset($weeklyProgress[$dayOfWeek])) {
                     $weeklyProgress[$dayOfWeek]['checked_in'] = true;
-                    $weeklyProgress[$dayOfWeek]['actual_points'] = $checkin->reward_points;
+                    $weeklyProgress[$dayOfWeek]['actual_points'] = $checkin['reward_points'];
                 }
             }
             
             return [
-                'today_checkin' => !empty($todayCheckin),
+                'today_checkin' => $todayCheckin,
                 'week_checkins' => $weekCheckins,
                 'checkin_count' => count($weekCheckins),
                 'weekly_progress' => $weeklyProgress,
@@ -296,124 +306,107 @@ class CustomerController extends BaseController
      */
     private function getCurrentWeekDates()
     {
-        $currentDay = date('N'); // 1=Monday, 7=Sunday
+        $today = new \DateTime();
+        $dayOfWeek = $today->format('N'); // 1 (Monday) to 7 (Sunday)
         
         // Calculate Monday of current week
-        $monday = date('Y-m-d', strtotime('-' . ($currentDay - 1) . ' days'));
+        $mondayOffset = $dayOfWeek - 1;
+        $monday = clone $today;
+        $monday->sub(new \DateInterval("P{$mondayOffset}D"));
         
-        // Calculate Sunday of current week  
-        $sunday = date('Y-m-d', strtotime($monday . ' +6 days'));
+        // Calculate Sunday of current week
+        $sunday = clone $monday;
+        $sunday->add(new \DateInterval('P6D'));
         
         return [
-            'week_start' => $monday,
-            'week_end' => $sunday
+            'week_start' => $monday->format('Y-m-d'),
+            'week_end' => $sunday->format('Y-m-d')
         ];
     }
 
     /**
      * Calculate weekly reward points
      */
-    private function calculateWeeklyReward($checkinNumber, $dayOfWeek)
+    private function calculateWeeklyReward($dayNumber, $dayOfWeek)
     {
-        // Progressive reward system for the week
-        $baseRewards = [
-            1 => 10,  // Monday: 10 points
-            2 => 15,  // Tuesday: 15 points  
-            3 => 20,  // Wednesday: 20 points
-            4 => 25,  // Thursday: 25 points
-            5 => 30,  // Friday: 30 points
-            6 => 40,  // Saturday: 40 points
-            7 => 50   // Sunday: 50 points (bonus day)
-        ];
+        // Base points per day
+        $basePoints = 10;
         
-        $baseReward = $baseRewards[$dayOfWeek] ?? 10;
+        // Bonus for consecutive days
+        $consecutiveBonus = ($dayNumber - 1) * 5;
         
-        // Bonus for consecutive check-ins
-        $consecutiveBonus = 0;
-        if ($checkinNumber >= 3) $consecutiveBonus += 5;  // 3+ days bonus
-        if ($checkinNumber >= 5) $consecutiveBonus += 10; // 5+ days bonus  
-        if ($checkinNumber >= 7) $consecutiveBonus += 20; // Perfect week bonus
+        // Weekend bonus
+        $weekendBonus = ($dayOfWeek == 6 || $dayOfWeek == 7) ? 10 : 0;
         
-        return $baseReward + $consecutiveBonus;
+        return $basePoints + $consecutiveBonus + $weekendBonus;
     }
 
     /**
-     * Get check-in bonus message
+     * Add points to customer
      */
-    private function getCheckinBonusMessage($checkinCount)
+    private function addPointsToCustomer($customerId, $points)
     {
-        switch ($checkinCount) {
-            case 1:
-                return "Great start! Welcome to this week's check-in challenge!";
-            case 2:
-                return "Nice! You're building momentum!";
-            case 3:
-                return "Awesome! 3 days down - bonus points activated!";
-            case 4:
-                return "Fantastic! You're more than halfway there!";
-            case 5:
-                return "Amazing! 5-day streak bonus unlocked!";
-            case 6:
-                return "Incredible! Just one more day for the perfect week!";
-            case 7:
-                return "🎉 PERFECT WEEK! You've completed all 7 days!";
-            default:
-                return "Keep it up!";
+        try {
+            return $this->customerModel->addPoints($customerId, $points);
+        } catch (\Exception $e) {
+            log_message('error', 'Add points error: ' . $e->getMessage());
+            return false;
         }
     }
 
     /**
-     * Get recent activities
+     * Get recent activities for customer (formatted for original dashboard)
      */
-    private function getRecentActivities($customerId, $limit = 5)
+    private function getRecentActivities($customerId)
     {
-        $activities = [];
-        
         try {
-            // Get recent spins if SpinHistoryModel exists
-            if (class_exists('App\Models\SpinHistoryModel')) {
-                $spins = $this->spinHistoryModel
-                    ->where('customer_id', $customerId)
-                    ->orderBy('spin_time', 'DESC')
-                    ->limit(3)
-                    ->find();
-                
-                foreach ($spins as $spin) {
-                    $activities[] = [
-                        'type_color' => $spin['item_won'] === 'Try Again' ? 'danger' : 'warning',
-                        'icon' => 'pie-chart',
-                        'title' => 'Wheel Spin - ' . $spin['item_won'],
-                        'time_ago' => $this->timeAgo($spin['spin_time']),
-                        'reward' => $spin['item_won'] === 'Try Again' ? 'Lost' : 'Won'
-                    ];
-                }
-            }
-            
-            // Get recent check-ins
             $db = \Config\Database::connect();
+            $activities = [];
+            
+            // Get recent check-ins (last 5)
             $checkins = $db->table('customer_checkins')
-                ->where('customer_id', $customerId)
-                ->orderBy('created_at', 'DESC')
-                ->limit(2)
-                ->get()
-                ->getResult();
+                          ->where('customer_id', $customerId)
+                          ->orderBy('created_at', 'DESC')
+                          ->limit(5)
+                          ->get()
+                          ->getResultArray();
             
             foreach ($checkins as $checkin) {
                 $activities[] = [
+                    'type' => 'checkin',
                     'type_color' => 'success',
-                    'icon' => 'check-circle',
-                    'title' => 'Daily Check-in',
-                    'time_ago' => $this->timeAgo($checkin->created_at),
-                    'reward' => '+' . $checkin->reward_points
+                    'icon' => 'calendar-check',
+                    'title' => 'Daily Check-in Completed',
+                    'time_ago' => $this->timeAgo($checkin['created_at']),
+                    'reward' => '+' . $checkin['reward_points'] . ' pts'
                 ];
             }
             
-            // Sort by time
+            // Get recent bonus claims (last 5)
+            $claims = $db->table('bonus_claims')
+                        ->where('customer_id', $customerId)
+                        ->orderBy('created_at', 'DESC')
+                        ->limit(5)
+                        ->get()
+                        ->getResultArray();
+            
+            foreach ($claims as $claim) {
+                $activities[] = [
+                    'type' => 'claim',
+                    'type_color' => 'info',
+                    'icon' => 'gift',
+                    'title' => 'Reward Claimed: ' . $claim['bonus_type'],
+                    'time_ago' => $this->timeAgo($claim['created_at']),
+                    'reward' => ucfirst($claim['status'])
+                ];
+            }
+            
+            // Sort by date
             usort($activities, function($a, $b) {
                 return strcmp($b['time_ago'], $a['time_ago']);
             });
             
-            return array_slice($activities, 0, $limit);
+            return array_slice($activities, 0, 10);
             
         } catch (\Exception $e) {
             log_message('error', 'Get recent activities error: ' . $e->getMessage());
@@ -450,22 +443,85 @@ class CustomerController extends BaseController
     }
 
     /**
-     * Safe method to add points to customer (avoiding the db->raw issue)
+     * Get monthly checkins count
      */
-    private function addPointsToCustomer($customerId, $points)
+    private function getMonthlyCheckinsCount($customerId)
     {
         try {
-            $customer = $this->customerModel->find($customerId);
-            if ($customer) {
-                $newPoints = $customer['points'] + $points;
-                return $this->customerModel->update($customerId, [
-                    'points' => $newPoints
-                ]);
-            }
-            return false;
+            $db = \Config\Database::connect();
+            $currentMonth = date('Y-m');
+            
+            $count = $db->table('customer_checkins')
+                       ->where('customer_id', $customerId)
+                       ->where('checkin_date >=', $currentMonth . '-01')
+                       ->where('checkin_date <=', $currentMonth . '-31')
+                       ->countAllResults();
+            
+            return $count;
+            
         } catch (\Exception $e) {
-            log_message('error', 'Add points error: ' . $e->getMessage());
-            return false;
+            log_message('error', 'Get monthly checkins error: ' . $e->getMessage());
+            return 0;
+        }
+    }
+
+    public function getWheelData()
+    {
+        $session = session();
+        $customerId = $session->get('customer_id');
+
+        if (!$customerId) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Unauthorized access'
+            ]);
+        }
+
+        try {
+            $db = \Config\Database::connect();
+
+            // Count today's spins
+            $spinCount = $db->table('spin_history')
+                ->where('customer_id', $customerId)
+                ->where('DATE(spin_time)', date('Y-m-d'))
+                ->countAllResults();
+
+            $maxSpinsPerDay = 3;
+            $remainingSpins = max(0, $maxSpinsPerDay - $spinCount);
+
+            // Fetch wheel items from the database
+            $wheelItemsRaw = $db->table('wheel_items')
+                ->where('is_active', 1)
+                ->orderBy('order', 'ASC')
+                ->get()
+                ->getResultArray();
+
+            // Transform data to match JS expectations
+            $wheelItems = array_map(function ($item) {
+                return [
+                    'item_id' => (int) $item['item_id'],
+                    'item_name' => $item['item_name'],
+                    'item_prize' => (float) $item['item_prize'],
+                    'item_types' => $item['item_types'],
+                    'winning_rate' => (float) $item['winning_rate'],
+                    'order' => (int) $item['order']
+                ];
+            }, $wheelItemsRaw);
+
+            return $this->response->setJSON([
+                'success' => true,
+                'spins_remaining' => $remainingSpins,
+                'wheel_items' => $wheelItems,
+                'spin_sound' => ['enabled' => true], // You can fetch these from DB if needed
+                'win_sound' => ['enabled' => true]
+            ]);
+
+        } catch (\Exception $e) {
+            log_message('error', 'getWheelData error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to load wheel data'
+            ]);
         }
     }
 }

@@ -1,3 +1,8 @@
+<?php 
+// Check if winner_data exists and is valid
+$hasValidPrize = isset($winner_data) && is_array($winner_data) && isset($winner_data['name']);
+$isLoggedIn = isset($logged_in) && $logged_in;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -502,7 +507,7 @@
             </div>
             
             <div class="reward-card">
-                <?php if (isset($winner_data) && $winner_data): ?>
+                <?php if ($hasValidPrize): ?>
                     <!-- Prize Display -->
                     <div class="prize-display">
                         <p class="prize-text">🎉 Congratulations! You Won:</p>
@@ -512,12 +517,12 @@
                         <?php endif; ?>
                     </div>
 
-                    <?php if ($logged_in): ?>
+                    <?php if ($isLoggedIn): ?>
                         <!-- Logged In User - Ready to Claim -->
                         <div class="customer-welcome">
                             <div class="customer-info">
                                 <i class="bi bi-person-check-fill"></i> 
-                                Welcome back, <?= esc($customer_data['username']) ?>!
+                                Welcome back, <?= esc($customer_data['username'] ?? 'Customer') ?>!
                             </div>
                             <?php if (isset($customer_data['points'])): ?>
                                 <div class="points-display">
@@ -540,6 +545,9 @@
                             </div>
                             
                             <div class="text-center mt-3">
+                                <a href="<?= base_url('customer/dashboard') ?>" class="btn btn-platform btn-sm me-2">
+                                    <i class="bi bi-speedometer2"></i> Dashboard
+                                </a>
                                 <button type="button" class="btn btn-platform btn-sm" onclick="logout()">
                                     <i class="bi bi-box-arrow-right"></i> Logout
                                 </button>
@@ -626,14 +634,116 @@
                         </div>
                     <?php endif; ?>
 
-                <?php else: ?>
-                    <!-- No Prize Data -->
+                <?php elseif ($isLoggedIn): ?>
+                    <!-- Logged In User - No Prize but Show Dashboard Access -->
+                    <div class="customer-welcome">
+                        <div class="customer-info">
+                            <i class="bi bi-person-check-fill"></i> 
+                            Welcome back, <?= esc($customer_data['username'] ?? 'Customer') ?>!
+                        </div>
+                        <?php if (isset($customer_data['points'])): ?>
+                            <div class="points-display">
+                                <i class="bi bi-star-fill"></i> Points: <?= number_format($customer_data['points']) ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
                     <div class="no-prize-message">
-                        <h3><i class="bi bi-exclamation-circle"></i> No Prize Found</h3>
-                        <p>You need to spin the wheel first to claim a reward!</p>
-                        <a href="<?= base_url('/') ?>" class="btn btn-claim mt-3">
-                            <i class="bi bi-arrow-left"></i> Back to Game
-                        </a>
+                        <h3><i class="bi bi-info-circle"></i> No Active Rewards</h3>
+                        <p>You don't have any pending rewards to claim right now.</p>
+                        <p class="text-muted">Spin the wheel to win exciting prizes!</p>
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <a href="<?= base_url('/') ?>" class="btn btn-claim">
+                                <i class="bi bi-arrow-left"></i> Back to Game
+                            </a>
+                            <a href="<?= base_url('customer/dashboard') ?>" class="btn btn-platform">
+                                <i class="bi bi-speedometer2"></i> View Dashboard
+                            </a>
+                            <button type="button" class="btn btn-platform" onclick="logout()">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                            </button>
+                        </div>
+                    </div>
+
+                <?php else: ?>
+                    <!-- Not Logged In - Show Login Options -->
+                    <div id="authContainer">
+                        <!-- Login Form (Initially Hidden) -->
+                        <div id="loginForm" style="display: none;">
+                            <h5 class="text-center text-warning mb-3">Login to Your Account</h5>
+                            <form id="customerLoginForm">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" id="loginUsername" name="username" 
+                                           placeholder="Enter your username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="password" class="form-control" id="loginPassword" name="password" 
+                                           placeholder="Enter your password" required>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-claim">
+                                        <i class="bi bi-box-arrow-in-right"></i> Login
+                                    </button>
+                                    <button type="button" class="btn btn-platform" onclick="showRegistration()">
+                                        <i class="bi bi-arrow-left"></i> Back
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Default Options -->
+                        <div id="registrationOptions">
+                            <div class="no-prize-message">
+                                <h3><i class="bi bi-person-circle"></i> Account Access</h3>
+                                <p>Login to access your dashboard or create a new account.</p>
+                                
+                                <div class="d-grid gap-2 mt-4">
+                                    <button type="button" class="btn btn-claim" onclick="showLogin()">
+                                        <i class="bi bi-box-arrow-in-right"></i> Login to Account
+                                    </button>
+                                    <button type="button" class="btn btn-platform" onclick="autoRegister()">
+                                        <i class="bi bi-person-plus-fill"></i> Create New Account
+                                    </button>
+                                    <a href="<?= base_url('/') ?>" class="btn btn-platform">
+                                        <i class="bi bi-arrow-left"></i> Back to Game
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Account Created Step (Hidden Initially) -->
+                        <div id="accountCreatedStep" style="display: none;">
+                            <h5 class="text-center text-success mb-3">
+                                <i class="bi bi-check-circle-fill"></i> Account Created!
+                            </h5>
+                            
+                            <div class="credentials-box">
+                                <h6 class="text-warning mb-3">Save Your Login Details:</h6>
+                                <div class="credential-item">
+                                    <div class="credential-label">Username:</div>
+                                    <div id="displayUsername">-</div>
+                                </div>
+                                <div class="credential-item">
+                                    <div class="credential-label">Password:</div>
+                                    <div id="displayPassword">-</div>
+                                </div>
+                            </div>
+                            
+                            <div class="important-note">
+                                <i class="bi bi-exclamation-triangle-fill"></i> 
+                                Important: Save these credentials to access your account later!
+                            </div>
+
+                            <div class="d-grid gap-2 mt-3">
+                                <a href="<?= base_url('customer/dashboard') ?>" class="btn btn-claim">
+                                    <i class="bi bi-speedometer2"></i> Go to Dashboard
+                                </a>
+                                <a href="<?= base_url('/') ?>" class="btn btn-platform">
+                                    <i class="bi bi-arrow-left"></i> Back to Game
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 <?php endif; ?>
             </div>
@@ -690,6 +800,7 @@
             e.preventDefault();
             
             const formData = new FormData(this);
+            formData.append(csrfName, csrfToken);
             showLoading(true);
             
             fetch('<?= base_url('reward/login') ?>', {
@@ -725,11 +836,7 @@
             
             // Create FormData to handle CSRF properly
             const formData = new FormData();
-            
-            // Add CSRF token if available
-            if (typeof csrfName !== 'undefined' && typeof csrfToken !== 'undefined') {
-                formData.append(csrfName, csrfToken);
-            }
+            formData.append(csrfName, csrfToken);
             
             fetch('<?= base_url('reward/auto-register') ?>', {
                 method: 'POST',
@@ -740,7 +847,6 @@
             })
             .then(response => {
                 console.log('Response status:', response.status);
-                console.log('Response headers:', response.headers);
                 return response.json();
             })
             .then(data => {
@@ -755,8 +861,8 @@
                     document.getElementById('accountCreatedStep').style.display = 'block';
                     
                     // Display credentials
-                    document.getElementById('displayUsername').textContent = data.account_data.username;
-                    document.getElementById('displayPassword').textContent = data.account_data.password;
+                    document.getElementById('displayUsername').textContent = data.customer_data.username;
+                    document.getElementById('displayPassword').textContent = data.customer_data.password;
                     
                     showAlert(data.message, 'success');
                 } else {
@@ -776,6 +882,7 @@
             
             const formData = new FormData();
             formData.append('platform', platform);
+            formData.append(csrfName, csrfToken);
             
             fetch('<?= base_url('reward/claim-reward') ?>', {
                 method: 'POST',
@@ -794,13 +901,10 @@
                     // Redirect to platform after short delay
                     setTimeout(() => {
                         window.open(data.redirect_url, '_blank');
-                        
-                        // Optionally redirect to dashboard
-                        if (data.dashboard_url) {
-                            setTimeout(() => {
-                                window.location.href = data.dashboard_url;
-                            }, 2000);
-                        }
+                        // Redirect to home page after opening platform
+                        setTimeout(() => {
+                            window.location.href = '<?= base_url('/') ?>';
+                        }, 2000);
                     }, 1500);
                 } else {
                     showAlert(data.message, 'danger');
@@ -819,6 +923,7 @@
                 showLoading(true);
                 
                 const formData = new FormData();
+                formData.append(csrfName, csrfToken);
                 
                 fetch('<?= base_url('reward/logout') ?>', {
                     method: 'POST',
@@ -868,6 +973,17 @@
                 });
             });
         });
+
+        // Debug: Log session data on page load
+        console.log('Reward page loaded');
+        console.log('Has valid prize:', <?= json_encode($hasValidPrize) ?>);
+        console.log('Logged in:', <?= json_encode($logged_in) ?>);
+        <?php if (isset($winner_data)): ?>
+        console.log('Winner data:', <?= json_encode($winner_data) ?>);
+        <?php endif; ?>
+        <?php if (isset($customer_data)): ?>
+        console.log('Customer data:', <?= json_encode($customer_data) ?>);
+        <?php endif; ?>
     </script>
 </body>
 </html>

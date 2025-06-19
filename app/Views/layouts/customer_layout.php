@@ -176,24 +176,6 @@
                 </a>
             </div>
             <div class="nav-item">
-                <a href="#" class="nav-link" onclick="openWheelModal()">
-                    <i class="bi bi-pie-chart"></i>
-                    <span>Wheel</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="#" class="nav-link" onclick="showRewards()">
-                    <i class="bi bi-gift"></i>
-                    <span>Rewards</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="#" class="nav-link" onclick="showProfile()">
-                    <i class="bi bi-person"></i>
-                    <span>Profile</span>
-                </a>
-            </div>
-            <div class="nav-item">
                 <a href="<?= base_url('logout') ?>" class="nav-link">
                     <i class="bi bi-box-arrow-right"></i>
                     <span>Logout</span>

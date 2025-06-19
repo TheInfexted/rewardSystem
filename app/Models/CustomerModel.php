@@ -8,147 +8,167 @@ class CustomerModel extends Model
 {
     protected $table = 'customers';
     protected $primaryKey = 'id';
-    
+    protected $useAutoIncrement = true;
+    protected $returnType = 'array';
+    protected $useSoftDeletes = false;
+    protected $protectFields = true;
     protected $allowedFields = [
-        'username',
-        'password',
-        'email',
-        'name',
-        'profile_background',
-        'spin_count',
-        'last_spin_date',
-        'points',
-        'is_active'
+        'username', 'password', 'name', 'email', 'phone', 
+        'is_active', 'last_login', 'points', 'profile_background', 
+        'created_at', 'updated_at'
     ];
-    
+
+
+    protected bool $allowEmptyInserts = false;
+
+    // Dates
     protected $useTimestamps = true;
+    protected $dateFormat = 'datetime';
     protected $createdField = 'created_at';
     protected $updatedField = 'updated_at';
-    
-    // Simplified validation - remove uniqueness check for now to avoid conflicts
+
+    // Validation
     protected $validationRules = [
-        'username' => 'required|min_length[3]|max_length[50]',
+        'username' => 'required|min_length[3]|max_length[50]|is_unique[customers.username,id,{id}]',
         'password' => 'required|min_length[4]',
-        'email' => 'permit_empty|valid_email',
-        'name' => 'permit_empty|max_length[100]',
-        'points' => 'permit_empty|integer'
+        'email' => 'permit_empty|valid_email|is_unique[customers.email,id,{id}]',
+        'phone' => 'permit_empty|min_length[10]|max_length[20]',
+        'name' => 'permit_empty|max_length[100]'
     ];
 
     protected $validationMessages = [
         'username' => [
             'required' => 'Username is required',
             'min_length' => 'Username must be at least 3 characters',
-            'max_length' => 'Username cannot exceed 50 characters'
+            'max_length' => 'Username cannot exceed 50 characters',
+            'is_unique' => 'Username already exists'
         ],
         'password' => [
             'required' => 'Password is required',
             'min_length' => 'Password must be at least 4 characters'
         ],
         'email' => [
-            'valid_email' => 'Please enter a valid email address'
+            'valid_email' => 'Please enter a valid email address',
+            'is_unique' => 'Email already exists'
+        ],
+        'phone' => [
+            'min_length' => 'Phone number must be at least 10 digits',
+            'max_length' => 'Phone number cannot exceed 20 digits'
         ]
     ];
+
+    protected $skipValidation = false;
+    protected $cleanValidationRules = true;
+
+    // Callbacks
+    protected $allowCallbacks = true;
+    protected $beforeInsert = ['hashPassword'];
+    protected $beforeUpdate = ['hashPassword'];
+
+    /**
+     * Hash password before insert/update
+     */
+    protected function hashPassword(array $data)
+    {
+        if (isset($data['data']['password'])) {
+            $data['data']['password'] = password_hash($data['data']['password'], PASSWORD_DEFAULT);
+        }
+        return $data;
+    }
 
     /**
      * Generate unique username (phone number format)
      */
-    public function generateUniqueUsername()
+    public function generateUniqueUsername(): string
     {
-        $attempts = 0;
-        $maxAttempts = 20;
+        $maxAttempts = 100;
+        $attempt = 0;
         
         do {
-            // Generate phone number format: 01XXXXXXXX (Malaysian format)
-            $username = '01' . str_pad(mt_rand(10000000, 99999999), 8, '0', STR_PAD_LEFT);
+            // Generate Malaysian phone number format: 01xxxxxxxx
+            $username = '01' . str_pad(rand(0, 99999999), 8, '0', STR_PAD_LEFT);
             
             // Check if username exists
-            $existing = $this->where('username', $username)->first();
-            $attempts++;
+            $exists = $this->where('username', $username)->first();
+            $attempt++;
             
-        } while ($existing && $attempts < $maxAttempts);
-        
-        if ($attempts >= $maxAttempts) {
-            // Fallback to timestamp-based username
-            $username = 'user_' . time() . '_' . rand(100, 999);
-        }
+            if ($attempt >= $maxAttempts) {
+                throw new \Exception('Unable to generate unique username after maximum attempts');
+            }
+            
+        } while ($exists);
         
         return $username;
     }
 
     /**
-     * Create new customer with auto-generated credentials
+     * Create auto customer account
      */
-    public function createAutoCustomer()
+    public function createAutoCustomer(): array|false
     {
         try {
-            // Generate unique username
+            // Generate unique username and password
             $username = $this->generateUniqueUsername();
-            
-            // Generate simple password
-            $password = bin2hex(random_bytes(4)); // 8 character hex string
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $password = $this->generateRandomPassword();
             
             // Prepare customer data
             $customerData = [
                 'username' => $username,
-                'password' => $hashedPassword,
+                'password' => $password, // Will be hashed by beforeInsert callback
                 'name' => $username,
                 'email' => null,
-                'profile_background' => 'default',
-                'spin_count' => 0,
-                'last_spin_date' => null,
-                'points' => 0,
-                'is_active' => 1
+                'phone' => $username,
+                'is_active' => 1,
+                'points' => 0
             ];
             
-            // Insert customer without validation first
-            $db = \Config\Database::connect();
-            $builder = $db->table($this->table);
+            // Insert customer
+            $customerId = $this->insert($customerData);
             
-            // Manual insert to avoid validation issues
-            $result = $builder->insert($customerData);
-            
-            if ($result) {
-                $customerId = $db->insertID();
+            if ($customerId) {
+                log_message('info', 'Auto customer created successfully: ' . $username);
                 
                 return [
                     'id' => $customerId,
                     'username' => $username,
                     'password' => $password, // Return plain password for display
-                    'customer_data' => $this->find($customerId)
+                    'name' => $username,
+                    'phone' => $username
                 ];
             }
             
             return false;
             
         } catch (\Exception $e) {
-            log_message('error', 'Customer auto creation failed: ' . $e->getMessage());
+            log_message('error', 'Failed to create auto customer: ' . $e->getMessage());
             return false;
         }
     }
 
     /**
-     * Find customer by username
+     * Generate random password
      */
-    public function getByUsername($username)
+    private function generateRandomPassword(int $length = 8): string
     {
-        return $this->where('username', $username)
-                   ->where('is_active', 1)
-                   ->first();
+        $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        return substr(str_shuffle($chars), 0, $length);
     }
 
     /**
-     * Verify customer login credentials
+     * Authenticate customer
      */
-    public function verifyLogin($username, $password)
+    public function authenticate(string $username, string $password): array|false
     {
-        $customer = $this->getByUsername($username);
+        $customer = $this->where('username', $username)
+                         ->where('is_active', 1)
+                         ->first();
         
         if ($customer && password_verify($password, $customer['password'])) {
-            // Update last login time
-            $this->update($customer['id'], [
-                'updated_at' => date('Y-m-d H:i:s')
-            ]);
+            // Update last login
+            $this->update($customer['id'], ['last_login' => date('Y-m-d H:i:s')]);
+            
+            // Remove password from returned data
+            unset($customer['password']);
             
             return $customer;
         }
@@ -157,166 +177,91 @@ class CustomerModel extends Model
     }
 
     /**
-     * Add points to customer account (Fixed - no raw SQL)
+     * Get customer by ID with safe data
      */
-    public function addPoints($customerId, $points)
-    {
-        try {
-            $customer = $this->find($customerId);
-            
-            if ($customer) {
-                $newPoints = $customer['points'] + $points;
-                
-                return $this->update($customerId, [
-                    'points' => $newPoints
-                ]);
-            }
-            
-            return false;
-        } catch (\Exception $e) {
-            log_message('error', 'CustomerModel addPoints error: ' . $e->getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Deduct points from customer account
-     */
-    public function deductPoints($customerId, $points)
-    {
-        $customer = $this->find($customerId);
-        
-        if ($customer && $customer['points'] >= $points) {
-            $newPoints = $customer['points'] - $points;
-            
-            return $this->update($customerId, [
-                'points' => $newPoints
-            ]);
-        }
-        
-        return false;
-    }
-
-    /**
-     * Update customer spin count
-     */
-    public function updateSpinCount($customerId)
+    public function getCustomerSafeData(int $customerId): array|null
     {
         $customer = $this->find($customerId);
         
         if ($customer) {
-            return $this->update($customerId, [
-                'spin_count' => $customer['spin_count'] + 1,
-                'last_spin_date' => date('Y-m-d')
-            ]);
+            // Remove sensitive data
+            unset($customer['password']);
+            return $customer;
+        }
+        
+        return null;
+    }
+
+    /**
+     * Update customer points
+     */
+    public function updatePoints(int $customerId, int $points): bool
+    {
+        return $this->update($customerId, ['points' => $points]);
+    }
+
+    /**
+     * Add points to customer
+     */
+    public function addPoints(int $customerId, int $pointsToAdd): bool
+    {
+        $customer = $this->find($customerId);
+        
+        if ($customer) {
+            $newPoints = ($customer['points'] ?? 0) + $pointsToAdd;
+            return $this->update($customerId, ['points' => $newPoints]);
         }
         
         return false;
     }
 
     /**
-     * Get remaining spins for today
+     * Deactivate customer
      */
-    public function getRemainingSpins($customerId)
+    public function deactivateCustomer(int $customerId): bool
     {
-        $customer = $this->find($customerId);
-        if (!$customer) return 0;
-        
-        // Reset count if last spin was not today
-        if ($customer['last_spin_date'] != date('Y-m-d')) {
-            return 3; // Default daily spins
-        }
-        
-        return max(0, 3 - $customer['spin_count']);
+        return $this->update($customerId, ['is_active' => 0]);
     }
 
     /**
-     * Check if customer can spin today
+     * Activate customer
      */
-    public function canSpinToday($customerId)
+    public function activateCustomer(int $customerId): bool
     {
-        $customer = $this->find($customerId);
-        
-        if (!$customer) {
-            return false;
-        }
-
-        $today = date('Y-m-d');
-        $lastSpinDate = $customer['last_spin_date'];
-        
-        // Allow spin if never spun or last spin was not today
-        return !$lastSpinDate || $lastSpinDate !== $today;
+        return $this->update($customerId, ['is_active' => 1]);
     }
 
     /**
-     * Update customer profile background
+     * Get active customers count
      */
-    public function updateBackground($customerId, $background)
+    public function getActiveCustomersCount(): int
     {
-        $validBackgrounds = ['default', 'blue', 'green', 'purple', 'orange', 'red'];
-        
-        if (!in_array($background, $validBackgrounds)) {
-            $background = 'default';
-        }
-        
-        return $this->update($customerId, [
-            'profile_background' => $background
-        ]);
+        return $this->where('is_active', 1)->countAllResults();
     }
 
     /**
-     * Get customers with recent activity
+     * Get customers with pagination
      */
-    public function getActiveCustomers($limit = 10)
+    public function getCustomersPaginated(int $limit = 20, int $offset = 0): array
     {
-        return $this->where('is_active', 1)
-                   ->orderBy('updated_at', 'DESC')
-                   ->limit($limit)
-                   ->findAll();
+        return $this->select('id, username, name, email, phone, points, is_active, last_login, created_at')
+                    ->orderBy('created_at', 'DESC')
+                    ->findAll($limit, $offset);
     }
 
     /**
-     * Search customers by username or name
+     * Search customers
      */
-    public function searchCustomers($searchTerm, $limit = 20)
+    public function searchCustomers(string $term, int $limit = 20): array
     {
-        return $this->like('username', $searchTerm)
-                   ->orLike('name', $searchTerm)
-                   ->where('is_active', 1)
-                   ->limit($limit)
-                   ->findAll();
-    }
-
-    /**
-     * Disable customer account
-     */
-    public function deactivateCustomer($customerId)
-    {
-        return $this->update($customerId, [
-            'is_active' => 0
-        ]);
-    }
-
-    /**
-     * Enable customer account
-     */
-    public function activateCustomer($customerId)
-    {
-        return $this->update($customerId, [
-            'is_active' => 1
-        ]);
-    }
-
-    /**
-     * Simple method to test database connection
-     */
-    public function testDatabaseConnection()
-    {
-        try {
-            $result = $this->countAllResults();
-            return ['success' => true, 'count' => $result];
-        } catch (\Exception $e) {
-            return ['success' => false, 'error' => $e->getMessage()];
-        }
+        return $this->select('id, username, name, email, phone, points, is_active, last_login, created_at')
+                    ->groupStart()
+                        ->like('username', $term)
+                        ->orLike('name', $term)
+                        ->orLike('email', $term)
+                        ->orLike('phone', $term)
+                    ->groupEnd()
+                    ->orderBy('created_at', 'DESC')
+                    ->findAll($limit);
     }
 }

@@ -345,6 +345,7 @@
         grid-template-columns: repeat(3, 1fr);
         gap: 15px;
         margin-bottom: 20px;
+        padding: 0 20px;
     }
     
     .stat-card {
@@ -580,27 +581,29 @@
             </div>
             
             <div class="week-days">
-                <?php foreach ($weekly_progress as $day => $dayData): ?>
-                    <div class="day-item <?= $dayData['checked_in'] ? 'completed' : '' ?> 
-                                        <?= $dayData['is_today'] ? 'today' : '' ?>
-                                        <?= $dayData['is_future'] ? 'future' : '' ?>">
-                        <div class="day-name"><?= $dayData['day_short'] ?></div>
-                        <div class="day-number"><?= $day ?></div>
-                        <div class="day-points">
+                <?php if (is_array($weekly_progress)): ?>
+                    <?php foreach ($weekly_progress as $day => $dayData): ?>
+                        <div class="day-item <?= $dayData['checked_in'] ? 'completed' : '' ?> 
+                                            <?= $dayData['is_today'] ? 'today' : '' ?>
+                                            <?= $dayData['is_future'] ? 'future' : '' ?>">
+                            <div class="day-name"><?= $dayData['day_short'] ?></div>
+                            <div class="day-number"><?= $day ?></div>
+                            <div class="day-points">
+                                <?php if ($dayData['checked_in']): ?>
+                                    <span class="earned">+<?= $dayData['actual_points'] ?></span>
+                                <?php elseif (!$dayData['is_future']): ?>
+                                    <span class="available">+<?= $dayData['points'] ?></span>
+                                <?php else: ?>
+                                    <span class="future">+<?= $dayData['points'] ?></span>
+                                <?php endif; ?>
+                            </div>
+                            
                             <?php if ($dayData['checked_in']): ?>
-                                <span class="earned">+<?= $dayData['actual_points'] ?></span>
-                            <?php elseif (!$dayData['is_future']): ?>
-                                <span class="available">+<?= $dayData['points'] ?></span>
-                            <?php else: ?>
-                                <span class="future">+<?= $dayData['points'] ?></span>
+                                <div class="check-mark">✓</div>
                             <?php endif; ?>
                         </div>
-                        
-                        <?php if ($dayData['checked_in']): ?>
-                            <div class="check-mark">✓</div>
-                        <?php endif; ?>
-                    </div>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
             
             <div class="week-summary">
@@ -621,20 +624,19 @@
         </div>
     </div>
         
-        <!-- Statistics -->
-        <div class="stats-row">
-            <div class="stat-card">
-                <div class="stat-number"><?= $monthly_checkins ?></div>
-                <div class="stat-label">This Month</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number"><?= $checkin_streak ?></div>
-                <div class="stat-label">Current Streak</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number"><?= $total_points ?></div>
-                <div class="stat-label">Total Points</div>
-            </div>
+    <!-- Statistics -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-number"><?= $monthly_checkins ?></div>
+            <div class="stat-label">This Month</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number"><?= $checkin_streak ?></div>
+            <div class="stat-label">Current Streak</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number"><?= $total_points ?></div>
+            <div class="stat-label">Total Points</div>
         </div>
     </div>
 
@@ -657,18 +659,6 @@
                     <i class="bi bi-plus-circle-fill"></i>
                 </div>
                 <span class="action-text">Deposit</span>
-            </div>
-            <div class="action-item" onclick="showRewards()">
-                <div class="action-icon">
-                    <i class="bi bi-gift-fill"></i>
-                </div>
-                <span class="action-text">Rewards</span>
-            </div>
-            <div class="action-item" onclick="showProfile()">
-                <div class="action-icon">
-                    <i class="bi bi-person-fill"></i>
-                </div>
-                <span class="action-text">Profile</span>
             </div>
         </div>
     </div>
@@ -707,146 +697,38 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+<!-- Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- Dashboard Configuration from PHP -->
 <script>
-// CSRF token for AJAX requests
-const csrfToken = '<?= csrf_hash() ?>';
-const csrfName = '<?= csrf_token() ?>';
-
-// Check-in functionality
-function performCheckin() {
-    fetch('<?= base_url('customer/checkin') ?>', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Update UI
-            document.querySelector('.btn-checkin').disabled = true;
-            document.querySelector('.btn-checkin').textContent = 'Already Checked In';
-            
-            // Show success message
-            showToast('Check-in successful! +' + (data.points || 10) + ' points', 'success');
-            
-            // Refresh page after delay
-            setTimeout(() => {
-                location.reload();
-            }, 2000);
-        } else {
-            showToast(data.message || 'Check-in failed', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showToast('Check-in failed. Please try again.', 'error');
-    });
-}
-
-// Change background
-// Fixed changeBackground function for customer dashboard
-function changeBackground(bgType) {
-    console.log('Changing background to:', bgType);
-    
-    // Create FormData instead of JSON
-    const formData = new FormData();
-    formData.append('background', bgType);
-    
-    // Add CSRF token if available
-    if (typeof csrfName !== 'undefined' && typeof csrfToken !== 'undefined') {
-        formData.append(csrfName, csrfToken);
-    }
-    
-    fetch('<?= base_url('customer/update-background') ?>', {
-        method: 'POST',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: formData  // Use FormData instead of JSON
-    })
-    .then(response => {
-        console.log('Response status:', response.status);
-        return response.json();
-    })
-    .then(data => {
-        console.log('Response data:', data);
-        
-        if (data.success) {
-            // Update UI immediately
-            const profileHeader = document.querySelector('.profile-header');
-            if (profileHeader) {
-                // Remove all background classes
-                profileHeader.className = profileHeader.className.replace(/\w+-bg/g, '');
-                // Add new background class
-                profileHeader.classList.add(`${bgType}-bg`);
-            }
-            
-            // Update active button
-            document.querySelectorAll('.bg-option').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            const selectedBtn = document.querySelector(`[data-bg="${bgType}"]`);
-            if (selectedBtn) {
-                selectedBtn.classList.add('active');
-            }
-            
-            showToast('Background updated successfully!', 'success');
-        } else {
-            showToast(data.message || 'Failed to update background', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Background change error:', error);
-        showToast('Failed to update background. Please try again.', 'error');
-    });
-}
-
-// Navigation functions
-function redirectToDeposit() {
-    window.open('<?= base_url('admin/bonus') ?>', '_blank');
-}
-
-function openWheelModal() {
-    window.location.href = '<?= base_url('/') ?>';
-}
-
-function openSettings() {
-    showToast('Settings feature coming soon!', 'info');
-}
-
-function showRewards() {
-    showToast('Rewards feature coming soon!', 'info');
-}
-
-function showProfile() {
-    showToast('Profile feature coming soon!', 'info');
-}
-
-// Toast notification function
-function showToast(message, type = 'info') {
-    // Create toast element
-    const toast = document.createElement('div');
-    toast.className = `alert alert-${type === 'error' ? 'danger' : type} position-fixed`;
-    toast.style.cssText = `
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 9999;
-        min-width: 250px;
-        text-align: center;
-    `;
-    toast.textContent = message;
-    
-    document.body.appendChild(toast);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-        toast.remove();
-    }, 3000);
-}
+// Pass PHP data to JavaScript
+const dashboardPhpConfig = {
+    csrfToken: '<?= csrf_hash() ?>',
+    csrfName: '<?= csrf_token() ?>',
+    baseUrl: '<?= base_url() ?>',
+    username: '<?= esc($username) ?>',
+    totalPoints: <?= $total_points ?>,
+    monthlyCheckins: <?= $monthly_checkins ?>,
+    todayCheckin: <?= $today_checkin ? 'true' : 'false' ?>,
+    <?php if (isset($weekly_progress) && is_array($weekly_progress)): ?>
+    weeklyProgress: <?= json_encode($weekly_progress) ?>,
+    <?php else: ?>
+    weeklyProgress: null,
+    <?php endif; ?>
+    <?php if (isset($recent_activities) && is_array($recent_activities)): ?>
+    recentActivities: <?= json_encode($recent_activities) ?>
+    <?php else: ?>
+    recentActivities: null
+    <?php endif; ?>
+};
 </script>
+
+<!-- Dashboard JavaScript Modules -->
+<script src="<?= base_url('js/dashboard/dashboard-config.js') ?>"></script>
+<script src="<?= base_url('js/dashboard/dashboard-utils.js') ?>"></script>
+<script src="<?= base_url('js/dashboard/dashboard-core.js') ?>"></script>
+<script src="<?= base_url('js/dashboard/fortune-wheel.js') ?>"></script>
+<script src="<?= base_url('js/dashboard/dashboard-init.js') ?>"></script>
+
 <?= $this->endSection() ?>
