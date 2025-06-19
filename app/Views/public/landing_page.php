@@ -469,11 +469,17 @@
         </div>
         <?php endif; ?>
         
-        <!-- Spin Sound Plauer -->
+        <!-- Tick & Win Sounds -->
         <?php if (!empty($spin_sound['spin_sound'])): ?>
-            <audio id="spinSound" preload="auto">
-                <source src="<?= base_url('uploads/sounds/' . $spin_sound['spin_sound']) ?>" type="audio/mpeg">
-            </audio>
+        <audio id="spinAudio" preload="auto">
+            <source src="<?= base_url('uploads/sounds/' . $spin_sound['spin_sound']) ?>" type="audio/mpeg">
+        </audio>
+        <?php endif; ?>
+
+        <?php if (!empty($win_sound['sound_file'])): ?>
+        <audio id="winAudio" preload="auto">
+            <source src="<?= base_url('uploads/sounds/' . $win_sound['sound_file']) ?>" type="audio/mpeg">
+        </audio>
         <?php endif; ?>
 
 
@@ -488,104 +494,6 @@
                         <h5 class="win-title mb-3">🎉 You Won! 🎉</h5>
                         <div class="win-prize mb-3" id="modalPrize"></div>
                         <button type="button" class="btn btn-gold btn-sm" data-bs-dismiss="modal">Collect Your Prize</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- NEW: Bonus Claim Form Modal -->
-    <div class="modal fade" id="claimModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark border-0" style="border: 2px solid #ffd700;">
-                <div class="modal-header border-0 text-center">
-                    <div class="w-100">
-                        <h4 class="modal-title text-center" style="color: #ffd700;">
-                            🎉 CONGRATULATIONS! 🎉
-                        </h4>
-                        <p class="mb-0" style="color: #ffb347;">You won: <span id="claimPrizeDisplay" style="font-weight: bold;"></span></p>
-                    </div>
-                </div>
-                <div class="modal-body">
-                    <!-- Success/Error Messages -->
-                    <div id="claimError" class="alert alert-danger" style="display: none;"></div>
-                    <div id="claimSuccess" class="alert alert-success" style="display: none;"></div>
-                    
-                    <!-- Claim Form -->
-                    <form id="claimForm" onsubmit="submitClaim(event)">
-                        <!-- Hidden fields for bonus details -->
-                        <input type="hidden" id="claimBonusType" value="">
-                        <input type="hidden" id="claimBonusAmount" value="">
-                        
-                        <div class="mb-3">
-                            <label for="claimUserName" class="form-label text-light">
-                                Full Name <span class="text-danger">*</span>
-                            </label>
-                            <input type="text" 
-                                   class="form-control bg-secondary text-light border-0" 
-                                   id="claimUserName" 
-                                   name="user_name"
-                                   placeholder="Enter your full name"
-                                   required
-                                   maxlength="100">
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="claimPhoneNumber" class="form-label text-light">
-                                Phone Number <span class="text-danger">*</span>
-                            </label>
-                            <input type="tel" 
-                                   class="form-control bg-secondary text-light border-0" 
-                                   id="claimPhoneNumber" 
-                                   name="phone_number"
-                                   placeholder="Enter your phone number"
-                                   required
-                                   maxlength="20">
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="claimEmail" class="form-label text-light">
-                                Email Address <span class="text-light">(Optional)</span>
-                            </label>
-                            <input type="email" 
-                                   class="form-control bg-secondary text-light border-0" 
-                                   id="claimEmail" 
-                                   name="email"
-                                   placeholder="Enter your email (optional)"
-                                   maxlength="100">
-                        </div>
-                        
-                        <!-- Terms and Conditions -->
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="agreeTerms" required>
-                                <label class="form-check-label text-light small" for="agreeTerms">
-                                    I agree to the 
-                                    <a href="#" class="text-warning" data-bs-toggle="modal" data-bs-target="#termsModal">
-                                        Terms and Conditions
-                                    </a>
-                                    <span class="text-danger">*</span>
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div class="text-center">
-                            <button type="submit" 
-                                    id="claimSubmitBtn"
-                                    class="btn btn-lg px-4 py-2"
-                                    style="background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%); 
-                                           border: 2px solid #b8860b; 
-                                           color: #000; 
-                                           font-weight: bold;">
-                                Claim My Bonus
-                            </button>
-                        </div>
-                    </form>
-                    
-                    <div class="text-center mt-3">
-                        <small class="text-light">
-                            * Required fields. Your information is secure and will only be used for bonus processing.
-                        </small>
                     </div>
                 </div>
             </div>
@@ -683,19 +591,85 @@
     </script>
     <?php endif; ?>
     
-    <script>
+<script>
+        // Global variables
         let theWheel;
         let wheelSpinning = false;
         let spinsRemaining = <?= $spins_remaining ?>;
-        let tickSoundContext = null;
-        let tickSoundBuffer = null;
-        let tickSoundVolume = <?= isset($spin_sound) && isset($spin_sound['volume']) ? $spin_sound['volume'] : 0.7 ?>;
-        let lastTickTime = 0;
         let tickSoundEnabled = <?= (isset($spin_sound) && $spin_sound['enabled']) ? 'true' : 'false' ?>;
-        let winSoundBuffer = null;
         let winSoundEnabled = <?= (isset($win_sound) && $win_sound['enabled']) ? 'true' : 'false' ?>;
-        
-        // Store the wheel items from database with their winning rates
+        let tickInterval = null;
+        let lastPinNumber = 0;
+
+        //Welcome Overlay Handler
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add welcome-active class to body
+            document.body.classList.add('welcome-active');
+            
+            // Handle start game button click
+            const startGameBtn = document.getElementById('startGameBtn');
+            if (startGameBtn) {
+                startGameBtn.addEventListener('click', function() {
+                    console.log('Start button clicked');
+                    
+                    // Initialize audio contexts
+                    if (typeof AudioContext !== 'undefined') {
+                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        if (audioContext.state === 'suspended') {
+                            audioContext.resume();
+                        }
+                    }
+                    
+                    // Start background music if it exists
+                    const bgMusic = document.getElementById('bgMusic');
+                    if (bgMusic) {
+                        bgMusic.play().catch(e => console.log('BGM autoplay failed:', e));
+                    }
+                    
+                    // Fade out welcome screen
+                    const overlay = document.getElementById('welcomeOverlay');
+                    if (overlay) {
+                        overlay.style.animation = 'fadeOut 0.5s ease-out forwards';
+                        
+                        setTimeout(() => {
+                            overlay.style.display = 'none';
+                            document.body.classList.remove('welcome-active');
+                            
+                            console.log('Welcome overlay hidden, wheel should be visible now');
+                            
+                            // Initialize wheel after overlay is hidden
+                            if (typeof initializeWheel === 'function') {
+                                initializeWheel();
+                            }
+                        }, 500);
+                    }
+                });
+            } else {
+                console.error('startGameBtn not found!');
+            }
+        });
+
+        // Add fadeOut CSS animation
+        const welcomeStyle = document.createElement('style');
+        welcomeStyle.textContent = `
+            @keyframes fadeOut {
+                from { 
+                    opacity: 1; 
+                    transform: scale(1);
+                }
+                to { 
+                    opacity: 0; 
+                    transform: scale(0.95);
+                }
+            }
+            
+            .welcome-active .portrait-container {
+                display: none;
+            }
+        `;
+        document.head.appendChild(welcomeStyle);
+
+        // Store the wheel items from database
         const wheelItems = [
             <?php foreach($wheel_items as $index => $item): ?>
             {
@@ -703,242 +677,30 @@
                 prize: <?= $item['item_prize'] ?>,
                 type: '<?= $item['item_types'] ?>',
                 winningRate: <?= $item['winning_rate'] ?>,
-                order: <?= $item['order'] ?>
+                order: <?= $item['order'] ?>,
+                id: <?= $item['item_id'] ?>
             }<?= $index < count($wheel_items) - 1 ? ',' : '' ?>
             <?php endforeach; ?>
         ];
-        
-        // Calculate winning ranges based on winning rates
-        function calculateWinningRanges() {
-            let totalRate = 0;
-            const ranges = [];
-            
-            // First, calculate total of all winning rates
-            wheelItems.forEach(item => {
-                totalRate += item.winningRate;
-            });
-            
-            // If total doesn't equal 100, normalize the rates proportionally
-            if (totalRate !== 100 && totalRate > 0) {
-                wheelItems.forEach(item => {
-                    item.normalizedRate = (item.winningRate / totalRate) * 100;
-                });
-            } else {
-                wheelItems.forEach(item => {
-                    item.normalizedRate = item.winningRate;
-                });
-            }
-            
-            // Calculate cumulative ranges
-            let currentSum = 0;
-            wheelItems.forEach((item, index) => {
-                ranges[index] = {
-                    start: currentSum,
-                    end: currentSum + item.normalizedRate,
-                    item: item
-                };
-                currentSum += item.normalizedRate;
-            });
-            
-            return ranges;
-        }
-        
-        // Determine winner based on winning rates
-        function determineWinner() {
-            const ranges = calculateWinningRanges();
-            const random = Math.random() * 100; // Random number between 0-100
-            
-            console.log('Random number:', random);
-            console.log('Winning ranges:', ranges);
-            
-            // Find which range the random number falls into
-            for (let i = 0; i < ranges.length; i++) {
-                if (random >= ranges[i].start && random < ranges[i].end) {
-                    console.log('Winner determined:', ranges[i].item);
-                    return {
-                        winnerIndex: i,
-                        winnerItem: ranges[i].item
-                    };
-                }
-            }
-            
-            // Fallback to first item if no match found
-            console.log('No match found, defaulting to first item');
-            return {
-                winnerIndex: 0,
-                winnerItem: wheelItems[0]
-            };
-        }
-        
-        // Initialize tick sound
-        function initializeTickSound() {
-            <?php if (isset($spin_sound) && !empty($spin_sound['sound_file']) && $spin_sound['enabled']): ?>
-            try {
-                // Create audio context (only once)
-                if (!tickSoundContext) {
-                    tickSoundContext = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                
-                // Load the tick sound file
-                fetch('<?= base_url('uploads/sounds/' . $spin_sound['sound_file']) ?>')
-                    .then(response => response.arrayBuffer())
-                    .then(data => tickSoundContext.decodeAudioData(data))
-                    .then(buffer => {
-                        tickSoundBuffer = buffer;
-                        console.log('Tick sound loaded successfully');
-                    })
-                    .catch(error => {
-                        console.error('Error loading tick sound:', error);
-                    });
-            } catch (error) {
-                console.error('Web Audio API not supported:', error);
-            }
-            <?php endif; ?>
-        }
-        
-        // Play tick sound once
-        function playTickSound() {
-            if (!tickSoundEnabled || !tickSoundBuffer || !tickSoundContext) return;
-            
-            try {
-                // Resume audio context if suspended
-                if (tickSoundContext.state === 'suspended') {
-                    tickSoundContext.resume();
-                }
-                
-                // Prevent overlapping sounds - ensure minimum time between ticks
-                const currentTime = Date.now();
-                if (currentTime - lastTickTime < 50) return; // Minimum 50ms between ticks
-                lastTickTime = currentTime;
-                
-                // Create a new source for each tick
-                const source = tickSoundContext.createBufferSource();
-                source.buffer = tickSoundBuffer;
-                
-                // Create gain node for volume control
-                const gainNode = tickSoundContext.createGain();
-                gainNode.gain.value = tickSoundVolume;
-                
-                // Connect nodes
-                source.connect(gainNode);
-                gainNode.connect(tickSoundContext.destination);
-                
-                // Play the tick
-                source.start(0);
-                
-                // Clean up when done
-                source.onended = function() {
-                    source.disconnect();
-                    gainNode.disconnect();
-                };
-                
-            } catch (error) {
-                console.error('Error playing tick sound:', error);
-            }
-        }
-        
-        // Initialize win sound
-        function initializeWinSound() {
-            <?php if (isset($win_sound) && !empty($win_sound['sound_file']) && $win_sound['enabled']): ?>
-            try {
-                if (!tickSoundContext) {
-                    tickSoundContext = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                
-                // Load win sound
-                fetch('<?= base_url('uploads/sounds/' . $win_sound['sound_file']) ?>')
-                    .then(response => response.arrayBuffer())
-                    .then(data => tickSoundContext.decodeAudioData(data))
-                    .then(buffer => {
-                        winSoundBuffer = buffer;
-                        console.log('Win sound loaded successfully');
-                    })
-                    .catch(error => {
-                        console.error('Error loading win sound:', error);
-                    });
-            } catch (error) {
-                console.error('Win sound initialization error:', error);
-            }
-            <?php endif; ?>
-        }
-        
-        // Play win sound
-        function playWinSound() {
-            if (!winSoundEnabled || !winSoundBuffer || !tickSoundContext) return;
-            
-            try {
-                const source = tickSoundContext.createBufferSource();
-                source.buffer = winSoundBuffer;
-                
-                const gainNode = tickSoundContext.createGain();
-                gainNode.gain.value = <?= isset($win_sound) && isset($win_sound['volume']) ? $win_sound['volume'] : 0.8 ?>;
-                
-                source.connect(gainNode);
-                gainNode.connect(tickSoundContext.destination);
-                
-                source.start(0);
-                
-                source.onended = function() {
-                    source.disconnect();
-                    gainNode.disconnect();
-                };
-            } catch (error) {
-                console.error('Error playing win sound:', error);
-            }
-        }
-        
-        // Initialize everything when page loads
+
+        // Initialize wheel when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            // Add welcome-active class to body
-            document.body.classList.add('welcome-active');
-            
-            // Start game button
-            document.getElementById('startGameBtn').addEventListener('click', function() {
-                console.log('Start button clicked');
-                
-                // Initialize audio contexts (this is the user interaction we need!)
-                if (tickSoundContext && tickSoundContext.state === 'suspended') {
-                    tickSoundContext.resume();
-                }
-                
-                // Start background music if it exists
-                const bgMusic = document.getElementById('bgMusic');
-                if (bgMusic) {
-                    bgMusic.play().catch(e => console.log('BGM autoplay failed:', e));
-                }
-                
-                // Fade out welcome screen
-                const overlay = document.getElementById('welcomeOverlay');
-                overlay.style.animation = 'fadeOut 0.5s ease-out forwards';
-                
-                setTimeout(() => {
-                    overlay.style.display = 'none';
-                    document.body.classList.remove('welcome-active');
-                    
-                    // Initialize everything AFTER the overlay is hidden
-                    initializeTickSound();
-                    initializeWinSound();
-                    createWheel();
-                    addCelebrationStyles();
-                    addEnhancedSpinStyles();
-                }, 500);
-            });
-            
-            // Handle additional click for audio context
-            document.addEventListener('click', function initAudio() {
-                if (tickSoundContext && tickSoundContext.state === 'suspended') {
-                    tickSoundContext.resume();
-                }
-            }, { once: true });
+            console.log('Initializing wheel with items:', wheelItems);
+            initializeWheel();
+            updateSpinsCounter();
         });
-        
-        function createWheel() {
-            // Create segments for the wheel display
-            let segments = [];
-            
-            for (let i = 0; i < wheelItems.length; i++) {
-                const item = wheelItems[i];
-                const useRedBackground = i % 2 === 0;
+
+        // Initialize the wheel
+        function initializeWheel() {
+            if (wheelItems.length === 0) {
+                console.error('No wheel items found!');
+                return;
+            }
+
+            // Create segments array for the wheel
+            const segments = [];
+            wheelItems.forEach((item, index) => {
+                const useRedBackground = index % 2 === 0;
                 const textColor = useRedBackground ? "#f8b500" : "#000";
                 
                 segments.push({
@@ -947,14 +709,11 @@
                     'image': `<?= base_url("img/fortune_wheel/") ?>${useRedBackground ? 'red.png' : 'brown.png'}`,
                     'itemData': item
                 });
-            }
-        
-            // Destroy existing wheel if it exists
-            if (theWheel) {
-                theWheel.ctx.clearRect(0, 0, theWheel.canvas.width, theWheel.canvas.height);
-            }
-        
-            // Create new wheel with tick sound
+            });
+
+            console.log('Creating wheel with segments:', segments);
+
+            // Create the wheel WITHOUT sound configuration (we'll handle it manually)
             theWheel = new Winwheel({
                 'canvasId': 'fortuneWheel',
                 'numSegments': segments.length,
@@ -971,7 +730,7 @@
                 'textFontFamily': 'Arial, sans-serif',
                 'segments': segments,
                 'pins': {
-                    'number': segments.length * 2, // Double pins for more frequent ticks
+                    'number': segments.length * 2,
                     'outerRadius': 5,
                     'responsive': true,
                     'margin': 5,
@@ -983,19 +742,57 @@
                     'duration': 8,
                     'spins': 12,
                     'callbackFinished': alertPrize,
-                    'soundTrigger': 'pin', // Trigger sound when pointer hits pin
-                    'callbackSound': playTickSound, // Function to call for sound
+                    'callbackBefore': animationBefore,
+                    'callbackAfter': animationAfter,
                     'easing': 'Power3.easeOut'
                 }
             });
+
+            console.log('Wheel created successfully:', theWheel);
         }
-        
+
+        // Animation callbacks for manual sound handling
+        function animationBefore() {
+            // This is called before each frame update
+            if (tickSoundEnabled && theWheel) {
+                const currentPinNumber = theWheel.getCurrentPinNumber();
+                if (currentPinNumber !== lastPinNumber) {
+                    playTickSound();
+                    lastPinNumber = currentPinNumber;
+                }
+            }
+        }
+
+        function animationAfter() {
+            // Called after each frame update
+        }
+
+        // Main spin function
         function startSpin() {
-            if (wheelSpinning === true || spinsRemaining <= 0) {
+            console.log('startSpin() called');
+            console.log('wheelSpinning:', wheelSpinning);
+            console.log('spinsRemaining:', spinsRemaining);
+            
+            if (wheelSpinning === true) {
+                console.log('Wheel already spinning');
+                return;
+            }
+            
+            if (spinsRemaining <= 0) {
+                console.log('No spins remaining');
+                showNoSpinsModal();
+                return;
+            }
+
+            if (!theWheel) {
+                console.error('Wheel not initialized!');
+                alert('Wheel not ready. Please refresh the page.');
                 return;
             }
             
             wheelSpinning = true;
+            lastPinNumber = 0; // Reset pin tracking
+            console.log('Starting spin...');
             
             // Update button state immediately
             const spinButton = document.getElementById('spinButton');
@@ -1007,18 +804,40 @@
             } else {
                 spinButton.textContent = 'SPINNING...';
             }
-        
-            // Determine winner based on actual winning rates
+
+            // Alternative: Manual tick sound interval (fallback if callback doesn't work)
+            if (tickSoundEnabled) {
+                let tickCount = 0;
+                const totalTicks = 100; // Approximate number of ticks during spin
+                const tickDuration = (theWheel.animation.duration * 1000) / totalTicks;
+                
+                tickInterval = setInterval(() => {
+                    tickCount++;
+                    // Gradually slow down the ticks
+                    const progress = tickCount / totalTicks;
+                    const delay = tickDuration * (1 + progress * 3); // Slow down more as it progresses
+                    
+                    if (tickCount < totalTicks * 0.8) { // Only tick for 80% of the animation
+                        playTickSound();
+                    } else {
+                        clearInterval(tickInterval);
+                    }
+                }, tickDuration);
+            }
+
+            // Determine winner
             const winnerResult = determineWinner();
             const winnerIndex = winnerResult.winnerIndex;
             const winnerItem = winnerResult.winnerItem;
+            
+            console.log('Winner determined:', winnerItem);
             
             // Calculate the exact angle to land on the predetermined segment
             const segmentAngle = 360 / theWheel.numSegments;
             const targetAngle = (winnerIndex * segmentAngle) + (segmentAngle / 2);
             
             // Add many rotations for dramatic effect
-            const additionalSpins = Math.floor(Math.random() * 8) + 15;
+            const additionalSpins = Math.floor(Math.random() * 5) + 8;
             const finalRotation = (360 * additionalSpins) + targetAngle;
             
             // Set the wheel to stop at the predetermined segment
@@ -1031,25 +850,274 @@
             // Start the animation
             theWheel.startAnimation();
             
-            // Add spinning effects
-            addSpinningEffects();
-            
-            // Decrease spins remaining IMMEDIATELY
+            // Decrease spins remaining
             spinsRemaining--;
-            
-            // Update counter immediately
             updateSpinsCounter();
-        
-            // Send spin data to backend
+            
+            // Record spin result
+            recordSpinResult(winnerItem);
+        }
+
+        // Determine winner based on winning rates
+        function determineWinner() {
+            const rand = Math.random() * 100;
+            let cumulativeRate = 0;
+            
+            for (let i = 0; i < wheelItems.length; i++) {
+                cumulativeRate += parseFloat(wheelItems[i].winningRate);
+                if (rand <= cumulativeRate) {
+                    return {
+                        winnerIndex: i,
+                        winnerItem: wheelItems[i]
+                    };
+                }
+            }
+            
+            // Fallback to random if rates don't add up to 100%
+            const randomIndex = Math.floor(Math.random() * wheelItems.length);
+            return {
+                winnerIndex: randomIndex,
+                winnerItem: wheelItems[randomIndex]
+            };
+        }
+
+        // Handle prize alert when wheel stops
+        function alertPrize(indicatedSegment) {
+            console.log('alertPrize called with:', indicatedSegment);
+            
+            // Clear any tick interval
+            if (tickInterval) {
+                clearInterval(tickInterval);
+                tickInterval = null;
+            }
+            
+            const winner = theWheel.winnerData || indicatedSegment.itemData;
+            
+            if (!winner) {
+                console.error('No winner data found!');
+                resetSpinButton();
+                return;
+            }
+
+            console.log('Processing winner:', winner);
+
+            // Play win sound for actual prizes (not "Try Again")
+            if (winner.name !== 'Try Again' && winSoundEnabled) {
+                playWinSound();
+            }
+
+            // Handle different types of wins
+            if (winner.name === 'Try Again') {
+                showTryAgainModal();
+            } else if (winner.name.includes('120%') || winner.name.includes('BONUS') || winner.type === 'product') {
+                // Redirect to reward system for bonus prizes
+                storeWinnerDataAndRedirect(winner);
+            } else {
+                // Regular prize
+                showRegularWinModal(winner);
+            }
+
+            // Reset button after delay
+            setTimeout(() => {
+                resetSpinButton();
+            }, 3000);
+        }
+
+        // Store winner data and redirect to reward system
+        function storeWinnerDataAndRedirect(winner) {
+            console.log('Storing winner data and redirecting:', winner);
+            
+            // Store winner data in session via AJAX
+            const formData = new FormData();
+            formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+            formData.append('winner_data', JSON.stringify(winner));
+            
+            fetch('<?= base_url('store-winner') ?>', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Store winner response:', data);
+                if (data.success) {
+                    // Show modal with redirect button
+                    showBonusWinModal(winner);
+                } else {
+                    console.error('Failed to store winner data:', data.message);
+                    // Fallback to regular modal
+                    showRegularWinModal(winner);
+                }
+            })
+            .catch(error => {
+                console.error('Error storing winner data:', error);
+                // Fallback to regular modal
+                showRegularWinModal(winner);
+            });
+        }
+
+        // Show bonus win modal with redirect functionality
+        function showBonusWinModal(winner) {
+            const modalContent = document.querySelector('#winModal .modal-content');
+            const modalPrize = document.getElementById('modalPrize');
+            const winTitle = document.querySelector('.win-title');
+            const collectButton = document.querySelector('#winModal .btn');
+            
+            // Update modal for bonus win
+            winTitle.textContent = '🎉 CONGRATULATIONS! 🎉';
+            modalPrize.textContent = `You Won: ${winner.name}${winner.prize > 0 ? ' - ¥' + parseFloat(winner.prize).toLocaleString() : ''}`;
+            collectButton.textContent = 'Claim Reward';
+            collectButton.className = 'btn btn-success btn-sm';
+            
+            // Style the modal
+            winTitle.style.color = '#ffd700';
+            modalPrize.style.color = '#28a745';
+            modalContent.style.background = 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)';
+            modalContent.style.border = '3px solid #ffd700';
+            
+            // Set up redirect functionality
+            collectButton.onclick = function() {
+                window.location.href = '<?= base_url('reward') ?>';
+            };
+            
+            // Show modal
+            const winModal = new bootstrap.Modal(document.getElementById('winModal'));
+            winModal.show();
+            
+            // Auto-redirect after 5 seconds
+            setTimeout(() => {
+                window.location.href = '<?= base_url('reward') ?>';
+            }, 5000);
+        }
+
+        // Show regular win modal
+        function showRegularWinModal(winner) {
+            const modalContent = document.querySelector('#winModal .modal-content');
+            const modalPrize = document.getElementById('modalPrize');
+            const winTitle = document.querySelector('.win-title');
+            const collectButton = document.querySelector('#winModal .btn');
+            
+            winTitle.textContent = '🎉 You Won! 🎉';
+            modalPrize.textContent = `${winner.name}${winner.prize > 0 ? ' - ¥' + parseFloat(winner.prize).toLocaleString() : ''}`;
+            collectButton.textContent = 'Collect Prize';
+            collectButton.className = 'btn btn-warning btn-sm';
+            
+            winTitle.style.color = '#ffd700';
+            modalPrize.style.color = '#fff';
+            modalContent.style.background = '';
+            modalContent.style.border = '';
+            
+            collectButton.onclick = function() {
+                bootstrap.Modal.getInstance(document.getElementById('winModal')).hide();
+            };
+            
+            const winModal = new bootstrap.Modal(document.getElementById('winModal'));
+            winModal.show();
+        }
+
+        // Show try again modal
+        function showTryAgainModal() {
+            const modalContent = document.querySelector('#winModal .modal-content');
+            const modalPrize = document.getElementById('modalPrize');
+            const winTitle = document.querySelector('.win-title');
+            const collectButton = document.querySelector('#winModal .btn');
+            
+            winTitle.textContent = '😔 Try Again!';
+            modalPrize.textContent = 'Better luck next time!';
+            collectButton.textContent = spinsRemaining > 0 ? 'Continue Playing' : 'Come Back Tomorrow';
+            collectButton.className = 'btn btn-secondary btn-sm';
+            
+            winTitle.style.color = '#ffa500';
+            modalPrize.style.color = '#fff';
+            modalContent.style.background = 'linear-gradient(135deg, #6c757d, #495057)';
+            modalContent.style.border = '';
+            
+            collectButton.onclick = function() {
+                bootstrap.Modal.getInstance(document.getElementById('winModal')).hide();
+            };
+            
+            const winModal = new bootstrap.Modal(document.getElementById('winModal'));
+            winModal.show();
+        }
+
+        // Show no spins modal
+        function showNoSpinsModal() {
+            const modalContent = document.querySelector('#winModal .modal-content');
+            const modalPrize = document.getElementById('modalPrize');
+            const winTitle = document.querySelector('.win-title');
+            const collectButton = document.querySelector('#winModal .btn');
+            
+            winTitle.textContent = '⏰ No Spins Left!';
+            modalPrize.textContent = 'Come back tomorrow for more free spins!';
+            collectButton.textContent = 'OK';
+            collectButton.className = 'btn btn-secondary btn-sm';
+            
+            winTitle.style.color = '#dc3545';
+            modalPrize.style.color = '#fff';
+            modalContent.style.background = 'linear-gradient(135deg, #dc3545, #c82333)';
+            modalContent.style.border = '';
+            
+            collectButton.onclick = function() {
+                bootstrap.Modal.getInstance(document.getElementById('winModal')).hide();
+            };
+            
+            const winModal = new bootstrap.Modal(document.getElementById('winModal'));
+            winModal.show();
+        }
+
+        // Reset spin button
+        function resetSpinButton() {
+            wheelSpinning = false;
+            const spinButton = document.getElementById('spinButton');
+            const spinButtonText = document.getElementById('spinButtonText');
+            
+            if (spinsRemaining > 0) {
+                spinButton.disabled = false;
+                if (spinButtonText) {
+                    spinButtonText.textContent = 'Spin the Wheel';
+                } else {
+                    spinButton.textContent = 'Spin the Wheel';
+                }
+                spinButton.style.background = '';
+                spinButton.style.color = '';
+            } else {
+                spinButton.disabled = true;
+                if (spinButtonText) {
+                    spinButtonText.textContent = 'Out of Spins';
+                } else {
+                    spinButton.textContent = 'Out of Spins';
+                }
+                spinButton.style.background = 'linear-gradient(135deg, #6c757d 0%, #495057 100%)';
+                spinButton.style.color = '#fff';
+            }
+        }
+
+        // Update spins counter
+        function updateSpinsCounter() {
+            const spinsCount = document.getElementById('spinsCount');
+            const freeSpinsText = document.getElementById('freeSpinsText');
+            
+            if (spinsCount) {
+                spinsCount.textContent = spinsRemaining;
+            }
+            if (freeSpinsText) {
+                freeSpinsText.textContent = spinsRemaining;
+            }
+        }
+
+        // Record spin result
+        function recordSpinResult(winner) {
             const formData = new FormData();
             formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
             formData.append('predetermined_outcome', JSON.stringify({
-                item_name: winnerItem.name,
-                item_prize: winnerItem.prize,
-                item_types: winnerItem.type,
-                index: winnerIndex
+                item_name: winner.name,
+                item_prize: winner.prize,
+                item_types: winner.type,
+                index: winner.order
             }));
-        
+
             fetch('<?= base_url('spin') ?>', {
                 method: 'POST',
                 headers: {
@@ -1065,460 +1133,74 @@
                 console.error('Error recording spin:', error);
             });
         }
-        
-        function alertPrize(indicatedSegment) {
-            const winner = theWheel.winnerData || indicatedSegment.itemData;
-            
-            if (!winner) {
-                resetSpinButton();
-                return;
+
+        // Sound functions
+        function playTickSound() {
+            const spinAudio = document.getElementById('spinAudio');
+            if (spinAudio && tickSoundEnabled) {
+                // Clone the audio element for overlapping sounds
+                const audioClone = spinAudio.cloneNode();
+                audioClone.volume = <?= isset($spin_sound['volume']) ? $spin_sound['volume'] : 0.5 ?>;
+                audioClone.play().catch(e => {
+                    // Fallback to original element if clone fails
+                    spinAudio.currentTime = 0;
+                    spinAudio.volume = <?= isset($spin_sound['volume']) ? $spin_sound['volume'] : 0.5 ?>;
+                    spinAudio.play().catch(err => console.log('Tick sound play failed:', err));
+                });
             }
-            
-            // Play win sound for actual prizes (not "Try Again")
-            if (winner.name !== 'Try Again') {
-                playWinSound();
-            }
-            
-            const modalContent = document.querySelector('#winModal .modal-content');
-            const modalPrize = document.getElementById('modalPrize');
-            const winTitle = document.querySelector('.win-title');
-            const collectButton = document.querySelector('#winModal .btn');
-            
-            let prizeText = winner.name;
-            let titleText = '';
-            let buttonText = '';
-            
-            // Remove previous styling classes
-            modalContent.classList.remove('try-again', 'big-win');
-            
-            // Check if it's "Try Again" or a real prize
-            if (winner.name === 'Try Again') {
-                // "Try Again" message
-                titleText = '😔 Please Try Again!';
-                prizeText = 'Better luck on your next spin!';
-                buttonText = spinsRemaining > 0 ? 'Continue Playing' : 'Come Back Tomorrow';
-                
-                modalContent.classList.add('try-again');
-                winTitle.style.color = '#ffa500';
-                modalPrize.style.color = '#fff';
-                collectButton.className = 'btn btn-warning btn-sm';
-                collectButton.onclick = function() {
-                    bootstrap.Modal.getInstance(document.getElementById('winModal')).hide();
-                };
-                
-            } else if (winner.name.includes('120%') || winner.name.includes('BONUS') || winner.type === 'product') {
-                // Bonus/Prize message - Show claim form instead of simple modal
-                showClaimForm(winner);
-                return; // Exit early since we're showing claim form
-                
-            } else {
-                // Other prizes (smaller bonuses)
-                titleText = '🎉 You Won! 🎉';
-                
-                if (winner.prize > 0) {
-                    prizeText = `${winner.name} - ${winner.type === 'cash' ? '¥' : ''}${parseFloat(winner.prize).toLocaleString()}`;
-                } else {
-                    prizeText = winner.name;
-                }
-                
-                buttonText = 'Collect Your Prize';
-                
-                winTitle.style.color = '#ffd700';
-                modalPrize.style.color = '#ffb347';
-                collectButton.className = 'btn spin-wheel-btn btn-sm';
-                collectButton.onclick = function() {
-                    bootstrap.Modal.getInstance(document.getElementById('winModal')).hide();
-                };
-            }
-            
-            // Update modal content for non-bonus wins
-            winTitle.textContent = titleText;
-            modalPrize.textContent = prizeText;
-            collectButton.textContent = buttonText;
-            
-            // Show Bootstrap modal
-            const winModal = new bootstrap.Modal(document.getElementById('winModal'));
-            winModal.show();
-            
-            // Reset spin button after delay
-            setTimeout(() => {
-                resetSpinButton();
-            }, 3000);
         }
-        
-        //Fadeout Animation
-        const fadeOutStyle = document.createElement('style');
-        fadeOutStyle.textContent = `
-            @keyframes fadeOut {
-                from { opacity: 1; }
-                to { opacity: 0; }
+
+        function playWinSound() {
+            const winAudio = document.getElementById('winAudio');
+            if (winAudio && winSoundEnabled) {
+                winAudio.currentTime = 0;
+                winAudio.volume = <?= isset($win_sound['volume']) ? $win_sound['volume'] : 0.8 ?>;
+                winAudio.play().catch(e => console.log('Win sound play failed:', e));
+            }
+        }
+
+        // Debug functions
+        function testSpin() {
+            console.log('Test spin triggered');
+            console.log('Current state:', {
+                wheelSpinning: wheelSpinning,
+                spinsRemaining: spinsRemaining,
+                theWheel: theWheel,
+                wheelItems: wheelItems,
+                tickSoundEnabled: tickSoundEnabled
+            });
+            startSpin();
+        }
+
+        function testTickSound() {
+            console.log('Testing tick sound...');
+            playTickSound();
+        }
+
+        // Add some CSS for better visual effects
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+            
+            .winner-glow {
+                filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)) !important;
+            }
+            
+            .celebration-modal .modal-content {
+                animation: bounce 0.6s ease-in-out;
+            }
+            
+            @keyframes bounce {
+                0%, 20%, 60%, 100% { transform: scale(1); }
+                40% { transform: scale(1.1); }
+                80% { transform: scale(1.05); }
             }
         `;
-        document.head.appendChild(fadeOutStyle);
-        
-        // Show claim form for bonus wins
-        function showClaimForm(winner) {
-            // Hide the regular win modal if it's open
-            const winModalEl = document.getElementById('winModal');
-            if (winModalEl) {
-                const winModal = bootstrap.Modal.getInstance(winModalEl);
-                if (winModal) {
-                    winModal.hide();
-                }
-            }
-            
-            // Show claim form modal
-            const claimModal = new bootstrap.Modal(document.getElementById('claimModal'));
-            
-            // Update claim form with winner details
-            document.getElementById('claimBonusType').value = winner.name;
-            document.getElementById('claimBonusAmount').value = winner.prize || 0;
-            document.getElementById('claimPrizeDisplay').textContent = `${winner.name}${winner.prize > 0 ? ' - ¥' + parseFloat(winner.prize).toLocaleString() : ''}`;
-            
-            // Add celebration effects
-            addCelebrationEffects();
-            
-            claimModal.show();
-            
-            // Reset spin button after delay
-            setTimeout(() => {
-                resetSpinButton();
-            }, 3000);
-        }
-        
-        // Handle claim form submission
-        function submitClaim(event) {
-            event.preventDefault();
-            
-            const submitBtn = document.getElementById('claimSubmitBtn');
-            const originalText = submitBtn.textContent;
-            
-            // Disable button and show loading
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Processing...';
-            
-            // Get form data
-            const formData = new FormData();
-            formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
-            formData.append('user_name', document.getElementById('claimUserName').value.trim());
-            formData.append('phone_number', document.getElementById('claimPhoneNumber').value.trim());
-            formData.append('email', document.getElementById('claimEmail').value.trim());
-            formData.append('bonus_type', document.getElementById('claimBonusType').value);
-            formData.append('bonus_amount', document.getElementById('claimBonusAmount').value);
-            
-            // Client-side validation
-            const userName = formData.get('user_name');
-            const phoneNumber = formData.get('phone_number');
-            const email = formData.get('email');
-            
-            if (!userName || userName.length < 2) {
-                showClaimError('Please enter a valid name (minimum 2 characters).');
-                resetClaimButton(submitBtn, originalText);
-                return;
-            }
-            
-            if (!phoneNumber || phoneNumber.length < 10) {
-                showClaimError('Please enter a valid phone number (minimum 10 digits).');
-                resetClaimButton(submitBtn, originalText);
-                return;
-            }
-            
-            if (email && !isValidEmail(email)) {
-                showClaimError('Please enter a valid email address.');
-                resetClaimButton(submitBtn, originalText);
-                return;
-            }
-            
-            // Submit to backend
-            fetch('<?= base_url('claim-bonus') ?>', {
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Show success message
-                    showClaimSuccess('Bonus claimed successfully! Redirecting...');
-                    
-                    // Hide modal after delay and redirect
-                    setTimeout(() => {
-                        bootstrap.Modal.getInstance(document.getElementById('claimModal')).hide();
-                        
-                        // Redirect to admin-configured URL
-                        if (data.redirect_url) {
-                            window.location.href = data.redirect_url;
-                        }
-                    }, 2000);
-                } else {
-                    showClaimError(data.message || 'Failed to claim bonus. Please try again.');
-                    resetClaimButton(submitBtn, originalText);
-                }
-            })
-            .catch(error => {
-                showClaimError('Network error. Please check your connection and try again.');
-                resetClaimButton(submitBtn, originalText);
-            });
-        }
-        
-        // Helper functions for claim form
-        function resetClaimButton(button, originalText) {
-            button.disabled = false;
-            button.textContent = originalText;
-        }
-        
-        function showClaimError(message) {
-            const errorDiv = document.getElementById('claimError');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-            
-            // Hide error after 5 seconds
-            setTimeout(() => {
-                errorDiv.style.display = 'none';
-            }, 5000);
-        }
-        
-        function showClaimSuccess(message) {
-            const successDiv = document.getElementById('claimSuccess');
-            successDiv.textContent = message;
-            successDiv.style.display = 'block';
-        }
-        
-        function isValidEmail(email) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
-        }
-        
-        // Clear form when modal is hidden
-        document.getElementById('claimModal').addEventListener('hidden.bs.modal', function() {
-            // Clear form
-            document.getElementById('claimForm').reset();
-            
-            // Hide messages
-            document.getElementById('claimError').style.display = 'none';
-            document.getElementById('claimSuccess').style.display = 'none';
-            
-            // Reset button
-            const submitBtn = document.getElementById('claimSubmitBtn');
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Claim My Bonus';
-        });
-        
-        function updateSpinsCounter() {
-            // Update main counter "You have X Free Spins Left!"
-            const spinsCount = document.getElementById('spinsCount');
-            if (spinsCount) {
-                spinsCount.textContent = spinsRemaining;
-            }
-            
-            // Update free spins text in the frame
-            const freeSpinsText = document.getElementById('freeSpinsText');
-            if (freeSpinsText) {
-                freeSpinsText.textContent = Math.max(spinsRemaining, 0);
-            }
-            
-            // Update the main text if no spins left
-            const mainSpinsText = spinsCount?.parentElement;
-            if (mainSpinsText && spinsRemaining <= 0) {
-                mainSpinsText.innerHTML = '<b id="spinsCount">0</b> Free Spins Left! Come back tomorrow!';
-                mainSpinsText.classList.remove('blinking');
-                mainSpinsText.classList.add('text-muted');
-            }
-        }
-        
-        function resetSpinButton() {
-            wheelSpinning = false;
-            const spinButton = document.getElementById('spinButton');
-            const spinButtonText = document.getElementById('spinButtonText');
-            
-            if (spinsRemaining > 0) {
-                spinButton.disabled = false;
-                if (spinButtonText) {
-                    spinButtonText.textContent = 'SPIN THE WHEEL';
-                } else {
-                    spinButton.textContent = 'SPIN THE WHEEL';
-                }
-                spinButton.style.background = '';
-                spinButton.style.color = '';
-            } else {
-                spinButton.disabled = true;
-                if (spinButtonText) {
-                    spinButtonText.textContent = 'COME BACK TOMORROW!';
-                } else {
-                    spinButton.textContent = 'COME BACK TOMORROW!';
-                }
-                spinButton.style.background = 'linear-gradient(135deg, #6c757d 0%, #495057 100%)';
-                spinButton.style.color = '#fff';
-            }
-        }
-        
-        function addCelebrationEffects() {
-            // Add confetti-like effect
-            const modal = document.getElementById('winModal');
-            modal.classList.add('celebration-modal');
-            
-            // Remove after animation
-            setTimeout(() => {
-                modal.classList.remove('celebration-modal');
-            }, 3000);
-            
-            // Add sparkle effect to the wheel
-            const canvas = document.getElementById('fortuneWheel');
-            canvas.classList.add('winner-glow');
-            
-            setTimeout(() => {
-                canvas.classList.remove('winner-glow');
-            }, 3000);
-        }
-        
-        // Add visual effects during spinning
-        function addSpinningEffects() {
-            const canvas = document.getElementById('fortuneWheel');
-            const spinButton = document.getElementById('spinButton');
-            
-            // Add glow effect to wheel during spin
-            canvas.style.filter = 'drop-shadow(0 0 20px rgba(255, 215, 0, 0.6))';
-            
-            // Make button pulse
-            spinButton.style.animation = 'pulse 1s infinite';
-            
-            // Remove effects after spin completes
-            setTimeout(() => {
-                canvas.style.filter = '';
-                spinButton.style.animation = '';
-            }, 9000);
-        }
-        
-        function addCelebrationStyles() {
-            const celebrationStyles = `
-                .celebration-modal .modal-content {
-                    animation: celebrationBounce 0.6s ease-in-out;
-                    box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
-                }
-                
-                @keyframes celebrationBounce {
-                    0%, 100% { transform: scale(1); }
-                    25% { transform: scale(1.05); }
-                    50% { transform: scale(1.1); }
-                    75% { transform: scale(1.05); }
-                }
-                
-                .winner-glow {
-                    animation: winnerGlow 1s ease-in-out infinite alternate;
-                }
-                
-                @keyframes winnerGlow {
-                    0% { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.3)); }
-                    100% { filter: drop-shadow(0 0 40px rgba(255, 215, 0, 0.8)); }
-                }
-                
-                .win-title {
-                    transition: color 0.3s ease;
-                }
-                
-                .win-prize {
-                    transition: color 0.3s ease;
-                }
-                
-                /* Try Again specific styling */
-                .modal-content.try-again {
-                    border: 2px solid #ffa500;
-                    box-shadow: 0 0 20px rgba(255, 165, 0, 0.5);
-                }
-                
-                /* Big win specific styling */
-                .modal-content.big-win {
-                    border: 2px solid #ffd700;
-                    box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
-                    background: linear-gradient(135deg, rgba(0,0,0,0.9) 0%, rgba(25,25,25,0.9) 100%);
-                }
-            `;
-            
-            // Add the celebration styles to the page
-            const styleSheet = document.createElement('style');
-            styleSheet.textContent = celebrationStyles;
-            document.head.appendChild(styleSheet);
-        }
-        
-        // Enhanced CSS animations for spinning effects
-        function addEnhancedSpinStyles() {
-            const enhancedStyles = `
-                @keyframes pulse {
-                    0% { transform: scale(1); }
-                    50% { transform: scale(1.05); }
-                    100% { transform: scale(1); }
-                }
-                
-                .spinning-wheel {
-                    animation: wheelGlow 0.5s ease-in-out infinite alternate;
-                }
-                
-                @keyframes wheelGlow {
-                    0% { 
-                        filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
-                        transform: scale(1);
-                    }
-                    50% { 
-                        filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8));
-                        transform: scale(1.02);
-                    }
-                    100% { 
-                        filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
-                        transform: scale(1);
-                    }
-                }
-            `;
-            
-            const styleSheet = document.createElement('style');
-            styleSheet.textContent = enhancedStyles;
-            document.head.appendChild(styleSheet);
-        }
-        
-        // Clean up on page unload
-        window.addEventListener('beforeunload', function() {
-            if (tickSoundContext) {
-                tickSoundContext.close();
-            }
-        });
-        
-        // Prevent zooming with Ctrl/Cmd + scroll
-        document.addEventListener('wheel', function(e) {
-            if (e.ctrlKey || e.metaKey) {
-                e.preventDefault();
-            }
-        }, { passive: false });
-        
-        // Prevent zooming with Ctrl/Cmd + plus/minus
-        document.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '=')) {
-                e.preventDefault();
-            }
-        });
-        
-        // Prevent double-tap zoom on mobile
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function(e) {
-            const now = Date.now();
-            if (now - lastTouchEnd <= 300) {
-                e.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
-        
-        // Prevent pinch zoom on iOS
-        document.addEventListener('gesturestart', function(e) {
-            e.preventDefault();
-        });
-        
-        document.addEventListener('gesturechange', function(e) {
-            e.preventDefault();
-        });
-        
-        document.addEventListener('gestureend', function(e) {
-            e.preventDefault();
-        });
+        document.head.appendChild(style);
     </script>
 </body>
 </html>

@@ -10,7 +10,7 @@ class DomainFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        $allowedDomain = 'pixelboy.kopisugar.cc'; 
+        $allowedDomain = 'localhost'; 
         $currentDomain = $_SERVER['HTTP_HOST'] ?? '';
 
         if (stripos($currentDomain, $allowedDomain) === false) {

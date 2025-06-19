@@ -82,6 +82,20 @@
                     </ul>
                 </div>
 
+                <!-- Reward System Section -->
+                <div class="nav-section">
+                    <div class="nav-section-title"><?= t('Admin.nav.reward_system') ?></div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link <?= strpos(uri_string(), 'admin/reward-system') !== false ? 'active' : '' ?>" 
+                            href="<?= base_url('admin/reward-system') ?>">
+                                <i class="bi bi-badge-ad"></i>
+                                <?= t('Admin.nav.reward_ads') ?>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
                 <!-- Reports Section -->
                 <div class="nav-section">
                     <div class="nav-section-title"><?= t('Admin.nav.reports_analytics') ?></div>
