@@ -13,9 +13,18 @@ class CustomerModel extends Model
     protected $useSoftDeletes = false;
     protected $protectFields = true;
     protected $allowedFields = [
-        'username', 'password', 'name', 'email', 'phone', 
-        'is_active', 'last_login', 'points', 'profile_background', 
-        'created_at', 'updated_at'
+        'username', 
+        'password', 
+        'email', 
+        'name', 
+        'profile_background',
+        'profile_background_image',
+        'spin_count', 
+        'last_spin_date', 
+        'points', 
+        'monthly_checkins', 
+        'is_active',
+        'last_login'
     ];
 
 

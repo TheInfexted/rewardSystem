@@ -46,23 +46,29 @@
             flex: 1;
             overflow-y: auto;
             padding-bottom: 80px; /* Space for bottom navigation */
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        }
+        
+        /* Bottom Navigation Container */
+        .bottom-nav-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            max-width: 414px;
+            margin: 0 auto;
         }
         
         /* Bottom Navigation */
         .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
             width: 100%;
-            max-width: 414px;
             height: 70px;
             background: white;
             border-top: 1px solid #e9ecef;
             display: flex;
             justify-content: space-around;
             align-items: center;
-            z-index: 1000;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
         }
         
@@ -107,11 +113,17 @@
                 max-width: 100%;
                 box-shadow: none;
             }
-            
+        }
+        
+        /* Safe area padding for iOS devices */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
             .bottom-nav {
-                left: 0;
-                transform: none;
-                width: 100%;
+                padding-bottom: env(safe-area-inset-bottom);
+                height: calc(70px + env(safe-area-inset-bottom));
+            }
+            
+            .main-content {
+                padding-bottom: calc(80px + env(safe-area-inset-bottom));
             }
         }
         
@@ -168,20 +180,22 @@
         </main>
         
         <!-- Bottom Navigation -->
-        <nav class="bottom-nav">
-            <div class="nav-item <?= uri_string() == 'customer/dashboard' ? 'active' : '' ?>">
-                <a href="<?= base_url('customer/dashboard') ?>" class="nav-link">
-                    <i class="bi bi-house"></i>
-                    <span>Home</span>
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="<?= base_url('logout') ?>" class="nav-link">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span>Logout</span>
-                </a>
-            </div>
-        </nav>
+        <div class="bottom-nav-container">
+            <nav class="bottom-nav">
+                <div class="nav-item <?= uri_string() == 'customer/dashboard' ? 'active' : '' ?>">
+                    <a href="<?= base_url('customer/dashboard') ?>" class="nav-link">
+                        <i class="bi bi-house"></i>
+                        <span>Home</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="<?= base_url('logout') ?>" class="nav-link">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
     </div>
 
     <!-- Bootstrap JS -->

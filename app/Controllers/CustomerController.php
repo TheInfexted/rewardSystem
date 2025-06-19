@@ -12,12 +12,14 @@ class CustomerController extends BaseController
     protected $customerModel;
     protected $spinHistoryModel;
     protected $bonusClaimModel;
+    protected $rewardSystemAdModel;
 
     public function __construct()
     {
         $this->customerModel = new CustomerModel();
         $this->spinHistoryModel = new SpinHistoryModel();
         $this->bonusClaimModel = new BonusClaimModel();
+        $this->rewardSystemAdModel = new \App\Models\RewardSystemAdModel();
     }
 
     /**
@@ -56,6 +58,7 @@ class CustomerController extends BaseController
                 'title' => 'Customer Dashboard',
                 'username' => $customer['username'],
                 'profile_background' => $customer['profile_background'] ?? 'default',
+                'profile_background_image' => $customer['profile_background_image'] ?? null,
                 'today_checkin' => $weekData['today_checkin'],
                 'week_checkins' => $weekData['week_checkins'],
                 'checkin_streak' => $weekData['checkin_count'],
@@ -64,7 +67,8 @@ class CustomerController extends BaseController
                 'current_week_end' => $weekData['week_end'],
                 'total_points' => $customer['points'] ?? 0,
                 'recent_activities' => $recentActivities,
-                'monthly_checkins' => $monthlyCheckins
+                'monthly_checkins' => $monthlyCheckins,
+                'ads' => $this->rewardSystemAdModel->getActiveAds(),
             ];
             
             return view('customer/dashboard', $data);
@@ -173,7 +177,7 @@ class CustomerController extends BaseController
     }
 
     /**
-     * Update customer background
+     * Update customer background image
      */
     public function updateBackground()
     {
@@ -191,30 +195,72 @@ class CustomerController extends BaseController
             ]);
         }
 
-        $background = $this->request->getPost('background');
-        
-        if (empty($background)) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Background type is required'
-            ]);
-        }
-
         try {
-            $updateData = ['profile_background' => $background];
-            $updated = $this->customerModel->update($customerId, $updateData);
+            $backgroundFile = $this->request->getFile('background_image');
             
-            if ($updated) {
+            if ($backgroundFile && $backgroundFile->isValid() && !$backgroundFile->hasMoved()) {
+                // Validate file type
+                $validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                if (!in_array($backgroundFile->getMimeType(), $validTypes)) {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'Invalid file type. Please upload a valid image (JPG, PNG, GIF, or WebP)'
+                    ]);
+                }
+                
+                // Validate file size (max 5MB)
+                if ($backgroundFile->getSize() > 5 * 1024 * 1024) {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'File size too large. Maximum allowed size is 5MB'
+                    ]);
+                }
+                
+                // Create upload directory if it doesn't exist
+                $uploadPath = FCPATH . 'uploads/profile_backgrounds/';
+                if (!is_dir($uploadPath)) {
+                    mkdir($uploadPath, 0755, true);
+                }
+                
+                // Generate unique filename
+                $newName = $customerId . '_' . time() . '_' . $backgroundFile->getRandomName();
+                
+                // Move the file
+                if ($backgroundFile->move($uploadPath, $newName)) {
+                    // Get current customer data to delete old image
+                    $customer = $this->customerModel->find($customerId);
+                    
+                    // Delete old background image if exists
+                    if (!empty($customer['profile_background_image'])) {
+                        $oldImagePath = FCPATH . 'uploads/profile_backgrounds/' . $customer['profile_background_image'];
+                        if (file_exists($oldImagePath)) {
+                            unlink($oldImagePath);
+                        }
+                    }
+                    
+                    // Update database
+                    $updateData = ['profile_background_image' => $newName];
+                    $updated = $this->customerModel->update($customerId, $updateData);
+                    
+                    if ($updated) {
+                        return $this->response->setJSON([
+                            'success' => true,
+                            'message' => 'Background image updated successfully',
+                            'image_url' => base_url('uploads/profile_backgrounds/' . $newName)
+                        ]);
+                    }
+                } else {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'Failed to upload image'
+                    ]);
+                }
+            } else {
                 return $this->response->setJSON([
-                    'success' => true,
-                    'message' => 'Background updated successfully'
+                    'success' => false,
+                    'message' => 'No valid image file uploaded'
                 ]);
             }
-            
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Failed to update background'
-            ]);
             
         } catch (\Exception $e) {
             log_message('error', 'Background update error: ' . $e->getMessage());
@@ -225,6 +271,54 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * Remove background image
+     */
+    public function removeBackgroundImage()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->to('/customer/dashboard');
+        }
+
+        $session = session();
+        $customerId = $session->get('customer_id');
+        
+        if (!$customerId) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Please login first'
+            ]);
+        }
+
+        try {
+            $customer = $this->customerModel->find($customerId);
+            
+            // Delete image file if exists
+            if (!empty($customer['profile_background_image'])) {
+                $imagePath = FCPATH . 'uploads/profile_backgrounds/' . $customer['profile_background_image'];
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+            }
+            
+            // Update database
+            $updated = $this->customerModel->update($customerId, ['profile_background_image' => null]);
+            
+            if ($updated) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Background image removed successfully'
+                ]);
+            }
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Background removal error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to remove background image'
+            ]);
+        }
+    }
     /**
      * Get current week check-in data
      */
@@ -523,5 +617,19 @@ class CustomerController extends BaseController
                 'message' => 'Failed to load wheel data'
             ]);
         }
+    }
+
+    public function getAds()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->to('/customer/dashboard');
+        }
+        
+        $ads = $this->rewardSystemAdModel->getActiveAds();
+        
+        return $this->response->setJSON([
+            'success' => true,
+            'ads' => $ads
+        ]);
     }
 }

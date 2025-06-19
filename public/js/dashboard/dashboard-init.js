@@ -15,12 +15,22 @@ function changeBackground(bgType) {
     DashboardCore.changeBackground(bgType);
 }
 
+// NEW: Global function for image upload
+function uploadBackgroundImage(input) {
+    DashboardCore.uploadBackgroundImage(input);
+}
+
+// NEW: Global function for image removal
+function removeBackgroundImage() {
+    DashboardCore.removeBackgroundImage();
+}
+
 function redirectToDeposit() {
     DashboardCore.redirectToDeposit();
 }
 
 function openSettings() {
-    DashboardCore.openSettings();
+    openWheelModal();
 }
 
 function openWheelModal() {
@@ -99,49 +109,5 @@ function logDashboardInfo() {
         console.log('Points:', dashboardPhpConfig.totalPoints);
         console.log('Monthly checkins:', dashboardPhpConfig.monthlyCheckins);
         console.log('Today checkin status:', dashboardPhpConfig.todayCheckin);
-        
-        if (dashboardPhpConfig.weeklyProgress) {
-            console.log('Weekly progress loaded:', dashboardPhpConfig.weeklyProgress);
-        }
-        
-        if (dashboardPhpConfig.recentActivities) {
-            console.log('Recent activities loaded:', dashboardPhpConfig.recentActivities);
-        }
     }
-    
-    console.log('Available functions:', [
-        'openWheelModal()', 
-        'performCheckin()',
-        'changeBackground(type)',
-        'redirectToDeposit()',
-        'openSettings()'
-    ]);
 }
-
-// Debug functions for testing
-window.debugDashboard = {
-    testWheel: function() {
-        console.log('Testing wheel instance:', fortuneWheelInstance);
-        if (fortuneWheelInstance) {
-            console.log('Wheel state:', {
-                scriptsLoaded: fortuneWheelInstance.scriptsLoaded,
-                wheelSpinning: fortuneWheelInstance.wheelSpinning,
-                spinsRemaining: fortuneWheelInstance.spinsRemaining
-            });
-        }
-    },
-    
-    forceWheelSpin: function() {
-        if (fortuneWheelInstance && fortuneWheelInstance.wheel) {
-            fortuneWheelInstance.wheelSpinning = false;
-            fortuneWheelInstance.spinsRemaining = 1;
-            fortuneWheelInstance.startSpin();
-        } else {
-            console.log('Wheel not initialized');
-        }
-    },
-    
-    showToast: function(message, type = 'info') {
-        DashboardUtils.showToast(message, type);
-    }
-};

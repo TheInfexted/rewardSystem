@@ -1,0 +1,14 @@
+# Prevent directory listing
+Options -Indexes
+
+# Allow only image files
+<FilesMatch "(?i)\.(jpg|jpeg|png|gif|webp)$">
+    Order allow,deny
+    Allow from all
+</FilesMatch>
+
+# Deny all other files
+<FilesMatch "(?i)\.(php|js|html|htm|xml)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

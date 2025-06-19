@@ -32,6 +32,7 @@ $routes->group('customer', function($routes) {
     $routes->get('dashboard', 'CustomerController::dashboard');
     $routes->post('checkin', 'CustomerController::checkin');
     $routes->post('update-background', 'CustomerController::updateBackground');
+    $routes->post('remove-background', 'CustomerController::removeBackgroundImage'); 
 });
 
 // Authentication routes
@@ -118,6 +119,13 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
         $routes->get('export', 'Admin\ReportsController::export');             
         $routes->get('analytics', 'Admin\ReportsController::analytics');       
     });
+
+    // Reward System routes
+    $routes->get('reward-system', 'Admin\RewardSystemController::index');
+    $routes->match(['get', 'post'], 'reward-system/add', 'Admin\RewardSystemController::add');
+    $routes->match(['get', 'post'], 'reward-system/edit/(:num)', 'Admin\RewardSystemController::edit/$1');
+    $routes->get('reward-system/delete/(:num)', 'Admin\RewardSystemController::delete/$1');
+    $routes->post('reward-system/update-order', 'Admin\RewardSystemController::updateOrder');
     
     // Settings routes
     $routes->group('settings', function($routes) {

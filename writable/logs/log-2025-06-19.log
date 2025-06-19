@@ -246,3 +246,43 @@ Stack trace:
 #11 {main}
 ERROR - 2025-06-19 12:59:12 --> getWheelData error: Unknown column 'created_time' in 'where clause'
 ERROR - 2025-06-19 13:16:53 --> Background update error: There is no data to update.
+CRITICAL - 2025-06-19 17:29:37 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "admin/reward_system/index.php"
+[Method: GET, Route: admin/reward-system]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(212): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('admin/reward_system/index.php')
+ 2 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/reward_system/index', [], true)
+ 3 APPPATH\Controllers\Admin\RewardSystemController.php(33): view('admin/reward_system/index', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\RewardSystemController->index()
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\RewardSystemController))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-19 17:32:18 --> ErrorException: Undefined variable $filters
+[Method: GET, Route: admin/reward-system]
+in APPPATH\Views\admin\reward_system\index.php on line 9.
+ 1 APPPATH\Views\admin\reward_system\index.php(9): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $filters', 'C:\\xampp\\htdocs\\rewardSystem\\app\\Views\\admin\\reward_system\\index.php', 9)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\xampp\\htdocs\\rewardSystem\\app\\Views\\admin\\reward_system\\index.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/reward_system/index', [], true)
+ 5 APPPATH\Controllers\Admin\RewardSystemController.php(33): view('admin/reward_system/index', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\RewardSystemController->index()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\RewardSystemController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-19 17:32:50 --> ErrorException: Undefined variable $filters
+[Method: GET, Route: admin/reward-system]
+in APPPATH\Views\admin\reward_system\index.php on line 9.
+ 1 APPPATH\Views\admin\reward_system\index.php(9): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $filters', 'C:\\xampp\\htdocs\\rewardSystem\\app\\Views\\admin\\reward_system\\index.php', 9)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\xampp\\htdocs\\rewardSystem\\app\\Views\\admin\\reward_system\\index.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/reward_system/index', [], true)
+ 5 APPPATH\Controllers\Admin\RewardSystemController.php(33): view('admin/reward_system/index', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\RewardSystemController->index()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\RewardSystemController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
