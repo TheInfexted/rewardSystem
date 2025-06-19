@@ -157,6 +157,107 @@
             z-index: 1;
         }
         
+        /* Customer Welcome */
+        .customer-welcome {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .customer-info {
+            color: #ffd700;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .points-display {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 15px;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        /* Buttons */
+        .btn-claim {
+            background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
+            border: 2px solid #b8860b;
+            color: #000;
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 15px 25px;
+            border-radius: 8px;
+            width: 100%;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-claim:hover,
+        .btn-claim:focus {
+            background: linear-gradient(135deg, #ffb347 0%, #ffd700 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.5);
+            color: #000;
+        }
+        
+        .btn-platform {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #444;
+            color: #fff;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 8px;
+            width: 100%;
+            margin: 8px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-platform:hover {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+            color: #ffd700;
+            transform: translateY(-2px);
+        }
+        
+        .btn-whatsapp:hover {
+            border-color: #25D366;
+            background: rgba(37, 211, 102, 0.1);
+            color: #25D366;
+        }
+        
+        .btn-telegram:hover {
+            border-color: #0088cc;
+            background: rgba(0, 136, 204, 0.1);
+            color: #0088cc;
+        }
+        
+        /* Form Elements */
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #444;
+            border-radius: 8px;
+            color: #fff;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .form-control:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #ffd700;
+            box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
+            color: #fff;
+        }
+        
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
         /* Credentials Display */
         .credentials-box {
             background: rgba(255, 215, 0, 0.1);
@@ -176,6 +277,12 @@
             font-size: 1.1rem;
             color: #ffd700;
             word-break: break-all;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .credential-item:hover {
+            background: rgba(255, 215, 0, 0.1);
         }
         
         .credential-label {
@@ -187,19 +294,20 @@
         /* Platform Selection */
         .platform-selection {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             margin: 20px 0;
         }
         
         .platform-btn {
             flex: 1;
-            padding: 20px;
+            padding: 20px 10px;
             border: 2px solid #444;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: center;
+            color: #fff;
         }
         
         .platform-btn:hover {
@@ -209,82 +317,39 @@
         }
         
         .platform-btn i {
-            font-size: 3rem;
-            margin-bottom: 10px;
+            font-size: 2.5rem;
+            margin-bottom: 8px;
             display: block;
         }
         
-        .platform-btn.whatsapp i {
+        .platform-btn.whatsapp:hover {
+            border-color: #25D366;
+            background: rgba(37, 211, 102, 0.1);
             color: #25D366;
         }
         
-        .platform-btn.telegram i {
+        .platform-btn.telegram:hover {
+            border-color: #0088cc;
+            background: rgba(0, 136, 204, 0.1);
             color: #0088cc;
         }
         
-        .platform-btn span {
-            color: #fff;
-            font-weight: 500;
+        /* Toggle Links */
+        .toggle-link {
+            text-align: center;
+            margin: 15px 0;
         }
         
-        /* Buttons */
-        .btn-reward {
-            background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
-            border: none;
-            color: #000;
-            padding: 15px 30px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            width: 100%;
+        .toggle-link a {
+            color: #ffd700;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
         }
         
-        .btn-reward:before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 300%;
-            height: 300%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
-            transform: translate(-50%, -50%) scale(0);
-            transition: transform 0.5s ease;
-        }
-        
-        .btn-reward:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.6);
-        }
-        
-        .btn-reward:hover:before {
-            transform: translate(-50%, -50%) scale(1);
-        }
-        
-        /* Alert Messages */
-        .alert-custom {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 9999;
-            min-width: 300px;
-            max-width: 90%;
-            animation: alertSlideDown 0.5s ease-out;
-        }
-        
-        @keyframes alertSlideDown {
-            from {
-                transform: translate(-50%, -100%);
-                opacity: 0;
-            }
-            to {
-                transform: translate(-50%, 0);
-                opacity: 1;
-            }
+        .toggle-link a:hover {
+            color: #ffb347;
+            text-decoration: underline;
         }
         
         /* Loading Spinner */
@@ -295,6 +360,9 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 9999;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
         }
         
         .loading-spinner.active {
@@ -308,15 +376,57 @@
             border-right-color: transparent;
         }
         
-        /* Success Animation */
-        .success-animation {
-            animation: successPulse 1s ease-out;
+        /* Alerts */
+        .alert {
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
         }
         
-        @keyframes successPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .alert-success {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid #28a745;
+            color: #28a745;
+        }
+        
+        .alert-danger {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid #dc3545;
+            color: #dc3545;
+        }
+        
+        .alert-info {
+            background: rgba(23, 162, 184, 0.2);
+            border: 1px solid #17a2b8;
+            color: #17a2b8;
+        }
+        
+        /* Important Note */
+        .important-note {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        .important-note i {
+            color: #ff4444;
+        }
+        
+        /* No Prize Message */
+        .no-prize-message {
+            text-align: center;
+            color: #fff;
+            padding: 40px 20px;
+        }
+        
+        .no-prize-message h3 {
+            color: #ffd700;
+            margin-bottom: 20px;
         }
         
         /* Footer */
@@ -334,24 +444,42 @@
             font-size: 0.9rem;
         }
         
-        /* Important Note */
-        .important-note {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid rgba(255, 0, 0, 0.3);
-            border-radius: 5px;
-            padding: 10px;
-            margin: 15px 0;
-            color: #ff6b6b;
-            font-size: 0.9rem;
-            text-align: center;
-        }
-        
-        .important-note i {
-            color: #ff4444;
+        /* Mobile Responsive */
+        @media (max-width: 375px) {
+            .reward-card {
+                padding: 20px 15px;
+                margin: 0 10px;
+            }
+            
+            .reward-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .prize-text {
+                font-size: 1.3rem;
+            }
+            
+            .prize-amount {
+                font-size: 1.8rem;
+            }
+            
+            .platform-btn {
+                padding: 15px 8px;
+            }
+            
+            .platform-btn i {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- CSRF Token for AJAX requests -->
+    <script>
+        const csrfToken = '<?= csrf_hash() ?>';
+        const csrfName = '<?= csrf_token() ?>';
+    </script>
+    
     <div class="portrait-container">
         <!-- Header -->
         <header class="reward-header">
@@ -360,114 +488,152 @@
         
         <!-- Main Content -->
         <main class="reward-content">
+            <!-- Alert Messages -->
+            <div id="alertContainer"></div>
+            
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="loading-spinner">
+                <div class="text-center text-warning">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2 mb-0">Processing...</p>
+                </div>
+            </div>
+            
             <div class="reward-card">
-                <?php if ($winner_data): ?>
+                <?php if (isset($winner_data) && $winner_data): ?>
                     <!-- Prize Display -->
                     <div class="prize-display">
-                        <p class="prize-text">Congratulations! You Won:</p>
+                        <p class="prize-text">🎉 Congratulations! You Won:</p>
                         <p class="prize-amount"><?= esc($winner_data['name']) ?></p>
-                        <?php if ($winner_data['prize'] > 0): ?>
-                            <p class="prize-text">Value: ¥<?= number_format($winner_data['prize']) ?></p>
+                        <?php if (isset($winner_data['prize']) && $winner_data['prize'] > 0): ?>
+                            <p class="prize-text">Value: $<?= number_format($winner_data['prize']) ?></p>
                         <?php endif; ?>
                     </div>
-                    
-                    <?php if (!$logged_in): ?>
-                        <!-- Registration Step -->
-                        <div id="registrationStep">
-                            <h5 class="text-center text-warning mb-3">Create Account to Claim</h5>
-                            <p class="text-center text-light mb-4">We'll create an instant account for you!</p>
+
+                    <?php if ($logged_in): ?>
+                        <!-- Logged In User - Ready to Claim -->
+                        <div class="customer-welcome">
+                            <div class="customer-info">
+                                <i class="bi bi-person-check-fill"></i> 
+                                Welcome back, <?= esc($customer_data['username']) ?>!
+                            </div>
+                            <?php if (isset($customer_data['points'])): ?>
+                                <div class="points-display">
+                                    <i class="bi bi-star-fill"></i> Points: <?= number_format($customer_data['points']) ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <div id="claimStep">
+                            <h5 class="text-center text-warning mb-3">Choose Platform to Contact:</h5>
+                            <div class="platform-selection">
+                                <div class="platform-btn whatsapp" onclick="claimReward('whatsapp')">
+                                    <i class="bi bi-whatsapp"></i>
+                                    <span>WhatsApp</span>
+                                </div>
+                                <div class="platform-btn telegram" onclick="claimReward('telegram')">
+                                    <i class="bi bi-telegram"></i>
+                                    <span>Telegram</span>
+                                </div>
+                            </div>
                             
-                            <div class="d-grid gap-2">
-                                <button type="button" class="btn btn-reward" onclick="autoRegister()">
+                            <div class="text-center mt-3">
+                                <button type="button" class="btn btn-platform btn-sm" onclick="logout()">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </button>
+                            </div>
+                        </div>
+
+                    <?php else: ?>
+                        <!-- Not Logged In - Show Login/Register Options -->
+                        <div id="authContainer">
+                            <!-- Login Form (Initially Hidden) -->
+                            <div id="loginForm" style="display: none;">
+                                <h5 class="text-center text-warning mb-3">Login to Your Account</h5>
+                                <form id="customerLoginForm">
+                                    <div class="mb-3">
+                                        <input type="text" class="form-control" id="loginUsername" name="username" 
+                                               placeholder="Enter your username" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <input type="password" class="form-control" id="loginPassword" name="password" 
+                                               placeholder="Enter your password" required>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-claim">
+                                            <i class="bi bi-box-arrow-in-right"></i> Login
+                                        </button>
+                                        <button type="button" class="btn btn-platform" onclick="showRegistration()">
+                                            <i class="bi bi-arrow-left"></i> Back to Registration
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Registration Options (Initially Visible) -->
+                            <div id="registrationOptions">
+                                <h5 class="text-center text-warning mb-3">Create Account to Claim</h5>
+                                <p class="text-center text-light mb-4">We'll create an instant account for you!</p>
+                                
+                                <button type="button" class="btn btn-claim" onclick="autoRegister()">
                                     <i class="bi bi-lightning-fill"></i> Create Instant Account
                                 </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Account Created Step (Hidden Initially) -->
-                        <div id="accountCreatedStep" style="display: none;">
-                            <h5 class="text-center text-success mb-3">
-                                <i class="bi bi-check-circle-fill"></i> Account Created!
-                            </h5>
-                            
-                            <div class="credentials-box">
-                                <h6 class="text-warning mb-3">Save Your Login Details:</h6>
-                                <div class="credential-item">
-                                    <div class="credential-label">Username:</div>
-                                    <div id="displayUsername">-</div>
-                                </div>
-                                <div class="credential-item">
-                                    <div class="credential-label">Password:</div>
-                                    <div id="displayPassword">-</div>
+
+                                <div class="toggle-link">
+                                    <a href="#" onclick="showLogin()">
+                                        Already have an account? Login here
+                                    </a>
                                 </div>
                             </div>
                             
-                            <div class="important-note">
-                                <i class="bi bi-exclamation-triangle-fill"></i> 
-                                Important: Save these credentials to access your account later!
-                            </div>
-                            
-                            <div class="d-grid">
-                                <button type="button" class="btn btn-reward" onclick="showPlatformSelection()">
-                                    <i class="bi bi-gift-fill"></i> Proceed to Claim Reward
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Platform Selection Step (Hidden Initially) -->
-                        <div id="platformSelectionStep" style="display: none;">
-                            <h5 class="text-center text-warning mb-4">Select Platform to Claim:</h5>
-                            
-                            <div class="platform-selection">
-                                <div class="platform-btn whatsapp" onclick="claimReward('whatsapp')">
-                                    <i class="bi bi-whatsapp"></i>
-                                    <span>WhatsApp</span>
+                            <!-- Account Created Step (Hidden Initially) -->
+                            <div id="accountCreatedStep" style="display: none;">
+                                <h5 class="text-center text-success mb-3">
+                                    <i class="bi bi-check-circle-fill"></i> Account Created!
+                                </h5>
+                                
+                                <div class="credentials-box">
+                                    <h6 class="text-warning mb-3">Save Your Login Details:</h6>
+                                    <div class="credential-item">
+                                        <div class="credential-label">Username:</div>
+                                        <div id="displayUsername">-</div>
+                                    </div>
+                                    <div class="credential-item">
+                                        <div class="credential-label">Password:</div>
+                                        <div id="displayPassword">-</div>
+                                    </div>
                                 </div>
-                                <div class="platform-btn telegram" onclick="claimReward('telegram')">
-                                    <i class="bi bi-telegram"></i>
-                                    <span>Telegram</span>
+                                
+                                <div class="important-note">
+                                    <i class="bi bi-exclamation-triangle-fill"></i> 
+                                    Important: Save these credentials to access your account later!
                                 </div>
-                            </div>
-                            
-                            <p class="text-center text-light mt-3">
-                                You'll be redirected to send your claim details
-                            </p>
-                        </div>
-                        
-                    <?php else: ?>
-                        <!-- Already Logged In -->
-                        <div class="text-center">
-                            <h5 class="text-success mb-3">
-                                <i class="bi bi-check-circle-fill"></i> Welcome back, <?= esc($customer_data['name']) ?>!
-                            </h5>
-                            
-                            <h6 class="text-warning mb-4">Select Platform to Claim:</h6>
-                            
-                            <div class="platform-selection">
-                                <div class="platform-btn whatsapp" onclick="claimReward('whatsapp')">
-                                    <i class="bi bi-whatsapp"></i>
-                                    <span>WhatsApp</span>
-                                </div>
-                                <div class="platform-btn telegram" onclick="claimReward('telegram')">
-                                    <i class="bi bi-telegram"></i>
-                                    <span>Telegram</span>
+
+                                <h5 class="text-center text-warning mb-3">Choose Platform to Contact:</h5>
+                                <div class="platform-selection">
+                                    <div class="platform-btn whatsapp" onclick="claimReward('whatsapp')">
+                                        <i class="bi bi-whatsapp"></i>
+                                        <span>WhatsApp</span>
+                                    </div>
+                                    <div class="platform-btn telegram" onclick="claimReward('telegram')">
+                                        <i class="bi bi-telegram"></i>
+                                        <span>Telegram</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     <?php endif; ?>
-                    
+
                 <?php else: ?>
                     <!-- No Prize Data -->
-                    <div class="text-center">
-                        <i class="bi bi-emoji-frown text-warning" style="font-size: 4rem;"></i>
-                        <h4 class="text-warning mt-3">No Prize Data Found</h4>
-                        <p class="text-light mb-4">Please spin the wheel first to win a prize!</p>
-                        
-                        <div class="d-grid">
-                            <a href="<?= base_url('/') ?>" class="btn btn-reward">
-                                <i class="bi bi-arrow-left-circle"></i> Go to Spin Wheel
-                            </a>
-                        </div>
+                    <div class="no-prize-message">
+                        <h3><i class="bi bi-exclamation-circle"></i> No Prize Found</h3>
+                        <p>You need to spin the wheel first to claim a reward!</p>
+                        <a href="<?= base_url('/') ?>" class="btn btn-claim mt-3">
+                            <i class="bi bi-arrow-left"></i> Back to Game
+                        </a>
                     </div>
                 <?php endif; ?>
             </div>
@@ -475,161 +641,232 @@
         
         <!-- Footer -->
         <footer class="reward-footer">
-            <p>&copy; <?= date('Y') ?> TapTapWin. All rights reserved.</p>
+            <p>&copy; 2025 TapTapWin. All rights reserved.</p>
         </footer>
     </div>
-    
-    <!-- Loading Spinner -->
-    <div class="loading-spinner" id="loadingSpinner">
-        <div class="spinner-border" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    </div>
-    
-    <!-- Alert Container -->
-    <div id="alertContainer"></div>
-    
-    <!-- Scripts -->
+
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
-        // Store credentials globally
-        let userCredentials = null;
-        
-        // Show alert function
+        // Show alert message
         function showAlert(message, type = 'info') {
-            const alertHtml = `
-                <div class="alert alert-${type} alert-dismissible fade show alert-custom" role="alert">
-                    ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+            const alertContainer = document.getElementById('alertContainer');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             `;
+            alertContainer.appendChild(alertDiv);
             
-            document.getElementById('alertContainer').innerHTML = alertHtml;
-            
-            // Auto-dismiss after 5 seconds
+            // Auto remove after 5 seconds
             setTimeout(() => {
-                const alert = document.querySelector('.alert-custom');
-                if (alert) {
-                    const bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
                 }
             }, 5000);
         }
-        
-        // Show/hide loading spinner
-        function toggleLoading(show) {
+
+        // Show loading spinner
+        function showLoading(show = true) {
             const spinner = document.getElementById('loadingSpinner');
-            if (show) {
-                spinner.classList.add('active');
-            } else {
-                spinner.classList.remove('active');
-            }
+            spinner.classList.toggle('active', show);
         }
-        
-        // Auto register function
-        async function autoRegister() {
-            toggleLoading(true);
+
+        // Toggle between login and registration
+        function showLogin() {
+            document.getElementById('registrationOptions').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        }
+
+        function showRegistration() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registrationOptions').style.display = 'block';
+        }
+
+        // Customer login
+        document.getElementById('customerLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            try {
-                const response = await fetch('<?= base_url('reward/auto-register') ?>', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-                
-                const data = await response.json();
-                toggleLoading(false);
+            const formData = new FormData(this);
+            showLoading(true);
+            
+            fetch('<?= base_url('reward/login') ?>', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                showLoading(false);
                 
                 if (data.success) {
-                    // Store credentials
-                    userCredentials = data.credentials;
+                    showAlert(data.message, 'success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showAlert(data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                showLoading(false);
+                showAlert('Login failed. Please try again.', 'danger');
+                console.error('Error:', error);
+            });
+        });
+
+        // Auto register function
+        function autoRegister() {
+            showLoading(true);
+            
+            // Create FormData to handle CSRF properly
+            const formData = new FormData();
+            
+            // Add CSRF token if available
+            if (typeof csrfName !== 'undefined' && typeof csrfToken !== 'undefined') {
+                formData.append(csrfName, csrfToken);
+            }
+            
+            fetch('<?= base_url('reward/auto-register') ?>', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                showLoading(false);
+                
+                if (data.success) {
+                    // Hide registration options
+                    document.getElementById('registrationOptions').style.display = 'none';
                     
-                    // Display credentials
-                    document.getElementById('displayUsername').textContent = data.credentials.username;
-                    document.getElementById('displayPassword').textContent = data.credentials.password;
-                    
-                    // Hide registration step, show account created step
-                    document.getElementById('registrationStep').style.display = 'none';
+                    // Show account created step
                     document.getElementById('accountCreatedStep').style.display = 'block';
                     
-                    showAlert('Account created successfully!', 'success');
+                    // Display credentials
+                    document.getElementById('displayUsername').textContent = data.account_data.username;
+                    document.getElementById('displayPassword').textContent = data.account_data.password;
+                    
+                    showAlert(data.message, 'success');
                 } else {
-                    showAlert(data.message || 'Registration failed', 'danger');
+                    showAlert(data.message || 'Registration failed. Please try again.', 'danger');
                 }
-            } catch (error) {
-                toggleLoading(false);
-                showAlert('Network error. Please try again.', 'danger');
+            })
+            .catch(error => {
                 console.error('Registration error:', error);
-            }
+                showLoading(false);
+                showAlert('Registration failed. Please try again.', 'danger');
+            });
         }
-        
-        // Show platform selection
-        function showPlatformSelection() {
-            document.getElementById('accountCreatedStep').style.display = 'none';
-            document.getElementById('platformSelectionStep').style.display = 'block';
-        }
-        
-        // Claim reward with selected platform
-        async function claimReward(platform) {
-            toggleLoading(true);
+
+        // Claim reward function
+        function claimReward(platform) {
+            showLoading(true);
             
             const formData = new FormData();
             formData.append('platform', platform);
-            formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
             
-            try {
-                const response = await fetch('<?= base_url('reward/claim-reward') ?>', {
+            fetch('<?= base_url('reward/claim-reward') ?>', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                showLoading(false);
+                
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    
+                    // Redirect to platform after short delay
+                    setTimeout(() => {
+                        window.open(data.redirect_url, '_blank');
+                        
+                        // Optionally redirect to dashboard
+                        if (data.dashboard_url) {
+                            setTimeout(() => {
+                                window.location.href = data.dashboard_url;
+                            }, 2000);
+                        }
+                    }, 1500);
+                } else {
+                    showAlert(data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                showLoading(false);
+                showAlert('Claim failed. Please try again.', 'danger');
+                console.error('Error:', error);
+            });
+        }
+
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                showLoading(true);
+                
+                const formData = new FormData();
+                
+                fetch('<?= base_url('reward/logout') ?>', {
                     method: 'POST',
                     body: formData,
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    showLoading(false);
+                    
+                    if (data.success) {
+                        showAlert(data.message, 'success');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    } else {
+                        showAlert('Logout failed. Please try again.', 'danger');
+                    }
+                })
+                .catch(error => {
+                    showLoading(false);
+                    showAlert('Logout failed. Please try again.', 'danger');
+                    console.error('Error:', error);
                 });
-                
-                const data = await response.json();
-                toggleLoading(false);
-                
-                if (data.success) {
-                    showAlert(`Redirecting to ${platform === 'whatsapp' ? 'WhatsApp' : 'Telegram'}...`, 'success');
-                    
-                    // Open platform in new tab
-                    window.open(data.redirect_url, '_blank');
-                    
-                    // Redirect to dashboard after 2 seconds
-                    setTimeout(() => {
-                        window.location.href = data.dashboard_url;
-                    }, 2000);
-                } else {
-                    showAlert(data.message || 'Claim failed', 'danger');
-                }
-            } catch (error) {
-                toggleLoading(false);
-                showAlert('Network error. Please try again.', 'danger');
-                console.error('Claim error:', error);
             }
         }
-        
-        // Prevent zoom on double tap
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function (event) {
-            const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
-        
-        // Prevent pinch zoom
-        document.addEventListener('gesturestart', function (e) {
-            e.preventDefault();
-        });
-        
-        document.addEventListener('touchstart', function(event) {
-            if (event.touches.length > 1) {
-                event.preventDefault();
-            }
+
+        // Copy to clipboard function for credentials
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showAlert('Copied to clipboard!', 'info');
+            }).catch(() => {
+                showAlert('Could not copy to clipboard', 'warning');
+            });
+        }
+
+        // Add click-to-copy functionality to credentials
+        document.addEventListener('DOMContentLoaded', function() {
+            const credentialElements = document.querySelectorAll('#displayUsername, #displayPassword');
+            credentialElements.forEach(element => {
+                element.style.cursor = 'pointer';
+                element.title = 'Click to copy';
+                element.addEventListener('click', function() {
+                    copyToClipboard(this.textContent);
+                });
+            });
         });
     </script>
 </body>

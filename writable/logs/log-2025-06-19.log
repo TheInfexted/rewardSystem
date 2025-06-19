@@ -112,3 +112,7 @@ in APPPATH\Models\CustomerModel.php on line 87.
  5 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
  6 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
  7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-06-19 11:53:08 --> Customer dashboard error: Undefined variable $monthly_checkins
+ERROR - 2025-06-19 11:53:41 --> Customer dashboard error: Undefined variable $monthly_checkins
+ERROR - 2025-06-19 11:54:23 --> Customer dashboard error: Undefined variable $monthly_checkins
+ERROR - 2025-06-19 11:55:29 --> Customer dashboard error: Undefined variable $monthly_checkins

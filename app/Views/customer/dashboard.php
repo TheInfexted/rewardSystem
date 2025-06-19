@@ -106,12 +106,12 @@
         transform: scale(1.1);
     }
     
-    /* Daily Check-in Section */
+    /* Weekly Check-in Section */
     .checkin-section {
         padding: 20px;
         background: white;
     }
-    
+
     .section-title {
         display: flex;
         align-items: center;
@@ -120,7 +120,7 @@
         margin-bottom: 15px;
         color: #333;
     }
-    
+
     .checkin-card {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border-radius: 15px;
@@ -129,18 +129,18 @@
         text-align: center;
         margin-bottom: 20px;
     }
-    
+
     .checkin-streak {
         font-size: 2rem;
         font-weight: bold;
         margin-bottom: 5px;
     }
-    
+
     .streak-text {
         opacity: 0.9;
         margin-bottom: 15px;
     }
-    
+
     .btn-checkin {
         background: rgba(255,255,255,0.2);
         border: 1px solid rgba(255,255,255,0.3);
@@ -150,64 +150,193 @@
         font-weight: 600;
         width: 100%;
     }
-    
+
     .btn-checkin:disabled {
         opacity: 0.6;
         cursor: not-allowed;
     }
-    
-    /* Checkin Calendar */
-    .checkin-calendar {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 8px;
+
+    /* NEW WEEKLY SYSTEM STYLES */
+    .weekly-calendar {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
         margin-top: 15px;
     }
-    
-    .day-item {
+
+    .week-header {
         text-align: center;
-        padding: 12px 8px;
-        border-radius: 10px;
-        background: #f8f9fa;
-        font-size: 0.8rem;
-        position: relative;
+        margin-bottom: 20px;
     }
-    
-    .day-item.current {
-        background: #ffd700;
+
+    .week-header span {
+        font-weight: 600;
         color: #333;
-        font-weight: 600;
+        font-size: 1.1rem;
     }
-    
+
+    .week-header small {
+        display: block;
+        color: #6c757d;
+        margin-top: 5px;
+        font-size: 0.8rem;
+    }
+
+    .week-days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .day-item {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 12px 8px;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        min-height: 90px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
     .day-item.completed {
-        background: #28a745;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border-color: #28a745;
         color: white;
+        transform: scale(1.05);
     }
-    
-    .day-number {
+
+    .day-item.today {
+        border-color: #007bff;
+        border-width: 3px;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    }
+
+    .day-item.future {
+        opacity: 0.6;
+        background: #f8f9fa;
+    }
+
+    .day-name {
+        font-size: 0.7rem;
         font-weight: 600;
+        text-transform: uppercase;
         margin-bottom: 2px;
     }
-    
+
+    .day-number {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin: 5px 0;
+    }
+
     .day-points {
         font-size: 0.7rem;
-        opacity: 0.8;
+        margin-top: auto;
     }
-    
-    .day-reward {
+
+    .day-points .earned {
+        color: #fff;
+        font-weight: bold;
+    }
+
+    .day-points .available {
+        color: #28a745;
+        font-weight: 600;
+    }
+
+    .day-points .future {
+        color: #6c757d;
+    }
+
+    .check-mark {
         position: absolute;
         top: -5px;
         right: -5px;
-        background: #ffd700;
-        color: #333;
-        border-radius: 50%;
+        background: #ffc107;
+        color: #000;
         width: 20px;
         height: 20px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 0.7rem;
+        font-weight: bold;
+    }
+
+    .week-summary {
+        display: flex;
+        justify-content: space-between;
+        padding-top: 15px;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .summary-item {
+        text-align: center;
+    }
+
+    .summary-item .label {
+        font-size: 0.8rem;
+        color: #6c757d;
+        display: block;
+    }
+
+    .summary-item .value {
         font-weight: 600;
+        color: #333;
+        font-size: 0.9rem;
+    }
+
+    .perfect-week-badge {
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        color: #333;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 0.9rem;
+        margin-top: 10px;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    /* Mobile responsive adjustments */
+    @media (max-width: 375px) {
+        .week-days {
+            gap: 5px;
+        }
+        
+        .day-item {
+            padding: 8px 4px;
+            min-height: 70px;
+        }
+        
+        .day-name {
+            font-size: 0.6rem;
+        }
+        
+        .day-number {
+            font-size: 1rem;
+        }
+        
+        .day-points {
+            font-size: 0.6rem;
+        }
+        
+        .check-mark {
+            width: 16px;
+            height: 16px;
+            font-size: 0.6rem;
+        }
     }
     
     /* Statistics Cards */
@@ -420,35 +549,77 @@
         </div>
     </div>
 
-    <!-- Daily Check-in Section -->
+    <!-- Weekly Check-in Section for Dashboard -->
     <div class="checkin-section">
         <h5 class="section-title">
             <i class="bi bi-calendar-check text-primary me-2"></i>
-            Daily Check-in
+            Weekly Check-in (<?= date('M j', strtotime($current_week_start)) ?> - <?= date('M j', strtotime($current_week_end)) ?>)
         </h5>
         
         <div class="checkin-card">
-            <div class="checkin-streak"><?= $checkin_streak ?></div>
-            <div class="streak-text">Days Streak</div>
+            <div class="checkin-streak"><?= $checkin_streak ?>/7</div>
+            <div class="streak-text">Days Completed</div>
             <button class="btn btn-checkin" 
                     onclick="performCheckin()" 
                     <?= $today_checkin ? 'disabled' : '' ?>>
                 <?= $today_checkin ? 'Already Checked In' : 'Check In Now' ?>
             </button>
+            
+            <?php if ($checkin_streak >= 7): ?>
+                <div class="perfect-week-badge">
+                    🎉 PERFECT WEEK!
+                </div>
+            <?php endif; ?>
         </div>
         
         <!-- Weekly Check-in Calendar -->
-        <div class="checkin-calendar">
-            <?php for ($i = 1; $i <= 7; $i++): ?>
-                <div class="day-item <?= $i <= $checkin_streak ? 'completed' : '' ?> <?= $i == ($checkin_streak + 1) && !$today_checkin ? 'current' : '' ?>">
-                    <div class="day-number">Day <?= $i ?></div>
-                    <div class="day-points"><?= min($i * 10, 70) ?> Points</div>
-                    <?php if ($i <= $checkin_streak): ?>
-                        <div class="day-reward">✓</div>
-                    <?php endif; ?>
+        <div class="weekly-calendar">
+            <div class="week-header">
+                <span>This Week's Progress</span>
+                <small>Monday resets weekly progress</small>
+            </div>
+            
+            <div class="week-days">
+                <?php foreach ($weekly_progress as $day => $dayData): ?>
+                    <div class="day-item <?= $dayData['checked_in'] ? 'completed' : '' ?> 
+                                        <?= $dayData['is_today'] ? 'today' : '' ?>
+                                        <?= $dayData['is_future'] ? 'future' : '' ?>">
+                        <div class="day-name"><?= $dayData['day_short'] ?></div>
+                        <div class="day-number"><?= $day ?></div>
+                        <div class="day-points">
+                            <?php if ($dayData['checked_in']): ?>
+                                <span class="earned">+<?= $dayData['actual_points'] ?></span>
+                            <?php elseif (!$dayData['is_future']): ?>
+                                <span class="available">+<?= $dayData['points'] ?></span>
+                            <?php else: ?>
+                                <span class="future">+<?= $dayData['points'] ?></span>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <?php if ($dayData['checked_in']): ?>
+                            <div class="check-mark">✓</div>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            
+            <div class="week-summary">
+                <div class="summary-item">
+                    <span class="label">This Week:</span>
+                    <span class="value"><?= $checkin_streak ?>/7 days</span>
                 </div>
-            <?php endfor; ?>
+                <div class="summary-item">
+                    <span class="label">Next Reset:</span>
+                    <span class="value">
+                        <?php 
+                        $nextMonday = date('M j', strtotime('next monday'));
+                        echo $nextMonday;
+                        ?>
+                    </span>
+                </div>
+            </div>
         </div>
+    </div>
         
         <!-- Statistics -->
         <div class="stats-row">
@@ -536,7 +707,12 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+
 <script>
+// CSRF token for AJAX requests
+const csrfToken = '<?= csrf_hash() ?>';
+const csrfName = '<?= csrf_token() ?>';
+
 // Check-in functionality
 function performCheckin() {
     fetch('<?= base_url('customer/checkin') ?>', {
@@ -571,32 +747,61 @@ function performCheckin() {
 }
 
 // Change background
+// Fixed changeBackground function for customer dashboard
 function changeBackground(bgType) {
+    console.log('Changing background to:', bgType);
+    
+    // Create FormData instead of JSON
+    const formData = new FormData();
+    formData.append('background', bgType);
+    
+    // Add CSRF token if available
+    if (typeof csrfName !== 'undefined' && typeof csrfToken !== 'undefined') {
+        formData.append(csrfName, csrfToken);
+    }
+    
     fetch('<?= base_url('customer/update-background') ?>', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest'
         },
-        body: JSON.stringify({ background: bgType })
+        body: formData  // Use FormData instead of JSON
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        return response.json();
+    })
     .then(data => {
+        console.log('Response data:', data);
+        
         if (data.success) {
-            // Update UI
-            document.querySelector('.profile-header').className = `profile-header ${bgType}-bg`;
+            // Update UI immediately
+            const profileHeader = document.querySelector('.profile-header');
+            if (profileHeader) {
+                // Remove all background classes
+                profileHeader.className = profileHeader.className.replace(/\w+-bg/g, '');
+                // Add new background class
+                profileHeader.classList.add(`${bgType}-bg`);
+            }
             
             // Update active button
             document.querySelectorAll('.bg-option').forEach(btn => {
                 btn.classList.remove('active');
             });
-            document.querySelector(`[data-bg="${bgType}"]`).classList.add('active');
             
-            showToast('Background updated!', 'success');
+            const selectedBtn = document.querySelector(`[data-bg="${bgType}"]`);
+            if (selectedBtn) {
+                selectedBtn.classList.add('active');
+            }
+            
+            showToast('Background updated successfully!', 'success');
+        } else {
+            showToast(data.message || 'Failed to update background', 'error');
         }
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error('Background change error:', error);
+        showToast('Failed to update background. Please try again.', 'error');
     });
 }
 

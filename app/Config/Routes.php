@@ -1,7 +1,35 @@
 <?php
 
 use CodeIgniter\Router\RouteCollection;
-
+// Add this temporarily to test registration in isolation
+$routes->get('test-registration', function() {
+    $customerModel = new \App\Models\CustomerModel();
+    
+    try {
+        // Test database connection
+        $count = $customerModel->countAllResults();
+        echo "Database connection OK. Current customers: $count<br>";
+        
+        // Test username generation
+        $username = $customerModel->generateUniqueUsername();
+        echo "Generated username: $username<br>";
+        
+        // Test actual registration
+        $result = $customerModel->createAutoCustomer();
+        
+        if ($result) {
+            echo "✅ Registration SUCCESS!<br>";
+            echo "Username: " . $result['username'] . "<br>";
+            echo "Password: " . $result['password'] . "<br>";
+            echo "Customer ID: " . $result['id'] . "<br>";
+        } else {
+            echo "❌ Registration FAILED<br>";
+        }
+        
+    } catch (\Exception $e) {
+        echo "❌ ERROR: " . $e->getMessage();
+    }
+});
 //Translation routes
 $routes->get('translate/(:segment)', 'TranslateController::index/$1');
 $routes->get('translate', 'TranslateController::getCurrentLanguage');
@@ -15,12 +43,13 @@ $routes->post('claim-bonus', 'LandingController::claimBonus');
 $routes->post('store-winner', 'LandingController::storeWinner'); 
 
 //Reward System routes
+//Reward System routes
 $routes->group('reward', function($routes) {
     $routes->get('/', 'RewardController::index');
+    $routes->get('test', 'RewardController::test');
     $routes->post('auto-register', 'RewardController::autoRegister');
-    $routes->post('auto-login', 'RewardController::autoLogin');
     $routes->post('login', 'RewardController::login');
-    $routes->post('claim', 'RewardController::claim'); 
+    $routes->post('logout', 'RewardController::logout');
     $routes->post('claim-reward', 'RewardController::claimReward'); 
 });
 
