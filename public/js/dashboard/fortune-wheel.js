@@ -114,52 +114,198 @@ class FortuneWheel {
         return `
             <div class="modal fade" id="wheelModal" tabindex="-1" aria-labelledby="wheelModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-centered">
-                    <div class="modal-content" style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border: 2px solid #ffd700; border-radius: 15px;">
-                        <div class="modal-header" style="border-bottom: 1px solid #ffd700; color: #fff;">
-                            <h5 class="modal-title" id="wheelModalLabel">
-                                <i class="bi bi-pie-chart-fill text-warning me-2"></i>Fortune Wheel
-                            </h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-content" style="
+                        background: #000;
+                        border: none;
+                        border-radius: 0;
+                        max-width: 414px;
+                        margin: 0 auto;
+                    ">
+                        <div class="modal-header" style="
+                            background: #000;
+                            border-bottom: none;
+                            padding: 10px 15px;
+                            position: relative;
+                        ">
+                            <button type="button" class="btn-close btn-close-white position-absolute" 
+                                    style="top: 10px; right: 15px; z-index: 1000;" 
+                                    data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="modal-body text-center" style="color: #fff; padding: 20px; background: url('${DashboardConfig.baseUrl}img/fortune_wheel/bg_spin.png') no-repeat center center; background-size: cover;">
-                            <!-- Spin Info -->
-                            <div class="wrap-text-frame text-center mb-3" style="font-size: .8rem; padding: 1rem; margin: 0 2rem; background: url('${DashboardConfig.baseUrl}img/fortune_wheel/text_frame.png') no-repeat center center; background-size: 100% 100%;">
-                                <p class="m-0 glow" style="color: #fff; animation: glow 1s ease-in-out infinite alternate;">Free <span id="modalSpinsCount">${this.spinsRemaining}</span> Spins!</p>
-                                <p class="m-0" style="color: #fff;">Try your luck now and win up to 120% BONUS!</p>
-                            </div>
-                            
-                            <!-- Wheel Container -->
-                            <div class="wheel-container" style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 1rem 0; position: relative;">
-                                <div class="innerWheel text-center" style="position: relative; width: 100%; max-width: 360px;">
-                                    <!-- Arrow -->
-                                    <div style="width: 50px; height: 50px; margin: 0 auto -35px auto; background: url('${DashboardConfig.baseUrl}img/fortune_wheel/arrow.png') no-repeat center center; background-size: contain; z-index: 20; position: relative;"></div>
-                                    
-                                    <div class="wheel-wrapper" style="width: 100%; max-width: 320px; aspect-ratio: 1 / 1; margin: 0 auto; position: relative; background: url('${DashboardConfig.baseUrl}img/fortune_wheel/bg_wheel_frame.png') no-repeat center center; background-size: contain;">
-                                        <canvas id="fortuneWheelModal" width="320" height="320" style="width: 100%; height: 100%; border-radius: 50%; background-color: transparent; display: block;">
-                                            <p>Your browser does not support canvas.</p>
+                        
+                        <div class="modal-body p-0" style="background: #000;">
+                            <!-- Main Content -->
+                            <div class="container-fluid" style="padding: 0;">
+                                <!-- Wheel Header -->
+                                <article class="text-center my-3 pb-3" style="padding: 0 20px;">
+                                    <p class="m-0 fw-bold text-warning blinking">
+                                        You have <b id="modalSpinsCount">${this.spinsRemaining}</b> Free Spins Left!
+                                    </p>
+                                    <label style="color: #fff;">
+                                        Limited Time Event: <b class="fw-semibold text-danger">LAST CHANCE!</b>
+                                    </label>
+                                </article>
+                                
+                                <!-- Fortune Wheel Section -->
+                                <section class="wrap-fortuneWheel pb-5" style="
+                                    background: url('${DashboardConfig.baseUrl}img/fortune_wheel/bg_spin.png') no-repeat center center;
+                                    background-size: 100%;
+                                    padding: 0 20px;
+                                ">
+                                    <!-- Text Frame -->
+                                    <section class="wrap-text-frame text-center" style="
+                                        font-size: .8rem;
+                                        padding: 1rem;
+                                        margin: 0 2rem;
+                                        background: url('${DashboardConfig.baseUrl}img/fortune_wheel/text_frame.png') no-repeat center center;
+                                        background-size: 100% 100%;
+                                    ">
+                                        <p class="m-0 glow" style="color: #fff;">
+                                            Free <span id="modalFreeSpinsText">${this.spinsRemaining}</span> Spins!
+                                        </p>
+                                        <p class="m-0" style="color: #fff;">
+                                            Try your luck now and win up to 120% BONUS!
+                                        </p>
+                                    </section>
+                                
+                                    <!-- Wheel Container -->
+                                    <figure class="d-block m-0 pt-1 p-4 innerWheel position-relative">
+                                        <!-- Arrow -->
+                                        <div class="wheel-arrow" style="
+                                            width: 50px;
+                                            height: 50px;
+                                            margin: 0 auto -40px auto;
+                                            background: url('${DashboardConfig.baseUrl}img/fortune_wheel/arrow.png') no-repeat top center;
+                                            background-size: contain;
+                                            z-index: 20;
+                                            position: relative;
+                                        "></div>
+                                        
+                                        <!-- Canvas with frame background -->
+                                        <canvas id="fortuneWheelModal" 
+                                                width="460" 
+                                                height="460"
+                                                data-responsiveMinWidth="180" 
+                                                data-responsiveScaleHeight="true" 
+                                                data-responsiveMargin="50"
+                                                style="
+                                                    padding: 1rem;
+                                                    max-width: 100%;
+                                                    width: 100%;
+                                                    height: 100%;
+                                                    display: inline-block;
+                                                    background: url('${DashboardConfig.baseUrl}img/fortune_wheel/bg_wheel_frame.png') no-repeat top center;
+                                                    background-size: 100%;
+                                                    position: relative;
+                                                    z-index: 0;
+                                                    overflow: hidden;
+                                                ">
+                                            <p class="text-white text-center">
+                                                Sorry, your browser doesn't support canvas. Please try another.
+                                            </p>
                                         </canvas>
+                                    </figure>
+                                    
+                                    <!-- Spin Button -->
+                                    <div class="text-center position-relative">
+                                        <button class="btn btn-warning bg-gradient" 
+                                                id="modalSpinButton" 
+                                                onclick="fortuneWheelInstance.startSpin()"
+                                                ${this.spinsRemaining <= 0 ? 'disabled' : ''}>
+                                            <span id="modalSpinButtonText">
+                                                ${this.spinsRemaining > 0 ? 'Spin the Wheel' : 'Out of Spins'}
+                                            </span>
+                                        </button>
                                     </div>
+                                </section>
+                                
+                                <!-- Result Display -->
+                                <div id="modalWheelResult" style="
+                                    display: none; 
+                                    margin: 20px; 
+                                    padding: 20px; 
+                                    background: rgba(255, 215, 0, 0.1); 
+                                    border-radius: 10px; 
+                                    border: 1px solid #ffd700;
+                                ">
+                                    <h4 class="text-warning">🎉 Congratulations!</h4>
+                                    <p id="modalResultText" class="text-white"></p>
+                                    <button class="btn btn-warning" onclick="fortuneWheelInstance.claimPrize()" id="modalClaimBtn">
+                                        Claim Prize
+                                    </button>
                                 </div>
-                            </div>
-                            
-                            <!-- Spin Button -->
-                            <div class="text-center position-relative mt-3">
-                                <button class="btn btn-warning bg-gradient" id="modalSpinButton" onclick="fortuneWheelInstance.startSpin()" ${this.spinsRemaining <= 0 ? 'disabled' : ''}>
-                                    <span id="modalSpinButtonText">${this.spinsRemaining > 0 ? 'Spin the Wheel' : 'Out of Spins'}</span>
-                                </button>
-                            </div>
-                            
-                            <!-- Result Display -->
-                            <div id="modalWheelResult" style="display: none; margin-top: 20px; padding: 20px; background: rgba(255, 215, 0, 0.1); border-radius: 10px; border: 1px solid #ffd700;">
-                                <h4 class="text-warning">🎉 Congratulations!</h4>
-                                <p id="modalResultText" class="text-white"></p>
-                                <button class="btn btn-warning" onclick="fortuneWheelInstance.claimPrize()" id="modalClaimBtn">Claim Prize</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         `;
+    }
+
+    addModalStyles() {
+        if (document.getElementById('modal-wheel-styles')) return;
+        
+        const style = document.createElement('style');
+        style.id = 'modal-wheel-styles';
+        style.textContent = `
+            /* Modal Wheel Specific Styles */
+            #wheelModal .modal-dialog {
+                max-width: 414px;
+                margin: 0 auto;
+            }
+            
+            #wheelModal .modal-content {
+                background: #000 !important;
+                border: none !important;
+                border-radius: 0 !important;
+            }
+            
+            /* Glow Animation */
+            .glow {
+                color: #fff;
+                animation: glow 1s ease-in-out infinite alternate;
+            }
+            
+            @keyframes glow {
+                from {
+                    text-shadow: 0 0 1px #fff, 0 0 5px #fff, 0 0 10px #e60073, 0 0 20px #e60073, 0 0 30px #e60073;
+                }
+                to {
+                    text-shadow: 0 0 1px #fff, 0 0 10px #ff4da6, 0 0 20px #ff4da6, 0 0 30px #ff4da6, 0 0 50px #ff4da6;
+                }
+            }
+            
+            /* Blinking Animation */
+            .blinking {
+                animation: blinker 1s linear infinite;
+            }
+            
+            @keyframes blinker {
+                50% {
+                    opacity: 0;
+                }
+            }
+            
+            /* Mobile Responsive */
+            @media (max-width: 414px) {
+                #wheelModal .modal-dialog {
+                    margin: 0;
+                    max-width: 100%;
+                    width: 100%;
+                    height: 100vh;
+                }
+                
+                #wheelModal .modal-content {
+                    height: 100vh;
+                    border-radius: 0;
+                }
+                
+                .wrap-text-frame {
+                    margin: 0 1rem;
+                    font-size: 0.7rem;
+                }
+            }
+        `;
+        document.head.appendChild(style);
     }
 
     // Initialize wheel after modal is shown
@@ -178,9 +324,12 @@ class FortuneWheel {
         
         console.log('Initializing modal wheel with items:', this.wheelItems);
 
-        // Create segments array for the wheel
+        // Sort items by order first to ensure correct positioning
+        const sortedItems = [...this.wheelItems].sort((a, b) => (a.order || 0) - (b.order || 0));
+        
+        // Create segments array for the wheel - SAME AS ORIGINAL
         const segments = [];
-        this.wheelItems.forEach((item, index) => {
+        sortedItems.forEach((item, index) => {
             const useRedBackground = index % 2 === 0;
             const textColor = useRedBackground ? "#f8b500" : "#000";
             
@@ -199,15 +348,17 @@ class FortuneWheel {
             });
         });
 
-        // Create the wheel
+        console.log('Creating modal wheel with segments:', segments);
+
+        // Create the wheel - MATCH ORIGINAL SETTINGS
         this.wheel = new Winwheel({
             'canvasId': 'fortuneWheelModal',
             'numSegments': segments.length,
-            'outerRadius': 150,
+            'outerRadius': 200,  // Match original
             'responsive': true,
             'drawMode': 'segmentImage',
             'drawText': true,
-            'textFontSize': 14,
+            'textFontSize': 16,  // Match original
             'textFontWeight': 'bold',
             'textOrientation': 'horizontal',
             'textAlignment': 'center',
@@ -217,7 +368,7 @@ class FortuneWheel {
             'segments': segments,
             'pins': {
                 'number': segments.length * 2,
-                'outerRadius': 4,
+                'outerRadius': 5,  // Match original
                 'responsive': true,
                 'margin': 5,
                 'fillStyle': '#f8b500',
@@ -225,8 +376,8 @@ class FortuneWheel {
             },
             'animation': {
                 'type': 'spinToStop',
-                'duration': 6,
-                'spins': 8,
+                'duration': 8,  // Match original
+                'spins': 12,    // Match original
                 'callbackFinished': (indicatedSegment) => this.alertPrize(indicatedSegment),
                 'callbackBefore': () => this.animationBefore(),
                 'callbackAfter': () => this.animationAfter(),
@@ -236,6 +387,9 @@ class FortuneWheel {
 
         console.log('Modal wheel created successfully:', this.wheel);
         this.updateSpinsCounter();
+        
+        // Add modal-specific styles
+        this.addModalStyles();
     }
 
     // Start spinning the wheel
@@ -296,13 +450,59 @@ class FortuneWheel {
 
     // Determine winner based on winning rates
     determineWinner() {
-        const rand = Math.random() * 100;
+        console.log('Determining winner with wheel items:', this.wheelItems);
+        
+        // Calculate total winning rate to normalize if needed
+        let totalRate = 0;
+        this.wheelItems.forEach(item => {
+            totalRate += parseFloat(item.winning_rate || 0);
+        });
+        
+        console.log('Total winning rate:', totalRate);
+        
+        // Generate random number between 0 and total rate (or 100 if total is 100)
+        const rand = Math.random() * (totalRate > 0 ? totalRate : 100);
+        console.log('Random number generated:', rand);
+        
         let cumulativeRate = 0;
         
+        // Sort items by order to ensure correct positioning
+        const sortedItems = [...this.wheelItems].sort((a, b) => (a.order || 0) - (b.order || 0));
+        
+        // Use the actual ORDER from database, not array index
+        for (let i = 0; i < sortedItems.length; i++) {
+            const item = sortedItems[i];
+            const itemRate = parseFloat(item.winning_rate || 0);
+            cumulativeRate += itemRate;
+            
+            console.log(`Item ${item.item_name}: rate=${itemRate}, cumulative=${cumulativeRate}, rand=${rand}`);
+            
+            if (rand <= cumulativeRate && itemRate > 0) {
+                // Find the original index in unsorted array for wheel positioning
+                const originalIndex = this.wheelItems.findIndex(originalItem => 
+                    originalItem.item_id === item.item_id
+                );
+                
+                console.log(`Winner selected: ${item.item_name} (original index: ${originalIndex})`);
+                return {
+                    winnerIndex: originalIndex >= 0 ? originalIndex : i,
+                    winnerItem: {
+                        name: item.item_name,
+                        prize: item.item_prize,
+                        type: item.item_types,
+                        winningRate: item.winning_rate,
+                        order: item.order,
+                        id: item.item_id
+                    }
+                };
+            }
+        }
+        
+        // Fallback to first item with winning rate > 0
         for (let i = 0; i < this.wheelItems.length; i++) {
             const item = this.wheelItems[i];
-            cumulativeRate += parseFloat(item.winning_rate || 0);
-            if (rand <= cumulativeRate) {
+            if (parseFloat(item.winning_rate || 0) > 0) {
+                console.log(`Fallback winner: ${item.item_name}`);
                 return {
                     winnerIndex: i,
                     winnerItem: {
@@ -317,18 +517,18 @@ class FortuneWheel {
             }
         }
         
-        // Fallback to random
-        const randomIndex = Math.floor(Math.random() * this.wheelItems.length);
-        const randomItem = this.wheelItems[randomIndex];
+        // Final fallback to first item
+        const firstItem = this.wheelItems[0];
+        console.log(`Final fallback winner: ${firstItem.item_name}`);
         return {
-            winnerIndex: randomIndex,
+            winnerIndex: 0,
             winnerItem: {
-                name: randomItem.item_name,
-                prize: randomItem.item_prize,
-                type: randomItem.item_types,
-                winningRate: randomItem.winning_rate,
-                order: randomItem.order,
-                id: randomItem.item_id
+                name: firstItem.item_name,
+                prize: firstItem.item_prize,
+                type: firstItem.item_types,
+                winningRate: firstItem.winning_rate,
+                order: firstItem.order,
+                id: firstItem.item_id
             }
         };
     }
