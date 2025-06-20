@@ -379,8 +379,8 @@ return [
             'always' => 'Always',
         ],
         'form' => [
-            'ad_title' => 'Advertisement Title',
-            'ad_title_placeholder' => 'Enter ad title...',
+            'ad_title' => 'Advertisement Title (Optional)',
+            'ad_title_placeholder' => 'Enter ad title (optional)...',
             'ad_type' => 'Advertisement Type',
             'type_image' => 'Image',
             'type_video' => 'Video',

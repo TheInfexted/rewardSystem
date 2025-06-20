@@ -67,102 +67,64 @@
         margin-top: 15px;
     }
     
-    /* Advertisement Section */
+    /* Advertisement Section - Stacked Layout */
     .advertisement-section {
-        padding: 20px;
+        margin: 0 -20px; /* Negative margin to reach edges */
         background: #f8f9fa;
-        min-height: 200px;
     }
 
-    .ads-container {
-        max-width: 100%;
-        overflow: hidden;
+    .ads-stack {
+        display: flex;
+        flex-direction: column;
     }
 
-    .ad-item {
-        background: white;
-        border-radius: 15px;
-        overflow: hidden;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease;
+    .ad-item-stacked {
+        position: relative;
+        width: 100%;
         cursor: pointer;
+        overflow: hidden;
+        line-height: 0; /* Remove gap between images */
+        background: #000; /* Black background for videos with different aspect ratios */
     }
 
-    .ad-item:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-    }
-
-    .ad-media {
+    /* Images - maintain aspect ratio */
+    .ad-item-stacked img.ad-media-stacked {
         width: 100%;
         height: auto;
         display: block;
+        object-fit: contain; 
+        max-height: 500px; 
     }
 
-    .ad-video {
+    /* Videos - maintain original aspect ratio */
+    .ad-item-stacked video.ad-media-stacked {
         width: 100%;
         height: auto;
-        max-height: 400px;
+        display: block;
+        object-fit: contain; /* This ensures video maintains its aspect ratio */
+        max-height: 400px; 
+        margin: 0 auto; /* Center the video if it doesn't fill width */
     }
 
-    .ad-content {
-        padding: 15px;
+
+    /* Hover effect */
+    .ad-item-stacked {
+        transition: opacity 0.3s ease;
     }
 
-    .ad-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 5px;
+    .ad-item-stacked:hover {
+        opacity: 0.95;
     }
 
-    .ad-description {
-        font-size: 0.9rem;
-        color: #666;
-        line-height: 1.4;
-    }
-
-    /* Carousel for multiple ads */
-    .ads-carousel {
-        position: relative;
-        overflow: hidden;
-    }
-
-    .ads-track {
-        display: flex;
-        transition: transform 0.5s ease;
-    }
-
-    .ads-track .ad-item {
-        flex: 0 0 100%;
-        margin-right: 20px;
-    }
-
-    .carousel-dots {
-        text-align: center;
-        padding: 10px 0;
-    }
-
-    .carousel-dot {
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        background: #ccc;
-        border-radius: 50%;
-        margin: 0 4px;
-        cursor: pointer;
-        transition: background 0.3s ease;
-    }
-
-    .carousel-dot.active {
-        background: #667eea;
+    /* Remove gaps between stacked items */
+    .ads-stack > * + * {
+        margin-top: 2px; /* Small gap for visual separation */
     }
 
     /* Empty state */
     .no-ads {
         text-align: center;
-        padding: 40px 20px;
+        padding: 60px 20px;
         color: #999;
     }
 
@@ -170,6 +132,46 @@
         font-size: 3rem;
         margin-bottom: 15px;
         opacity: 0.5;
+    }
+
+    /* Lazy loading styles */
+    .ad-media-stacked.lazy {
+        background: #f0f0f0;
+        min-height: 200px;
+    }
+
+    .ad-media-stacked.loaded {
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Ensure proper spacing after check-in section */
+    .checkin-section {
+        margin-bottom: 0;
+    }
+
+    /* Remove padding from parent containers for full-width effect */
+    @media (max-width: 414px) {
+        .advertisement-section {
+            margin: 0;
+        }
+    }
+
+    /* Specific handling for different video orientations */
+    .ad-item-stacked.horizontal-video {
+        max-height: 300px;
+    }
+
+    .ad-item-stacked.vertical-video {
+        max-height: 600px;
+    }
+
+    .ad-item-stacked.square-video {
+        max-height: 400px;
     }
 
     /*Button styles */

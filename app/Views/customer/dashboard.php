@@ -154,8 +154,46 @@
     
     <!-- Advertisement Section -->
     <div class="advertisement-section">
-        <div class="ads-container" id="adsContainer">
-            <!-- Ads will be loaded here dynamically -->
+        <div id="adsContainer"> 
+            <?php if (!empty($ads)): ?>
+                <div class="ads-stack">
+                    <?php foreach ($ads as $ad): ?>
+                        <?php 
+                        $mediaUrl = $ad['media_file'] 
+                            ? base_url('uploads/reward_ads/' . $ad['media_file'])
+                            : $ad['media_url'];
+                        ?>
+                        <div class="ad-item-stacked <?= $ad['ad_type'] === 'video' ? 'video-container' : '' ?>" 
+                            data-id="<?= $ad['id'] ?>"
+                            <?= $ad['click_url'] ? 'data-url="' . $ad['click_url'] . '"' : '' ?>>
+                            <?php if ($ad['ad_type'] === 'video'): ?>
+                                <video class="ad-media-stacked" autoplay muted loop playsinline>
+                                    <source src="<?= $mediaUrl ?>" type="video/mp4">
+                                </video>
+                            <?php else: ?>
+                                <img class="ad-media-stacked" src="<?= $mediaUrl ?>" alt="<?= esc($ad['ad_title'] ?? 'Advertisement') ?>">
+                            <?php endif; ?>
+                            
+                            <?php if (!empty($ad['ad_title']) || !empty($ad['ad_description'])): ?>
+                                <div class="ad-overlay-content">
+                                    <?php if (!empty($ad['ad_title'])): ?>
+                                        <h4 class="ad-overlay-title"><?= esc($ad['ad_title']) ?></h4>
+                                    <?php endif; ?>
+                                    <?php if (!empty($ad['ad_description'])): ?>
+                                        <p class="ad-overlay-description"><?= esc($ad['ad_description']) ?></p>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <!-- Empty State -->
+                <div class="no-ads">
+                    <i class="bi bi-image"></i>
+                    <p>Check back later for special offers!</p>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -166,6 +204,14 @@
 <?= $this->section('scripts') ?>
 <!-- Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Dashboard JavaScript Modules -->
+<script src="<?= base_url('js/dashboard/dashboard-config.js') ?>"></script>
+<script src="<?= base_url('js/dashboard/dashboard-utils.js') ?>"></script>
+<script src="<?= base_url('js/dashboard/dashboard-core.js') ?>"></script>
+<script src="<?= base_url('js/dashboard/fortune-wheel.js') ?>"></script>
+<script src="<?= base_url('js/dashboard/dashboard-init.js') ?>"></script>
+<script src="<?= base_url('js/dashboard/dashboard-ads.js') ?>"></script>
 
 <!-- Dashboard Configuration from PHP -->
 <script>
@@ -191,13 +237,5 @@ const dashboardPhpConfig = {
     ads: <?= json_encode($ads ?? []) ?>
 };
 </script>
-
-<!-- Dashboard JavaScript Modules -->
-<script src="<?= base_url('js/dashboard/dashboard-config.js') ?>"></script>
-<script src="<?= base_url('js/dashboard/dashboard-utils.js') ?>"></script>
-<script src="<?= base_url('js/dashboard/dashboard-core.js') ?>"></script>
-<script src="<?= base_url('js/dashboard/fortune-wheel.js') ?>"></script>
-<script src="<?= base_url('js/dashboard/dashboard-init.js') ?>"></script>
-<script src="<?= base_url('js/dashboard/dashboard-ads.js') ?>"></script>
 
 <?= $this->endSection() ?>

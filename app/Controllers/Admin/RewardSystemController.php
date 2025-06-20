@@ -40,7 +40,7 @@ class RewardSystemController extends BaseController
     {
         if ($this->request->getMethod() === 'POST') {
             $rules = [
-                'ad_title' => 'required|min_length[3]',
+                'ad_title' => 'permit_empty',
                 'ad_type' => 'required|in_list[image,video]',
             ];
 
@@ -97,7 +97,7 @@ class RewardSystemController extends BaseController
 
         if ($this->request->getMethod() === 'POST') {
             $rules = [
-                'ad_title' => 'required|min_length[3]',
+                'ad_title' => 'permit_empty',
                 'ad_type' => 'required|in_list[image,video]',
             ];
 

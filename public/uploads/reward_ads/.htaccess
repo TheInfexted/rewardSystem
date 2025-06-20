@@ -1,0 +1,24 @@
+# Prevent directory listing
+Options -Indexes
+
+# Set default handler
+DirectoryIndex index.html index.php
+
+# Deny access to all files by default
+<FilesMatch ".*">
+    Require all denied
+</FilesMatch>
+
+# Allow access to image and video files
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|mp4|webm|ogg|avi|mov)$">
+    Require all granted
+</FilesMatch>
+
+# Extra security: Deny access to PHP files
+<FilesMatch "\.php$">
+    Require all denied
+</FilesMatch>
+
+# Prevent script execution
+AddHandler cgi-script .php .pl .py .jsp .asp .sh .cgi
+Options -ExecCGI

@@ -1,13 +1,14 @@
 /**
- * Dashboard Advertisement Handler
+ * Dashboard Advertisement Handler - Stacked Layout
  */
+if (typeof DashboardConfig === 'undefined') {
+    console.error('DashboardConfig not initialized. Make sure dashboard-config.js is loaded first.');
+}
 
 class DashboardAds {
     constructor() {
         this.container = document.getElementById('adsContainer');
-        this.currentIndex = 0;
         this.ads = [];
-        this.autoRotateInterval = null;
     }
 
     /**
@@ -21,81 +22,92 @@ class DashboardAds {
             return;
         }
 
-        if (this.ads.length === 1) {
-            this.renderSingleAd(this.ads[0]);
-        } else {
-            this.renderCarousel();
-            this.startAutoRotate();
-        }
+        this.renderStackedAds();
+        this.attachLazyLoading();
+        this.detectVideoOrientation(); // Call it here after rendering
     }
 
     /**
-     * Render single ad
+     * Render stacked ads
      */
-    renderSingleAd(ad) {
-        const adHtml = this.createAdHtml(ad);
-        this.container.innerHTML = adHtml;
-        this.attachClickHandler(ad);
-    }
-
-    /**
-     * Render carousel for multiple ads
-     */
-    renderCarousel() {
-        let carouselHtml = '<div class="ads-carousel">';
-        carouselHtml += '<div class="ads-track" id="adsTrack">';
+    renderStackedAds() {
+        let stackHtml = '<div class="ads-stack">';
         
-        this.ads.forEach(ad => {
-            carouselHtml += this.createAdHtml(ad);
+        this.ads.forEach((ad, index) => {
+            stackHtml += this.createAdHtml(ad, index);
         });
         
-        carouselHtml += '</div>';
+        stackHtml += '</div>';
         
-        // Add dots
-        if (this.ads.length > 1) {
-            carouselHtml += '<div class="carousel-dots">';
-            for (let i = 0; i < this.ads.length; i++) {
-                carouselHtml += `<span class="carousel-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></span>`;
-            }
-            carouselHtml += '</div>';
-        }
+        this.container.innerHTML = stackHtml;
         
-        carouselHtml += '</div>';
+        // Attach click handlers
+        this.attachClickHandlers();
+    }
+
+    /**
+     * Detect video orientation and add appropriate classes
+     */
+    detectVideoOrientation() {
+        const videos = this.container.querySelectorAll('video.ad-media-stacked');
         
-        this.container.innerHTML = carouselHtml;
-        
-        // Attach handlers
-        this.attachCarouselHandlers();
+        videos.forEach(video => {
+            video.addEventListener('loadedmetadata', function() {
+                const aspectRatio = this.videoWidth / this.videoHeight;
+                const container = this.closest('.ad-item-stacked');
+                
+                if (aspectRatio > 1.3) {
+                    // Horizontal video (16:9, etc.)
+                    container.classList.add('horizontal-video');
+                } else if (aspectRatio < 0.8) {
+                    // Vertical video (9:16, etc.)
+                    container.classList.add('vertical-video');
+                } else {
+                    // Square-ish video
+                    container.classList.add('square-video');
+                }
+            });
+        });
     }
 
     /**
      * Create ad HTML
      */
-    createAdHtml(ad) {
+    createAdHtml(ad, index) {
         const mediaUrl = ad.media_file 
             ? `${DashboardConfig.baseUrl}uploads/reward_ads/${ad.media_file}`
             : ad.media_url;
 
-        let html = `<div class="ad-item" data-id="${ad.id}" data-url="${ad.click_url || ''}">`;
+        // For lazy loading, use data-src for images beyond the first two
+        const isLazyLoad = index > 1;
+        
+        let html = `<div class="ad-item-stacked ${ad.ad_type === 'video' ? 'video-container' : ''}" data-id="${ad.id}" ${ad.click_url ? `data-url="${ad.click_url}"` : ''}>`;
         
         if (ad.ad_type === 'video') {
+            // Videos should not lazy load to ensure smooth playback
             html += `
-                <video class="ad-media ad-video" controls autoplay muted loop>
+                <video class="ad-media-stacked" autoplay muted loop playsinline>
                     <source src="${mediaUrl}" type="video/mp4">
-                    Your browser does not support the video tag.
                 </video>
             `;
         } else {
-            html += `<img class="ad-media" src="${mediaUrl}" alt="${ad.ad_title}">`;
+            if (isLazyLoad) {
+                // Lazy load images after the first two
+                html += `<img class="ad-media-stacked lazy" data-src="${mediaUrl}" alt="${ad.ad_title || 'Advertisement'}">`;
+            } else {
+                // Load first two images immediately
+                html += `<img class="ad-media-stacked" src="${mediaUrl}" alt="${ad.ad_title || 'Advertisement'}">`;
+            }
         }
         
+        // Only add overlay if title or description exists
         if (ad.ad_title || ad.ad_description) {
-            html += '<div class="ad-content">';
+            html += '<div class="ad-overlay-content">';
             if (ad.ad_title) {
-                html += `<h4 class="ad-title">${ad.ad_title}</h4>`;
+                html += `<h4 class="ad-overlay-title">${this.escapeHtml(ad.ad_title)}</h4>`;
             }
             if (ad.ad_description) {
-                html += `<p class="ad-description">${ad.ad_description}</p>`;
+                html += `<p class="ad-overlay-description">${this.escapeHtml(ad.ad_description)}</p>`;
             }
             html += '</div>';
         }
@@ -106,130 +118,76 @@ class DashboardAds {
     }
 
     /**
-     * Attach click handler
+     * Attach click handlers
      */
-    attachClickHandler(ad) {
-        const adElement = this.container.querySelector('.ad-item');
-        if (adElement && ad.click_url) {
+    attachClickHandlers() {
+        const adElements = this.container.querySelectorAll('.ad-item-stacked[data-url]');
+        
+        adElements.forEach(adElement => {
             adElement.style.cursor = 'pointer';
-            adElement.addEventListener('click', () => {
-                window.open(ad.click_url, '_blank');
-            });
-        }
-    }
-
-    /**
-     * Attach carousel handlers
-     */
-    attachCarouselHandlers() {
-        // Click handlers for ads
-        this.ads.forEach((ad, index) => {
-            const adElement = this.container.querySelectorAll('.ad-item')[index];
-            if (adElement && ad.click_url) {
-                adElement.addEventListener('click', () => {
-                    window.open(ad.click_url, '_blank');
-                });
-            }
-        });
-
-        // Dot navigation
-        const dots = this.container.querySelectorAll('.carousel-dot');
-        dots.forEach(dot => {
-            dot.addEventListener('click', () => {
-                const index = parseInt(dot.dataset.index);
-                this.goToSlide(index);
-                this.stopAutoRotate();
-                this.startAutoRotate();
-            });
-        });
-
-        // Touch/swipe support
-        this.addSwipeSupport();
-    }
-
-    /**
-     * Go to specific slide
-     */
-    goToSlide(index) {
-        this.currentIndex = index;
-        const track = document.getElementById('adsTrack');
-        if (track) {
-            track.style.transform = `translateX(-${index * 100}%)`;
-        }
-        
-        // Update dots
-        const dots = this.container.querySelectorAll('.carousel-dot');
-        dots.forEach((dot, i) => {
-            dot.classList.toggle('active', i === index);
-        });
-    }
-
-    /**
-     * Start auto-rotate
-     */
-    startAutoRotate() {
-        this.autoRotateInterval = setInterval(() => {
-            this.nextSlide();
-        }, 5000); // Change slide every 5 seconds
-    }
-
-    /**
-     * Stop auto-rotate
-     */
-    stopAutoRotate() {
-        if (this.autoRotateInterval) {
-            clearInterval(this.autoRotateInterval);
-        }
-    }
-
-    /**
-     * Next slide
-     */
-    nextSlide() {
-        const nextIndex = (this.currentIndex + 1) % this.ads.length;
-        this.goToSlide(nextIndex);
-    }
-
-    /**
-     * Add swipe support
-     */
-    addSwipeSupport() {
-        let startX = 0;
-        let currentX = 0;
-        let isDragging = false;
-        
-        const track = document.getElementById('adsTrack');
-        if (!track) return;
-
-        track.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-            isDragging = true;
-        });
-
-        track.addEventListener('touchmove', (e) => {
-            if (!isDragging) return;
-            e.preventDefault();
-            currentX = e.touches[0].clientX;
-        });
-
-        track.addEventListener('touchend', () => {
-            if (!isDragging) return;
-            isDragging = false;
-            
-            const diff = startX - currentX;
-            if (Math.abs(diff) > 50) { // Minimum swipe distance
-                if (diff > 0) {
-                    // Swipe left - next
-                    this.nextSlide();
-                } else {
-                    // Swipe right - previous
-                    const prevIndex = (this.currentIndex - 1 + this.ads.length) % this.ads.length;
-                    this.goToSlide(prevIndex);
+            adElement.addEventListener('click', (e) => {
+                e.preventDefault();
+                const url = adElement.dataset.url;
+                if (url) {
+                    window.open(url, '_blank');
+                    
+                    // Track click (optional analytics)
+                    this.trackAdClick(adElement.dataset.id);
                 }
-                this.stopAutoRotate();
-                this.startAutoRotate();
-            }
+            });
         });
+    }
+
+    /**
+     * Lazy loading for images
+     */
+    attachLazyLoading() {
+        const lazyImages = this.container.querySelectorAll('img.lazy');
+        
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.classList.remove('lazy');
+                        img.classList.add('loaded');
+                        observer.unobserve(img);
+                    }
+                });
+            }, {
+                rootMargin: '50px 0px', // Start loading 50px before entering viewport
+                threshold: 0.01
+            });
+
+            lazyImages.forEach(img => {
+                imageObserver.observe(img);
+            });
+        } else {
+            // Fallback for browsers without IntersectionObserver
+            lazyImages.forEach(img => {
+                img.src = img.dataset.src;
+                img.classList.remove('lazy');
+            });
+        }
+    }
+
+    /**
+     * Track ad click (optional - for analytics)
+     */
+    trackAdClick(adId) {
+        console.log('Ad clicked:', adId);
+        
+        // You can send this to your analytics endpoint
+        // Example:
+        // fetch('/api/track-ad-click', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'X-Requested-With': 'XMLHttpRequest'
+        //     },
+        //     body: JSON.stringify({ ad_id: adId })
+        // });
     }
 
     /**
@@ -239,9 +197,43 @@ class DashboardAds {
         this.container.innerHTML = `
             <div class="no-ads">
                 <i class="bi bi-image"></i>
-                <p>No advertisements available</p>
+                <p>Check back later for special offers!</p>
             </div>
         `;
+    }
+
+    /**
+     * Escape HTML to prevent XSS
+     */
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    /**
+     * Refresh ads (optional - for dynamic updates)
+     */
+    async refreshAds() {
+        try {
+            const response = await fetch('/customer/get-ads', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.ads) {
+                    this.ads = data.ads;
+                    this.renderStackedAds();
+                    this.attachLazyLoading();
+                    this.detectVideoOrientation(); // Also call it here after refresh
+                }
+            }
+        } catch (error) {
+            console.error('Failed to refresh ads:', error);
+        }
     }
 }
 
@@ -253,4 +245,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof dashboardPhpConfig !== 'undefined' && dashboardPhpConfig.ads) {
         dashboardAds.init(dashboardPhpConfig.ads);
     }
+    
+    // Optional: Auto-refresh ads every 5 minutes
+    // setInterval(() => {
+    //     dashboardAds.refreshAds();
+    // }, 5 * 60 * 1000);
 });
