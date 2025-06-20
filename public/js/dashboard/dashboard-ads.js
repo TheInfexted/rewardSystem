@@ -121,17 +121,20 @@ class DashboardAds {
      * Attach click handlers
      */
     attachClickHandlers() {
-        const adElements = this.container.querySelectorAll('.ad-item-stacked[data-url]');
-        
+        const adElements = this.container.querySelectorAll('.ad-item-stacked');
+
+        console.log('Binding click handlers to:', adElements.length, 'ads'); 
+
         adElements.forEach(adElement => {
             adElement.style.cursor = 'pointer';
             adElement.addEventListener('click', (e) => {
                 e.preventDefault();
+
                 const url = adElement.dataset.url;
-                if (url) {
+                console.log('Clicked ad with URL:', url); 
+
+                if (url && url !== '#') {
                     window.open(url, '_blank');
-                    
-                    // Track click (optional analytics)
                     this.trackAdClick(adElement.dataset.id);
                 }
             });
