@@ -20,6 +20,7 @@ class CustomerModel extends Model
         'profile_background',
         'profile_background_image',
         'dashboard_bg_color',
+        'spin_tokens',
         'spin_count', 
         'last_spin_date', 
         'points', 
@@ -273,5 +274,160 @@ class CustomerModel extends Model
                     ->groupEnd()
                     ->orderBy('created_at', 'DESC')
                     ->findAll($limit);
+    }
+
+    /**
+     * Add spin tokens to customer
+     */
+    public function addSpinTokens(int $customerId, int $tokens, int $adminId = null, string $reason = null): bool
+    {
+        $db = \Config\Database::connect();
+        $db->transStart();
+        
+        try {
+            // Get current balance
+            $customer = $this->find($customerId);
+            if (!$customer) {
+                throw new \Exception('Customer not found');
+            }
+            
+            $currentBalance = $customer['spin_tokens'] ?? 0;
+            $newBalance = $currentBalance + $tokens;
+            
+            // Update customer tokens
+            $this->update($customerId, ['spin_tokens' => $newBalance]);
+            
+            // Record in history
+            $historyData = [
+                'customer_id' => $customerId,
+                'admin_id' => $adminId,
+                'action' => 'add',
+                'amount' => $tokens,
+                'balance_before' => $currentBalance,
+                'balance_after' => $newBalance,
+                'reason' => $reason
+            ];
+            
+            $db->table('spin_tokens_history')->insert($historyData);
+            
+            $db->transComplete();
+            
+            return $db->transStatus();
+            
+        } catch (\Exception $e) {
+            $db->transRollback();
+            log_message('error', 'Failed to add spin tokens: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Remove spin tokens from customer
+     */
+    public function removeSpinTokens(int $customerId, int $tokens, int $adminId = null, string $reason = null): bool
+    {
+        $db = \Config\Database::connect();
+        $db->transStart();
+        
+        try {
+            // Get current balance
+            $customer = $this->find($customerId);
+            if (!$customer) {
+                throw new \Exception('Customer not found');
+            }
+            
+            $currentBalance = $customer['spin_tokens'] ?? 0;
+            $newBalance = max(0, $currentBalance - $tokens); // Don't go below 0
+            
+            // Update customer tokens
+            $this->update($customerId, ['spin_tokens' => $newBalance]);
+            
+            // Record in history
+            $historyData = [
+                'customer_id' => $customerId,
+                'admin_id' => $adminId,
+                'action' => 'remove',
+                'amount' => $tokens,
+                'balance_before' => $currentBalance,
+                'balance_after' => $newBalance,
+                'reason' => $reason
+            ];
+            
+            $db->table('spin_tokens_history')->insert($historyData);
+            
+            $db->transComplete();
+            
+            return $db->transStatus();
+            
+        } catch (\Exception $e) {
+            $db->transRollback();
+            log_message('error', 'Failed to remove spin tokens: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Use a spin token
+     */
+    public function useSpinToken(int $customerId): bool
+    {
+        $db = \Config\Database::connect();
+        $db->transStart();
+        
+        try {
+            // Get current balance
+            $customer = $this->find($customerId);
+            if (!$customer) {
+                throw new \Exception('Customer not found');
+            }
+            
+            $currentBalance = $customer['spin_tokens'] ?? 0;
+            
+            if ($currentBalance <= 0) {
+                throw new \Exception('No spin tokens available');
+            }
+            
+            $newBalance = $currentBalance - 1;
+            
+            // Update customer tokens
+            $this->update($customerId, ['spin_tokens' => $newBalance]);
+            
+            // Record in history
+            $historyData = [
+                'customer_id' => $customerId,
+                'admin_id' => null,
+                'action' => 'used',
+                'amount' => 1,
+                'balance_before' => $currentBalance,
+                'balance_after' => $newBalance,
+                'reason' => 'Fortune wheel spin'
+            ];
+            
+            $db->table('spin_tokens_history')->insert($historyData);
+            
+            $db->transComplete();
+            
+            return $db->transStatus();
+            
+        } catch (\Exception $e) {
+            $db->transRollback();
+            log_message('error', 'Failed to use spin token: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Get spin tokens history
+     */
+    public function getTokensHistory(int $customerId, int $limit = 20): array
+    {
+        $db = \Config\Database::connect();
+        
+        return $db->table('spin_tokens_history')
+            ->where('customer_id', $customerId)
+            ->orderBy('created_at', 'DESC')
+            ->limit($limit)
+            ->get()
+            ->getResultArray();
     }
 }

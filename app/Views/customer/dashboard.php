@@ -30,6 +30,10 @@
             <div class="user-info">
                 <h4 class="username"><?= esc($username) ?></h4>
                 <p class="user-subtitle">Premium Member</p>
+                <p class="spin-tokens">
+                    <i class="bi bi-coin"></i> 
+                    <span id="spinTokensCount"><?= $spin_tokens ?></span> Spin Tokens
+                </p>
             </div>
             
             <div class="header-actions">

@@ -10,13 +10,16 @@ class CustomerAuth implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        if (!session()->get('customer_logged_in')) {
-            return redirect()->to('/reward')->with('error', 'Please login first');
+        $session = session();
+        
+        // Check if customer is logged in
+        if (!$session->get('customer_logged_in')) {
+            return redirect()->to('/customer/login')->with('error', 'Please login to continue');
         }
     }
-
+    
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        // Do nothing
+        // Do something here
     }
 }

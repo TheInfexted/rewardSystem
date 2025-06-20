@@ -17,9 +17,6 @@ $routes->post('store-winner', 'LandingController::storeWinner');
 // API Routes
 $routes->get('api/wheel-data', 'CustomerController::getWheelData');
 
-// Dashboard Color routes
-$routes->post('dashboard/updateBackgroundColor', 'Dashboard::updateBackgroundColor');
-
 //Reward System routes
 $routes->group('reward', function($routes) {
     $routes->get('/', 'RewardController::index');
@@ -32,10 +29,16 @@ $routes->group('reward', function($routes) {
 
 // Customer routes
 $routes->group('customer', function($routes) {
+    $routes->get('login', 'CustomerController::login');
+    $routes->post('authenticate', 'CustomerController::authenticate');
+    $routes->get('logout', 'CustomerController::logout');
     $routes->get('dashboard', 'CustomerController::dashboard');
     $routes->post('checkin', 'CustomerController::checkin');
+    $routes->post('updateDashboardColor', 'CustomerController::updateDashboardColor');
     $routes->post('update-background', 'CustomerController::updateBackground');
-    $routes->post('remove-background', 'CustomerController::removeBackgroundImage'); 
+    $routes->post('remove-background-image', 'CustomerController::removeBackgroundImage');
+    $routes->get('wheel-data', 'CustomerController::getWheelData');
+    $routes->get('ads', 'CustomerController::getAds');
 });
 
 // Authentication routes
@@ -145,4 +148,9 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
         $routes->get('export', 'Admin\LanguageController::export');
         $routes->post('import', 'Admin\LanguageController::import');
     });
+
+    // Customer management
+    $routes->get('customers', 'Admin\CustomersController::index');
+    $routes->get('customers/tokens/(:num)', 'Admin\CustomersController::manageTokens/$1');
+    $routes->post('customers/update-tokens', 'Admin\CustomersController::updateTokens');
 });

@@ -225,7 +225,7 @@
     .profile-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 20px;
+        padding: 60px;
         text-align: center;
         position: relative;
         overflow: hidden;
@@ -929,4 +929,18 @@
             min-width: 120px;
             margin-right: 5px;
         }
+    }
+
+    .spin-tokens {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 5px 15px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-top: 10px;
+        font-size: 0.9rem;
+    }
+
+    .spin-tokens i {
+        color: #ffd700;
+        margin-right: 5px;
     }

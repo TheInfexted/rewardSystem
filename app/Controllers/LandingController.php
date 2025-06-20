@@ -9,6 +9,7 @@ use App\Models\BonusClaimModel;
 use App\Models\AdminSettingsModel;
 use App\Models\LandingPageMusicModel;
 use App\Models\WheelSoundModel;
+use App\Models\CustomerModel;
 
 
 class LandingController extends BaseController
@@ -19,6 +20,7 @@ class LandingController extends BaseController
     protected $adminSettingsModel;
     protected $landingPageMusicModel;
     protected $wheelSoundModel;
+    protected $customerModel;
 
     public function __construct()
     {
@@ -28,6 +30,7 @@ class LandingController extends BaseController
         $this->adminSettingsModel = new AdminSettingsModel();
         $this->landingPageMusicModel = new LandingPageMusicModel();
         $this->wheelSoundModel = new WheelSoundModel();
+        $this->customerModel = new CustomerModel();
         
         // Set user IP in session when controller is loaded
         $this->setUserIpInSession();
@@ -75,82 +78,64 @@ class LandingController extends BaseController
         if ($this->request->isAJAX()) {
             $session = session();
             
-            // Check daily reset
-            if ($session->get('spin_date') != date('Y-m-d')) {
-                $session->set('spins_today', 0);
-                $session->set('spin_date', date('Y-m-d'));
-            }
-            
-            $spinsToday = $session->get('spins_today');
-            
-            // Check spins limit
-            if ($spinsToday >= 3) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'You have used all your free spins for today!'
-                ]);
-            }
-            
-            // Check if predetermined outcome was sent from frontend
-            $predeterminedOutcome = $this->request->getPost('predetermined_outcome');
-            
-            if ($predeterminedOutcome) {
-                // Handle predetermined outcome from frontend
-                $winner = json_decode($predeterminedOutcome, true);
+            $customerId = $session->get('customer_id');
+
+            // Check if customer is logged in
+            if ($customerId) {
+                // Customer spin - use tokens
+                $customer = $this->customerModel->find($customerId);
                 
-                // Validate the predetermined outcome
-                if (!$winner || !isset($winner['item_name'])) {
+                if (!$customer || ($customer['spin_tokens'] ?? 0) <= 0) {
                     return $this->response->setJSON([
                         'success' => false,
-                        'message' => 'Invalid predetermined outcome'
+                        'message' => 'No spin tokens available',
+                        'spins_remaining' => 0
                     ]);
                 }
                 
-                // Update session spins count
+                // Use a spin token
+                $tokenUsed = $this->customerModel->useSpinToken($customerId);
+                
+                if (!$tokenUsed) {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'Failed to use spin token',
+                        'spins_remaining' => $customer['spin_tokens']
+                    ]);
+                }
+
+                // Get updated token balance
+                $updatedCustomer = $this->customerModel->find($customerId);
+                $spinsToday = 0; // no session tracking needed for logged-in
+                $remainingTokens = $updatedCustomer['spin_tokens'] ?? 0;
+
+            } else {
+                // Guest user - use session-based spins
+                if ($session->get('spin_date') != date('Y-m-d')) {
+                    $session->set('spins_today', 0);
+                    $session->set('spin_date', date('Y-m-d'));
+                }
+
+                $spinsToday = $session->get('spins_today') ?? 0;
+                $maxSpinsPerDay = $this->getSettingValue('max_daily_spins', 3);
+
+                if ($spinsToday >= $maxSpinsPerDay) {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'You have used all your free spins for today!',
+                        'spins_remaining' => 0
+                    ]);
+                }
+
                 $session->set('spins_today', $spinsToday + 1);
-                $spinsRemaining = max(0, 3 - ($spinsToday + 1));
-                
-                // Log the predetermined spin result to database
-                $this->logSpinResult($winner, $session);
-                
-                return $this->response->setJSON([
-                    'success' => true,
-                    'winner' => $winner,
-                    'predetermined' => true,
-                    'spins_remaining' => $spinsRemaining,
-                    'message' => 'Spin completed successfully!'
-                ]);
-            }
-            
-            // Fallback logic (same as before)
-            $wheelItems = $this->wheelItemsModel->getWheelItems();
-            
-            if (empty($wheelItems)) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Wheel configuration error. Please contact support.'
-                ]);
-            }
-            
-            $winnerIndex = $this->wheelItemsModel->calculateWinner($wheelItems);
-            $winner = $wheelItems[$winnerIndex];
-            
-            $session->set('spins_today', $spinsToday + 1);
-            
-            $segmentDegrees = 360 / count($wheelItems);
-            $baseDegrees = $winnerIndex * $segmentDegrees;
-            $rotation = 360 * 5 + $baseDegrees + rand(5, 35);
-            
-            $spinsRemaining = max(0, 3 - ($spinsToday + 1));
-            
-            $this->logSpinResult($winner, $session);
+                $remainingTokens = $maxSpinsPerDay - ($spinsToday + 1);
+            };
+
+        
             
             return $this->response->setJSON([
                 'success' => true,
-                'winner' => $winner,
-                'rotation' => $rotation,
-                'index' => $winnerIndex,
-                'spins_remaining' => $spinsRemaining,
+                'spins_remaining' => $remainingTokens,
                 'predetermined' => false
             ]);
         }

@@ -109,5 +109,17 @@ class Filters extends BaseFilters
      *
      * @var array<string, array<string, list<string>>>
      */
-    public array $filters = [];
+    public array $filters = [
+        'customerAuth' => [
+            'before' => [
+                'customer/dashboard',
+                'customer/checkin',
+                'customer/update-background',
+                'customer/updateDashboardColor',
+                'customer/remove-background-image',
+                'customer/wheel-data',
+                'customer/ads'
+            ]
+        ]
+    ];
 }

@@ -93,6 +93,12 @@
                                 <?= t('Admin.nav.reward_ads') ?>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="<?= base_url('admin/customers') ?>" class="nav-link">
+                                <i class="bi bi-person"></i>
+                                <p>Customer Management</p>
+                            </a>
+                        </li>
                     </ul>
                 </div>
 

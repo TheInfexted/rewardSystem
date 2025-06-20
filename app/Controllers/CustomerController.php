@@ -65,6 +65,7 @@ class CustomerController extends BaseController
                 'profile_background' => $customer['profile_background'] ?? 'default',
                 'profile_background_image' => $customer['profile_background_image'] ?? null,
                 'dashboard_bg_color' => $customer['dashboard_bg_color'] ?? '#ffffff',
+                'spin_tokens' => $customer['spin_tokens'] ?? 0,
                 'today_checkin' => $weekData['today_checkin'],
                 'week_checkins' => $weekData['week_checkins'],
                 'checkin_streak' => $weekData['checkin_count'],
@@ -111,6 +112,102 @@ class CustomerController extends BaseController
         }
         
         return redirect()->to('/customer/dashboard');
+    }
+
+    /**
+     * Display login page
+     */
+    public function login()
+    {
+        $session = session();
+        
+        // If already logged in, redirect to dashboard
+        if ($session->get('customer_logged_in')) {
+            return redirect()->to('/customer/dashboard');
+        }
+        
+        $data = [
+            'site_name' => 'TapTapWin' // Or get from settings
+        ];
+        
+        return view('customer/login', $data);
+    }
+
+    /**
+     * Authenticate customer login
+     */
+    public function authenticate()
+    {
+        $session = session();
+        
+        // Validate input
+        $rules = [
+            'username' => 'required|min_length[3]',
+            'password' => 'required|min_length[4]'
+        ];
+        
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('error', 'Please enter valid credentials');
+        }
+        
+        $username = $this->request->getPost('username');
+        $password = $this->request->getPost('password');
+        $remember = $this->request->getPost('remember');
+        
+        // Authenticate user
+        $customer = $this->customerModel->authenticate($username, $password);
+        
+        if ($customer) {
+            // Set session data
+            $sessionData = [
+                'customer_id' => $customer['id'],
+                'customer_logged_in' => true,
+                'customer_data' => [
+                    'username' => $customer['username'],
+                    'name' => $customer['name'] ?? $customer['username'],
+                    'points' => $customer['points'] ?? 0
+                ]
+            ];
+            
+            $session->set($sessionData);
+            
+            // Set remember me cookie if checked
+            if ($remember) {
+                // Set a cookie that expires in 30 days
+                $this->response->setCookie([
+                    'name' => 'customer_remember',
+                    'value' => $customer['id'],
+                    'expire' => 86400 * 30, // 30 days
+                    'httponly' => true,
+                    'secure' => true,
+                    'samesite' => 'Lax'
+                ]);
+            }
+            
+            log_message('info', 'Customer login successful: ' . $username);
+            
+            return redirect()->to('/customer/dashboard')->with('success', 'Welcome back!');
+        } else {
+            log_message('warning', 'Failed login attempt for username: ' . $username);
+            
+            return redirect()->back()->withInput()->with('error', 'Invalid username or password');
+        }
+    }
+
+    /**
+     * Logout customer
+     */
+    public function logout()
+    {
+        $session = session();
+        
+        // Remove customer session data
+        $session->remove(['customer_id', 'customer_logged_in', 'customer_data']);
+        
+        // Remove remember me cookie
+        $this->response->deleteCookie('customer_remember');
+        
+        return redirect()->to('/customer/login')->with('success', 'You have been logged out successfully');
     }
 
     /**
@@ -607,15 +704,10 @@ class CustomerController extends BaseController
 
         try {
             $db = \Config\Database::connect();
-
-            // Count today's spins
-            $spinCount = $db->table('spin_history')
-                ->where('customer_id', $customerId)
-                ->where('DATE(spin_time)', date('Y-m-d'))
-                ->countAllResults();
-
-            $maxSpinsPerDay = 3;
-            $remainingSpins = max(0, $maxSpinsPerDay - $spinCount);
+            
+            // Get customer spin tokens
+            $customer = $this->customerModel->find($customerId);
+            $spinTokens = $customer['spin_tokens'] ?? 0;
 
             // Fetch wheel items from the database
             $wheelItemsRaw = $db->table('wheel_items')
@@ -638,9 +730,9 @@ class CustomerController extends BaseController
 
             return $this->response->setJSON([
                 'success' => true,
-                'spins_remaining' => $remainingSpins,
+                'spins_remaining' => $spinTokens,  
                 'wheel_items' => $wheelItems,
-                'spin_sound' => ['enabled' => true], // You can fetch these from DB if needed
+                'spin_sound' => ['enabled' => true],
                 'win_sound' => ['enabled' => true]
             ]);
 

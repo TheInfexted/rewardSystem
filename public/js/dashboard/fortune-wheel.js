@@ -138,10 +138,10 @@ class FortuneWheel {
                                 <!-- Wheel Header -->
                                 <article class="text-center my-3 pb-3" style="padding: 0 20px;">
                                     <p class="m-0 fw-bold text-warning blinking">
-                                        You have <b id="modalSpinsCount">${this.spinsRemaining}</b> Free Spins Left!
+                                        You have <b id="modalSpinsCount">${this.spinsRemaining}</b> Spin Tokens Left!
                                     </p>
                                     <label style="color: #fff;">
-                                        Limited Time Event: <b class="fw-semibold text-danger">LAST CHANCE!</b>
+                                        Use your tokens to spin the wheel!
                                     </label>
                                 </article>
                                 
@@ -400,8 +400,8 @@ class FortuneWheel {
         }
         
         if (this.spinsRemaining <= 0) {
-            console.log('No modal spins remaining');
-            DashboardUtils.showToast('No spins remaining!', 'warning');
+            console.log('No spin tokens remaining');
+            DashboardUtils.showToast('No spin tokens remaining! Contact customer service to get more.', 'warning');
             return;
         }
 
