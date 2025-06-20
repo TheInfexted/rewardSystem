@@ -230,11 +230,11 @@ const dashboardPhpConfig = {
     weeklyProgress: null,
     <?php endif; ?>
     <?php if (isset($recent_activities) && is_array($recent_activities)): ?>
-    recentActivities: <?= json_encode($recent_activities) ?>
+    recentActivities: <?= json_encode($recent_activities) ?>,
     <?php else: ?>
-    recentActivities: null
+    recentActivities: null,
     <?php endif; ?>
-    ads: <?= json_encode($ads ?? []) ?>
+    ads: <?= json_encode($ads ?? []) ?>,
 };
 </script>
 
