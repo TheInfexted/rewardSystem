@@ -19,6 +19,7 @@ class CustomerModel extends Model
         'name', 
         'profile_background',
         'profile_background_image',
+        'dashboard_bg_color',
         'spin_count', 
         'last_spin_date', 
         'points', 

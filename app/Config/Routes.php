@@ -17,6 +17,9 @@ $routes->post('store-winner', 'LandingController::storeWinner');
 // API Routes
 $routes->get('api/wheel-data', 'CustomerController::getWheelData');
 
+// Dashboard Color routes
+$routes->post('dashboard/updateBackgroundColor', 'Dashboard::updateBackgroundColor');
+
 //Reward System routes
 $routes->group('reward', function($routes) {
     $routes->get('/', 'RewardController::index');

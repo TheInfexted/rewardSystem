@@ -25,10 +25,6 @@ function removeBackgroundImage() {
     DashboardCore.removeBackgroundImage();
 }
 
-function redirectToDeposit() {
-    DashboardCore.redirectToDeposit();
-}
-
 function openSettings() {
     openWheelModal();
 }

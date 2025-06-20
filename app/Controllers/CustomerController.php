@@ -53,12 +53,18 @@ class CustomerController extends BaseController
             
             // Get monthly checkins count
             $monthlyCheckins = $this->getMonthlyCheckinsCount($customerId);
+
+            // Get platform settings for customer service
+            $adminSettingsModel = new \App\Models\AdminSettingsModel();
+            $whatsappNumber = $adminSettingsModel->getSetting('reward_whatsapp_number', '60102763672');
+            $telegramUsername = $adminSettingsModel->getSetting('reward_telegram_username', 'brendxn1127');
             
             $data = [
                 'title' => 'Customer Dashboard',
                 'username' => $customer['username'],
                 'profile_background' => $customer['profile_background'] ?? 'default',
                 'profile_background_image' => $customer['profile_background_image'] ?? null,
+                'dashboard_bg_color' => $customer['dashboard_bg_color'] ?? '#ffffff',
                 'today_checkin' => $weekData['today_checkin'],
                 'week_checkins' => $weekData['week_checkins'],
                 'checkin_streak' => $weekData['checkin_count'],
@@ -68,6 +74,8 @@ class CustomerController extends BaseController
                 'total_points' => $customer['points'] ?? 0,
                 'recent_activities' => $recentActivities,
                 'monthly_checkins' => $monthlyCheckins,
+                'whatsapp_number' => $whatsappNumber,
+                'telegram_username' => $telegramUsername,
                 'ads' => $this->rewardSystemAdModel->getActiveAds(),
             ];
             
@@ -77,6 +85,32 @@ class CustomerController extends BaseController
             log_message('error', 'Customer dashboard error: ' . $e->getMessage());
             return redirect()->to('/reward')->with('error', 'Unable to load dashboard');
         }
+    }
+
+    public function updateDashboardColor()
+    {
+        if ($this->request->isAJAX()) {
+            $customerId = session()->get('customer_id');
+            $color = $this->request->getPost('color');
+            
+            // Validate color format
+            if (preg_match('/^#[0-9A-F]{6}$/i', $color)) {
+                $customerModel = new CustomerModel();
+                $result = $customerModel->update($customerId, ['dashboard_bg_color' => $color]);
+                
+                return $this->response->setJSON([
+                    'success' => $result,
+                    'message' => $result ? 'Color updated' : 'Failed to update'
+                ]);
+            }
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Invalid color format'
+            ]);
+        }
+        
+        return redirect()->to('/customer/dashboard');
     }
 
     /**
