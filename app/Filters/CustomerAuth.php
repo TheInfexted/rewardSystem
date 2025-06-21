@@ -14,7 +14,7 @@ class CustomerAuth implements FilterInterface
         
         // Check if customer is logged in
         if (!$session->get('customer_logged_in')) {
-            return redirect()->to('/customer/login')->with('error', 'Please login to continue');
+            return redirect()->to('/reward')->with('error', 'Please login to continue');
         }
     }
     

@@ -23,15 +23,13 @@ $routes->group('reward', function($routes) {
     $routes->get('test', 'RewardController::test');
     $routes->post('auto-register', 'RewardController::autoRegister');
     $routes->post('login', 'RewardController::login');
+    $routes->get('logout', 'RewardController::logout');
     $routes->post('logout', 'RewardController::logout');
     $routes->post('claim-reward', 'RewardController::claimReward'); 
 });
 
 // Customer routes
 $routes->group('customer', function($routes) {
-    $routes->get('login', 'CustomerController::login');
-    $routes->post('authenticate', 'CustomerController::authenticate');
-    $routes->get('logout', 'CustomerController::logout');
     $routes->get('dashboard', 'CustomerController::dashboard');
     $routes->post('checkin', 'CustomerController::checkin');
     $routes->post('updateDashboardColor', 'CustomerController::updateDashboardColor');
