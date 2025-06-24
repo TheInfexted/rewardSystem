@@ -1,7 +1,8 @@
 <?= $this->extend('admin/layouts/main') ?>
-<link rel="stylesheet" href="<?= base_url('css/checkin-settings.css') ?>">
 
 <?= $this->section('content') ?>
+<link rel="stylesheet" href="<?= base_url('css/checkin-settings.css') ?>">
+
 <div class="container-fluid">
     <div class="row">
         <!-- Customer Info Card -->

@@ -178,24 +178,6 @@
         <main class="main-content">
             <?= $this->renderSection('content') ?>
         </main>
-        
-        <!-- Bottom Navigation -->
-        <div class="bottom-nav-container">
-            <nav class="bottom-nav">
-                <div class="nav-item <?= uri_string() == 'customer/dashboard' ? 'active' : '' ?>">
-                    <a href="<?= base_url('customer/dashboard') ?>" class="nav-link">
-                        <i class="bi bi-house"></i>
-                        <span>Home</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a href="<?= base_url('reward/logout') ?>" class="nav-link">
-                        <i class="bi bi-box-arrow-right"></i>
-                        <span>Logout</span>
-                    </a>
-                </div>
-            </nav>
-        </div>
     </div>
 
     <!-- Bootstrap JS -->

@@ -35,3 +35,14 @@ in SYSTEMPATH\Validation\Validation.php on line 345.
  8 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
  9 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
 10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-25 07:24:40 --> ErrorException: unlink(C:\xampp\htdocs\rewardSystem\public\uploads/reward_ads/1750391905_2650b7350385e3ad9245.mp4): Permission denied
+[Method: GET, Route: admin/reward-system/delete/5]
+in APPPATH\Controllers\Admin\RewardSystemController.php on line 168.
+ 1 [internal function]: CodeIgniter\Debug\Exceptions->errorHandler(2, 'unlink(C:\\xampp\\htdocs\\rewardSystem\\public\\uploads/reward_ads/1750391905_2650b7350385e3ad9245.mp4): Permission denied', 'C:\\xampp\\htdocs\\rewardSystem\\app\\Controllers\\Admin\\RewardSystemController.php', 168)
+ 2 APPPATH\Controllers\Admin\RewardSystemController.php(168): unlink('C:\\xampp\\htdocs\\rewardSystem\\public\\uploads/reward_ads/1750391905_2650b7350385e3ad9245.mp4')
+ 3 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\RewardSystemController->delete('5')
+ 4 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\RewardSystemController))
+ 5 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 7 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
