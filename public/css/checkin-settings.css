@@ -1,0 +1,435 @@
+/* ===================================================
+   CHECK-IN SETTINGS INTERFACE CSS
+   For: public/css/checkin-settings.css
+   =================================================== */
+
+/* Weekly Progress Calendar Styles */
+.weekly-day-card {
+    background: var(--secondary-black, #1a1a1a);
+    border: 2px solid var(--border-color, #333333);
+    border-radius: 10px;
+    padding: 12px 8px;
+    margin-bottom: 10px;
+    min-height: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.weekly-day-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+}
+
+.weekly-day-card.checked-in {
+    border-color: #28a745;
+    background: linear-gradient(135deg, var(--secondary-black, #1a1a1a) 0%, rgba(40, 167, 69, 0.15) 100%);
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
+}
+
+.weekly-day-card.weekend-day {
+    border-color: #17a2b8;
+    background: linear-gradient(135deg, var(--secondary-black, #1a1a1a) 0%, rgba(23, 162, 184, 0.1) 100%);
+}
+
+.weekly-day-card.checked-in.weekend-day {
+    border-color: #20c997;
+    background: linear-gradient(135deg, var(--secondary-black, #1a1a1a) 0%, rgba(32, 201, 151, 0.15) 100%);
+}
+
+.day-name {
+    font-size: 0.9rem;
+    color: var(--text-muted, #888888);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.check-icon i {
+    font-size: 1.8rem;
+    margin: 8px 0;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.no-checkin i {
+    font-size: 1.8rem;
+    margin: 8px 0;
+    opacity: 0.5;
+}
+
+.points-earned {
+    font-size: 0.8rem;
+    color: #ffc107;
+    font-weight: bold;
+    margin-top: 4px;
+    padding: 2px 6px;
+    background: rgba(255, 193, 7, 0.1);
+    border-radius: 12px;
+}
+
+.streak-day {
+    font-size: 0.7rem;
+    color: #28a745;
+    margin-top: 3px;
+    font-weight: 600;
+}
+
+/* Statistics Cards */
+.stats-card {
+    background: linear-gradient(135deg, var(--secondary-black, #1a1a1a) 0%, rgba(255, 215, 0, 0.08) 100%);
+    border: 1px solid var(--gold, #FFD700);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stats-card:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.stats-card:hover:before {
+    left: 100%;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+    border-color: #ffa500;
+}
+
+.stats-number {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: var(--gold, #FFD700);
+    margin-bottom: 8px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.stats-label {
+    color: var(--text-light, #ffffff);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 500;
+}
+
+/* Monthly Statistics Cards */
+.monthly-stat-card {
+    background: var(--secondary-black, #1a1a1a);
+    border: 1px solid var(--border-color, #333333);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.monthly-stat-card:hover {
+    border-color: var(--gold, #FFD700);
+    transform: scale(1.02);
+}
+
+.month-name {
+    font-size: 0.85rem;
+    color: var(--text-muted, #888888);
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.checkin-count {
+    font-size: 1.3rem;
+    color: var(--gold, #FFD700);
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.points-earned {
+    font-size: 0.9rem;
+    color: #28a745;
+    font-weight: 500;
+}
+
+/* Progress Summary Styles */
+.progress-summary h6,
+.previous-week-info h6 {
+    border-bottom: 2px solid var(--gold, #FFD700);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.progress-summary .badge,
+.previous-week-info .badge {
+    font-size: 0.85rem;
+    padding: 8px 12px;
+}
+
+/* Form Styles */
+.form-control {
+    background: var(--secondary-black, #1a1a1a);
+    border: 1px solid var(--border-color, #333333);
+    color: var(--text-light, #ffffff);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    background: var(--secondary-black, #1a1a1a);
+    border-color: var(--gold, #FFD700);
+    box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
+    color: var(--text-light, #ffffff);
+}
+
+.form-label {
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+/* Button Styles */
+.btn-gold {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    border: none;
+    color: #000;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-gold:hover {
+    background: linear-gradient(135deg, #FFA500 0%, #FF8C00 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    color: #000;
+}
+
+.btn-outline-gold {
+    border: 2px solid var(--gold, #FFD700);
+    color: var(--gold, #FFD700);
+    background: transparent;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-gold:hover {
+    background: var(--gold, #FFD700);
+    color: #000;
+    transform: translateY(-1px);
+}
+
+/* Table Styles */
+.table-dark {
+    background: var(--secondary-black, #1a1a1a);
+}
+
+.table-dark th {
+    border-color: var(--border-color, #333333);
+    background: var(--primary-black, #000000);
+    color: var(--gold, #FFD700);
+    font-weight: 600;
+}
+
+.table-dark td {
+    border-color: var(--border-color, #333333);
+    vertical-align: middle;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Alert/Toast Styles */
+.alert {
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+}
+
+/* Loading States */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .weekly-day-card {
+        min-height: 100px;
+        padding: 10px 6px;
+        margin-bottom: 8px;
+    }
+    
+    .day-name {
+        font-size: 0.8rem;
+        margin-bottom: 6px;
+    }
+    
+    .check-icon i,
+    .no-checkin i {
+        font-size: 1.4rem;
+        margin: 6px 0;
+    }
+    
+    .points-earned {
+        font-size: 0.7rem;
+    }
+    
+    .streak-day {
+        font-size: 0.65rem;
+    }
+    
+    .stats-card {
+        margin-bottom: 15px;
+        padding: 15px;
+    }
+    
+    .stats-number {
+        font-size: 1.8rem;
+    }
+    
+    .monthly-stat-card {
+        margin-bottom: 10px;
+        padding: 12px;
+    }
+    
+    .checkin-count {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .weekly-day-card {
+        min-height: 85px;
+        padding: 8px 4px;
+    }
+    
+    .stats-number {
+        font-size: 1.6rem;
+    }
+    
+    .stats-label {
+        font-size: 0.8rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+}
+
+/* Animation Effects */
+.fade-in {
+    animation: fadeIn 0.6s ease-in;
+}
+
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.5s ease-out;
+}
+
+@keyframes slideInLeft {
+    from { 
+        opacity: 0;
+        transform: translateX(-30px); 
+    }
+    to { 
+        opacity: 1;
+        transform: translateX(0); 
+    }
+}
+
+/* Badge Enhancements */
+.badge {
+    font-size: 0.75rem;
+    padding: 6px 10px;
+    font-weight: 600;
+}
+
+.badge.bg-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+}
+
+.badge.bg-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%) !important;
+    color: #000 !important;
+}
+
+.badge.bg-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%) !important;
+}
+
+/* Card Enhancements */
+.card {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.card-header {
+    border-bottom: 2px solid var(--gold, #FFD700);
+    font-weight: 600;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Custom Scrollbar for Tables */
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: var(--secondary-black, #1a1a1a);
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: var(--gold, #FFD700);
+    border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #ffa500;
+}

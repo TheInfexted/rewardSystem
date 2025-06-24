@@ -157,4 +157,9 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
     $routes->post('customers/resetDashboard/(:num)', 'Admin\CustomersController::resetDashboard/$1');
     $routes->post('customers/delete/(:num)', 'Admin\CustomersController::delete/$1');
     $routes->post('customers/deactivate/(:num)', 'Admin\CustomersController::deactivate/$1');
+    
+    // Check-in Settings Routes
+    $routes->get('customers/checkin-settings/(:num)', 'Admin\CustomersController::checkinSettings/$1');
+    $routes->post('customers/updateCheckinSettings', 'Admin\CustomersController::updateCheckinSettings');
+    $routes->post('customers/resetCheckinProgress/(:num)', 'Admin\CustomersController::resetCheckinProgress/$1');
 });

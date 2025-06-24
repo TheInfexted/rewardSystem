@@ -566,4 +566,404 @@ class CustomersController extends BaseController
             'dark' => 'Dark'
         ];
     }
+
+    /**
+     * Display check-in settings and history for a customer
+     */
+    public function checkinSettings($customerId)
+    {
+        $customer = $this->customerModel->find($customerId);
+        
+        if (!$customer) {
+            return redirect()->to('/admin/customers')->with('error', 'Customer not found');
+        }
+        
+        $data = [
+            'title' => 'Check-in Settings - ' . $customer['username'],
+            'customer' => $customer,
+            'checkin_settings' => $this->getCheckinSettings(),
+            'customer_checkin_history' => $this->getCustomerCheckinHistory($customerId),
+            'weekly_progress' => $this->getWeeklyProgress($customerId),
+            'checkin_statistics' => $this->getCheckinStatistics($customerId)
+        ];
+        
+        return view('admin/customers/checkin_settings', $data);
+    }
+
+    /**
+     * Update check-in settings
+     */
+    public function updateCheckinSettings()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->to('/admin/customers');
+        }
+        
+        $settingsData = $this->request->getPost();
+        
+        // Validation rules for check-in settings
+        $validationRules = [
+            'default_checkin_points' => 'required|integer|greater_than[0]|less_than[1000]',
+            'weekly_bonus_multiplier' => 'required|decimal|greater_than[0]|less_than[10]',
+            'max_streak_days' => 'required|integer|greater_than[0]|less_than[365]',
+            'weekend_bonus_points' => 'required|integer|greater_than_equal_to[0]|less_than[500]'
+        ];
+        
+        if (!$this->validate($validationRules)) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $this->validator->getErrors()
+            ]);
+        }
+        
+        try {
+            $db = \Config\Database::connect();
+            
+            // Update multiple settings at once
+            $settings = [
+                'default_checkin_points' => $settingsData['default_checkin_points'],
+                'weekly_bonus_multiplier' => $settingsData['weekly_bonus_multiplier'],
+                'max_streak_days' => $settingsData['max_streak_days'],
+                'weekend_bonus_points' => $settingsData['weekend_bonus_points']
+            ];
+            
+            foreach ($settings as $key => $value) {
+                $db->query("
+                    INSERT INTO admin_settings (setting_key, setting_value, setting_description, created_at) 
+                    VALUES (?, ?, ?, NOW()) 
+                    ON DUPLICATE KEY UPDATE 
+                    setting_value = VALUES(setting_value), 
+                    updated_at = NOW()
+                ", [$key, $value, "Check-in setting: {$key}"]);
+            }
+            
+            // Log the changes
+            $adminId = session()->get('user_id');
+            $this->logSettingsChange($adminId, 'checkin_settings_updated', json_encode($settings));
+            
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Check-in settings updated successfully'
+            ]);
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Check-in settings update error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to update settings: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Reset customer check-in progress
+     */
+    public function resetCheckinProgress($customerId)
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->to('/admin/customers');
+        }
+        
+        try {
+            $customer = $this->customerModel->find($customerId);
+            if (!$customer) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Customer not found'
+                ]);
+            }
+            
+            $resetType = $this->request->getPost('reset_type');
+            $db = \Config\Database::connect();
+            $adminId = session()->get('user_id');
+            
+            switch ($resetType) {
+                case 'current_streak':
+                    // Reset current streak only
+                    $db->query("
+                        UPDATE customer_checkins 
+                        SET streak_day = 1 
+                        WHERE customer_id = ? 
+                        AND checkin_date = (
+                            SELECT MAX(checkin_date) 
+                            FROM (SELECT checkin_date FROM customer_checkins WHERE customer_id = ?) as max_date
+                        )
+                    ", [$customerId, $customerId]);
+                    $message = 'Current streak reset successfully';
+                    break;
+                    
+                case 'monthly_progress':
+                    // Reset current month checkins
+                    $db->query("
+                        DELETE FROM customer_checkins 
+                        WHERE customer_id = ? 
+                        AND MONTH(checkin_date) = MONTH(CURRENT_DATE())
+                        AND YEAR(checkin_date) = YEAR(CURRENT_DATE())
+                    ", [$customerId]);
+                    
+                    // Update customer monthly count
+                    $this->customerModel->update($customerId, ['monthly_checkins' => 0]);
+                    $message = 'Monthly progress reset successfully';
+                    break;
+                    
+                case 'all_history':
+                    // Reset all check-in history
+                    $db->query("DELETE FROM customer_checkins WHERE customer_id = ?", [$customerId]);
+                    $db->query("DELETE FROM checkin_history WHERE user_id = ?", [$customerId]);
+                    $this->customerModel->update($customerId, ['monthly_checkins' => 0]);
+                    $message = 'All check-in history reset successfully';
+                    break;
+                    
+                default:
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'Invalid reset type'
+                    ]);
+            }
+            
+            // Log the reset action
+            $this->logProfileChanges($customerId, $customer, [
+                'checkin_reset' => $resetType,
+                'reset_by_admin' => $adminId,
+                'reset_date' => date('Y-m-d H:i:s')
+            ]);
+            
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => $message
+            ]);
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Check-in reset error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to reset check-in progress: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Get check-in settings from database
+     */
+    private function getCheckinSettings()
+    {
+        $db = \Config\Database::connect();
+        
+        $query = $db->query("
+            SELECT setting_key, setting_value 
+            FROM admin_settings 
+            WHERE setting_key IN (
+                'default_checkin_points', 
+                'weekly_bonus_multiplier', 
+                'max_streak_days', 
+                'weekend_bonus_points'
+            )
+        ");
+        
+        $settings = [];
+        foreach ($query->getResultArray() as $row) {
+            $settings[$row['setting_key']] = $row['setting_value'];
+        }
+        
+        // Set defaults if not found
+        $defaults = [
+            'default_checkin_points' => 10,
+            'weekly_bonus_multiplier' => 1.5,
+            'max_streak_days' => 7,
+            'weekend_bonus_points' => 5
+        ];
+        
+        return array_merge($defaults, $settings);
+    }
+
+    /**
+     * Get customer check-in history with pagination
+     */
+    private function getCustomerCheckinHistory($customerId, $limit = 30)
+    {
+        $db = \Config\Database::connect();
+        
+        $query = $db->query("
+            SELECT 
+                checkin_date,
+                reward_points,
+                streak_day,
+                created_at,
+                DAYNAME(checkin_date) as day_name,
+                CASE 
+                    WHEN DAYOFWEEK(checkin_date) IN (1,7) THEN 'weekend'
+                    ELSE 'weekday'
+                END as day_type
+            FROM customer_checkins 
+            WHERE customer_id = ? 
+            ORDER BY checkin_date DESC 
+            LIMIT ?
+        ", [$customerId, $limit]);
+        
+        return $query->getResultArray();
+    }
+
+    /**
+     * Get weekly progress for current and previous weeks
+     */
+    private function getWeeklyProgress($customerId)
+    {
+        $db = \Config\Database::connect();
+        
+        // Get current week progress
+        $currentWeekQuery = $db->query("
+            SELECT 
+                checkin_date,
+                reward_points,
+                streak_day,
+                DAYOFWEEK(checkin_date) as day_of_week,
+                DAYNAME(checkin_date) as day_name
+            FROM customer_checkins 
+            WHERE customer_id = ? 
+            AND YEARWEEK(checkin_date, 1) = YEARWEEK(CURDATE(), 1)
+            ORDER BY checkin_date ASC
+        ", [$customerId]);
+        
+        $currentWeek = $currentWeekQuery->getResultArray();
+        
+        // Get previous week for comparison
+        $previousWeekQuery = $db->query("
+            SELECT 
+                checkin_date,
+                reward_points,
+                COUNT(*) as checkin_count
+            FROM customer_checkins 
+            WHERE customer_id = ? 
+            AND YEARWEEK(checkin_date, 1) = YEARWEEK(DATE_SUB(CURDATE(), INTERVAL 1 WEEK), 1)
+            GROUP BY YEARWEEK(checkin_date, 1)
+        ", [$customerId]);
+        
+        $previousWeek = $previousWeekQuery->getRowArray();
+        
+        // Create weekly calendar view
+        $weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        $weeklyCalendar = [];
+        
+        foreach ($weekDays as $index => $dayName) {
+            $dayNumber = $index + 2; // MySQL DAYOFWEEK starts from Sunday=1
+            if ($dayNumber == 8) $dayNumber = 1; // Sunday
+            
+            $checkinData = null;
+            foreach ($currentWeek as $checkin) {
+                if ($checkin['day_of_week'] == $dayNumber) {
+                    $checkinData = $checkin;
+                    break;
+                }
+            }
+            
+            $weeklyCalendar[] = [
+                'day_name' => $dayName,
+                'day_number' => $dayNumber,
+                'checkin_data' => $checkinData,
+                'is_weekend' => in_array($dayName, ['Saturday', 'Sunday'])
+            ];
+        }
+        
+        return [
+            'current_week' => $weeklyCalendar,
+            'previous_week' => $previousWeek,
+            'total_current_week' => count($currentWeek),
+            'perfect_week' => count($currentWeek) >= 7
+        ];
+    }
+
+    /**
+     * Get comprehensive check-in statistics
+     */
+    private function getCheckinStatistics($customerId)
+    {
+        $db = \Config\Database::connect();
+        
+        // Basic statistics
+        $statsQuery = $db->query("
+            SELECT 
+                COUNT(*) as total_checkins,
+                SUM(reward_points) as total_points_earned,
+                MAX(streak_day) as max_streak,
+                MIN(checkin_date) as first_checkin,
+                MAX(checkin_date) as last_checkin,
+                AVG(reward_points) as avg_points_per_checkin
+            FROM customer_checkins 
+            WHERE customer_id = ?
+        ", [$customerId]);
+        
+        $basicStats = $statsQuery->getRowArray();
+        
+        // Monthly statistics
+        $monthlyQuery = $db->query("
+            SELECT 
+                MONTH(checkin_date) as month,
+                YEAR(checkin_date) as year,
+                COUNT(*) as checkin_count,
+                SUM(reward_points) as points_earned,
+                MONTHNAME(checkin_date) as month_name
+            FROM customer_checkins 
+            WHERE customer_id = ? 
+            GROUP BY YEAR(checkin_date), MONTH(checkin_date)
+            ORDER BY year DESC, month DESC
+            LIMIT 12
+        ", [$customerId]);
+        
+        $monthlyStats = $monthlyQuery->getResultArray();
+        
+        // Streak analysis
+        $streakQuery = $db->query("
+            SELECT 
+                streak_day,
+                COUNT(*) as frequency
+            FROM customer_checkins 
+            WHERE customer_id = ? 
+            GROUP BY streak_day
+            ORDER BY streak_day ASC
+        ", [$customerId]);
+        
+        $streakAnalysis = $streakQuery->getResultArray();
+        
+        // Weekend vs weekday analysis
+        $dayTypeQuery = $db->query("
+            SELECT 
+                CASE 
+                    WHEN DAYOFWEEK(checkin_date) IN (1,7) THEN 'Weekend'
+                    ELSE 'Weekday'
+                END as day_type,
+                COUNT(*) as checkin_count,
+                AVG(reward_points) as avg_points
+            FROM customer_checkins 
+            WHERE customer_id = ? 
+            GROUP BY day_type
+        ", [$customerId]);
+        
+        $dayTypeStats = $dayTypeQuery->getResultArray();
+        
+        return [
+            'basic' => $basicStats,
+            'monthly' => $monthlyStats,
+            'streak_analysis' => $streakAnalysis,
+            'day_type_analysis' => $dayTypeStats
+        ];
+    }
+
+    /**
+     * Log settings changes
+     */
+    private function logSettingsChange($adminId, $action, $details)
+    {
+        $db = \Config\Database::connect();
+        
+        try {
+            $db->query("
+                INSERT INTO customer_profile_changes 
+                (customer_id, admin_id, field_changed, old_value, new_value, change_reason, created_at) 
+                VALUES (0, ?, ?, '', ?, 'Settings updated by admin', NOW())
+            ", [$adminId, $action, $details]);
+        } catch (\Exception $e) {
+            log_message('error', 'Failed to log settings change: ' . $e->getMessage());
+        }
+    }
 }

@@ -89,10 +89,17 @@
                     <div class="nav-section-title">Customer Management</div>
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link <?= strpos(uri_string(), 'admin/customers') !== false ? 'active' : '' ?>" 
-                               href="<?= base_url('admin/customers') ?>">
+                            <a class="nav-link <?= strpos(uri_string(), 'admin/customers') !== false && strpos(uri_string(), 'checkin-settings') === false ? 'active' : '' ?>" 
+                            href="<?= base_url('admin/customers') ?>">
                                 <i class="fas fa-users"></i>
                                 Customer List
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= strpos(uri_string(), 'admin/customers/checkin-settings') !== false ? 'active' : '' ?>" 
+                            href="#" onclick="showCheckinSettingsInfo()">
+                                <i class="fas fa-calendar-check"></i>
+                                Check-in Settings
                             </a>
                         </li>
                     </ul>
@@ -281,6 +288,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 });
+
+function showCheckinSettingsInfo() {
+    alert('Please select a customer from the Customer List first, then use the "Check-in Settings" option in their profile menu.');
+}
 
 // Mobile sidebar toggle
 function toggleSidebar() {
