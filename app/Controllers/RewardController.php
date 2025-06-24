@@ -74,15 +74,6 @@ class RewardController extends BaseController
         }
 
         $session = session();
-        
-        // Check if winner data exists
-        $winnerData = $session->get('winner_data');
-        if (!$winnerData) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'No prize data found. Please spin the wheel first.'
-            ]);
-        }
 
         try {
             // Create auto customer
@@ -97,18 +88,20 @@ class RewardController extends BaseController
                         'id' => $result['id'],
                         'username' => $result['username'],
                         'name' => $result['username'],
-                        'phone' => $result['username']
+                        'phone' => $result['username'],
+                        'points' => 0  // New customers start with 0 points
                     ]
                 ]);
 
                 return $this->response->setJSON([
                     'success' => true,
-                    'message' => 'Account created successfully!',
+                    'message' => 'Account created successfully! Redirecting to dashboard in 5 seconds...',
                     'customer_data' => [
                         'username' => $result['username'],
                         'password' => $result['password'],
                         'id' => $result['id']
-                    ]
+                    ],
+                    'redirect' => base_url('customer/dashboard') 
                 ]);
             }
             
@@ -168,13 +161,15 @@ class RewardController extends BaseController
                         'id' => $customer['id'],
                         'username' => $customer['username'],
                         'name' => $customer['name'] ?? $customer['username'],
-                        'phone' => $customer['phone'] ?? $customer['username']
+                        'phone' => $customer['phone'] ?? $customer['username'],
+                        'points' => $customer['points'] ?? 0,
                     ]
                 ]);
 
                 return $this->response->setJSON([
                     'success' => true,
-                    'message' => 'Login successful!'
+                    'message' => 'Login successful!',
+                    'redirect' => base_url('customer/dashboard'),
                 ]);
             }
             

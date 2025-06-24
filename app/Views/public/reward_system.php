@@ -586,7 +586,7 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                                 <p class="text-center text-light mb-4">We'll create an instant account for you!</p>
                                 
                                 <button type="button" class="btn btn-claim" onclick="autoRegister()">
-                                    <i class="bi bi-lightning-fill"></i> Create Instant Account
+                                    <i class="bi bi-lightning-fill"></i> Create New Account
                                 </button>
 
                                 <div class="toggle-link">
@@ -816,9 +816,19 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                 
                 if (data.success) {
                     showAlert(data.message, 'success');
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
+                    
+                    // CHANGE THIS PART: Check if redirect URL exists
+                    if (data.redirect) {
+                        // Redirect to dashboard
+                        setTimeout(() => {
+                            window.location.href = data.redirect;
+                        }, 1000);
+                    } else {
+                        // Fallback: reload page
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    }
                 } else {
                     showAlert(data.message, 'danger');
                 }
@@ -830,11 +840,9 @@ $isLoggedIn = isset($logged_in) && $logged_in;
             });
         });
 
-        // Auto register function
         function autoRegister() {
             showLoading(true);
             
-            // Create FormData to handle CSRF properly
             const formData = new FormData();
             formData.append(csrfName, csrfToken);
             
@@ -845,26 +853,25 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             })
-            .then(response => {
-                console.log('Response status:', response.status);
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                console.log('Response data:', data);
                 showLoading(false);
                 
                 if (data.success) {
-                    // Hide registration options
+                    // Display credentials first
                     document.getElementById('registrationOptions').style.display = 'none';
-                    
-                    // Show account created step
                     document.getElementById('accountCreatedStep').style.display = 'block';
-                    
-                    // Display credentials
                     document.getElementById('displayUsername').textContent = data.customer_data.username;
                     document.getElementById('displayPassword').textContent = data.customer_data.password;
                     
                     showAlert(data.message, 'success');
+                    
+                    // Auto-redirect to dashboard after showing credentials
+                    if (data.redirect) {
+                        setTimeout(() => {
+                            window.location.href = data.redirect;
+                        }, 5000); // Give user 3 seconds to see and save credentials
+                    }
                 } else {
                     showAlert(data.message || 'Registration failed. Please try again.', 'danger');
                 }

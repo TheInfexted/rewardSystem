@@ -50,25 +50,6 @@
                 </button>
             </div>
         </div>
-        
-        <!-- Background Upload Options -->
-        <div class="bg-upload-container">
-            <input type="file" 
-                id="backgroundImageInput" 
-                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-                onchange="uploadBackgroundImage(this)">
-            
-            <button class="btn-upload-bg" onclick="document.getElementById('backgroundImageInput').click()">
-                <i class="bi bi-camera"></i> Change Background
-            </button>
-            
-            <?php if (!empty($profile_background_image)): ?>
-                <button class="btn-remove-bg" onclick="removeBackgroundImage()">
-                    <i class="bi bi-trash"></i>
-                </button>
-            <?php endif; ?>
-        </div>
-    </div>
 
         <!-- Color Picker Panel -->
     <div class="color-picker-panel" id="colorPickerPanel">
