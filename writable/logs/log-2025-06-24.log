@@ -1,0 +1,166 @@
+ERROR - 2025-06-24 21:12:21 --> mysqli_sql_exception: Table 'rewardsystem.spin_token_transactions' doesn't exist in C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('\r\n            S...', 0)
+#1 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('\r\n            S...')
+#2 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('\r\n            S...')
+#3 C:\xampp\htdocs\rewardSystem\app\Controllers\Admin\CustomersController.php(318): CodeIgniter\Database\BaseConnection->query('\r\n            S...', Array)
+#4 C:\xampp\htdocs\rewardSystem\app\Controllers\Admin\CustomersController.php(171): App\Controllers\Admin\CustomersController->getTokensHistory('1')
+#5 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\Admin\CustomersController->manageTokens('1')
+#6 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\CustomersController))
+#7 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+CRITICAL - 2025-06-24 21:12:21 --> CodeIgniter\Database\Exceptions\DatabaseException: Table 'rewardsystem.spin_token_transactions' doesn't exist
+[Method: GET, Route: admin/customers/tokens/1]
+in SYSTEMPATH\Database\BaseConnection.php on line 692.
+ 1 APPPATH\Controllers\Admin\CustomersController.php(318): CodeIgniter\Database\BaseConnection->query('
+            SELECT 
+                action,
+                amount,
+                old_balance,
+                new_balance,
+                admin_id,
+                reason,
+                created_at
+            FROM spin_token_transactions 
+            WHERE customer_id = ? 
+            ORDER BY created_at DESC 
+            LIMIT 20
+        ', [...])
+ 2 APPPATH\Controllers\Admin\CustomersController.php(171): App\Controllers\Admin\CustomersController->getTokensHistory('1')
+ 3 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\CustomersController->manageTokens('1')
+ 4 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\CustomersController))
+ 5 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 7 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-24 21:12:21 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Table 'rewardsystem.spin_token_transactions' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('
+            SELECT 
+                action,
+                amount,
+                old_balance,
+                new_balance,
+                admin_id,
+                reason,
+                created_at
+            FROM spin_token_transactions 
+            WHERE customer_id = \'1\' 
+            ORDER BY created_at DESC 
+            LIMIT 20
+        ')
+ 2 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('
+            SELECT 
+                action,
+                amount,
+                old_balance,
+                new_balance,
+                admin_id,
+                reason,
+                created_at
+            FROM spin_token_transactions 
+            WHERE customer_id = \'1\' 
+            ORDER BY created_at DESC 
+            LIMIT 20
+        ')
+ 3 APPPATH\Controllers\Admin\CustomersController.php(318): CodeIgniter\Database\BaseConnection->query('
+            SELECT 
+                action,
+                amount,
+                old_balance,
+                new_balance,
+                admin_id,
+                reason,
+                created_at
+            FROM spin_token_transactions 
+            WHERE customer_id = ? 
+            ORDER BY created_at DESC 
+            LIMIT 20
+        ', [...])
+ 4 APPPATH\Controllers\Admin\CustomersController.php(171): App\Controllers\Admin\CustomersController->getTokensHistory('1')
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\CustomersController->manageTokens('1')
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\CustomersController))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-24 21:12:21 --> [Caused by] mysqli_sql_exception: Table 'rewardsystem.spin_token_transactions' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('
+            SELECT 
+                action,
+                amount,
+                old_balance,
+                new_balance,
+                admin_id,
+                reason,
+                created_at
+            FROM spin_token_transactions 
+            WHERE customer_id = \'1\' 
+            ORDER BY created_at DESC 
+            LIMIT 20
+        ', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('
+            SELECT 
+                action,
+                amount,
+                old_balance,
+                new_balance,
+                admin_id,
+                reason,
+                created_at
+            FROM spin_token_transactions 
+            WHERE customer_id = \'1\' 
+            ORDER BY created_at DESC 
+            LIMIT 20
+        ')
+ 3 SYSTEMPATH\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('
+            SELECT 
+                action,
+                amount,
+                old_balance,
+                new_balance,
+                admin_id,
+                reason,
+                created_at
+            FROM spin_token_transactions 
+            WHERE customer_id = \'1\' 
+            ORDER BY created_at DESC 
+            LIMIT 20
+        ')
+ 4 APPPATH\Controllers\Admin\CustomersController.php(318): CodeIgniter\Database\BaseConnection->query('
+            SELECT 
+                action,
+                amount,
+                old_balance,
+                new_balance,
+                admin_id,
+                reason,
+                created_at
+            FROM spin_token_transactions 
+            WHERE customer_id = ? 
+            ORDER BY created_at DESC 
+            LIMIT 20
+        ', [...])
+ 5 APPPATH\Controllers\Admin\CustomersController.php(171): App\Controllers\Admin\CustomersController->getTokensHistory('1')
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\CustomersController->manageTokens('1')
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\CustomersController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-24 21:13:18 --> CodeIgniter\Validation\Exceptions\ValidationException: "greater_equal_than" is not a valid rule.
+[Method: POST, Route: admin/customers/update/1]
+in SYSTEMPATH\Validation\Validation.php on line 345.
+ 1 SYSTEMPATH\Validation\Validation.php(345): CodeIgniter\Validation\Exceptions\ValidationException::forRuleNotFound('greater_equal_than')
+ 2 SYSTEMPATH\Validation\Validation.php(201): CodeIgniter\Validation\Validation->processRules('points', 'points', '25', [...], [...], 'points')
+ 3 APPPATH\Controllers\Admin\CustomersController.php(101): CodeIgniter\Validation\Validation->run()
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\CustomersController->update('1')
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\CustomersController))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))

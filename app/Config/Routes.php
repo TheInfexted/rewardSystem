@@ -149,6 +149,12 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
 
     // Customer management
     $routes->get('customers', 'Admin\CustomersController::index');
+    $routes->get('customers/view/(:num)', 'Admin\CustomersController::view/$1');
+    $routes->get('customers/edit/(:num)', 'Admin\CustomersController::edit/$1');
+    $routes->post('customers/update/(:num)', 'Admin\CustomersController::update/$1');
     $routes->get('customers/tokens/(:num)', 'Admin\CustomersController::manageTokens/$1');
-    $routes->post('customers/update-tokens', 'Admin\CustomersController::updateTokens');
+    $routes->post('customers/updateTokens', 'Admin\CustomersController::updateTokens');
+    $routes->post('customers/resetDashboard/(:num)', 'Admin\CustomersController::resetDashboard/$1');
+    $routes->post('customers/delete/(:num)', 'Admin\CustomersController::delete/$1');
+    $routes->post('customers/deactivate/(:num)', 'Admin\CustomersController::deactivate/$1');
 });

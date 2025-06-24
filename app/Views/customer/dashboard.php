@@ -28,53 +28,40 @@
         
         <div class="profile-header-content">
             <div class="user-info">
-                <h4 class="username"><?= esc($username) ?></h4>
-                <p class="user-subtitle">Premium Member</p>
-                <p class="spin-tokens">
-                    <i class="bi bi-coin"></i> 
-                    <span id="spinTokensCount"><?= $spin_tokens ?></span> Spin Tokens
-                </p>
+                <div class="user-header-row">
+                    <div class="user-details">
+                        <h4 class="username"><?= esc($username) ?></h4>
+                        <p class="user-subtitle">Premium Member</p>
+                        <p class="spin-tokens">
+                            <i class="bi bi-coin"></i> 
+                            <span id="spinTokensCount"><?= $spin_tokens ?></span> Spin Tokens
+                        </p>
+                    </div>
+                    <div class="logout-section">
+                        <button class="btn-logout" onclick="window.location.href='<?= base_url('reward/logout') ?>'">
+                            <i class="bi bi-box-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="header-actions">
+                    <div class="left-buttons">
+                        <button class="btn btn-wallet" onclick="openDepositModal('spin')">
+                            <i class="bi bi-wallet2 me-1"></i>
+                            Spin Wallet
+                        </button>
+                        <button class="btn btn-wallet" onclick="openDepositModal('user')">
+                            <i class="bi bi-cash-coin me-1"></i>
+                            User Wallet
+                        </button>
+                    </div>
+                    <div class="right-buttons">
+                        <button class="btn-wheel" onclick="openWheelModal()">
+                            <i class="bi bi-bullseye"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
-            
-            <div class="header-actions">
-                <button class="btn btn-wallet" onclick="openDepositModal('spin')">
-                    <i class="bi bi-wallet2 me-1"></i>
-                    Spin Wallet
-                </button>
-                <button class="btn btn-wallet" onclick="openDepositModal('user')">
-                    <i class="bi bi-cash-coin me-1"></i>
-                    User Wallet
-                </button>
-                <button class="btn-wheel" onclick="openWheelModal()" style="width: auto; padding: 0 15px; border-radius: 25px;">
-                    <i class="bi bi-bullseye me-1"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Color Picker Panel -->
-    <div class="color-picker-panel" id="colorPickerPanel">
-        <div class="panel-header">
-            <h5>Dashboard Background</h5>
-            <button class="close-btn" onclick="closeColorPicker()">
-                <i class="bi bi-x"></i>
-            </button>
-        </div>
-        
-        <div class="preset-colors">
-            <div class="color-swatch" style="background: #FFFFFF" onclick="setDashboardColor('#FFFFFF')"></div>
-            <div class="color-swatch" style="background: #f8f9fa" onclick="setDashboardColor('#f8f9fa')"></div>
-            <div class="color-swatch" style="background: #e9ecef" onclick="setDashboardColor('#e9ecef')"></div>
-            <div class="color-swatch" style="background: #212529" onclick="setDashboardColor('#212529')"></div>
-            <div class="color-swatch" style="background: #e3f2fd" onclick="setDashboardColor('#e3f2fd')"></div>
-            <div class="color-swatch" style="background: #f3e5f5" onclick="setDashboardColor('#f3e5f5')"></div>
-            <div class="color-swatch" style="background: #e8f5e9" onclick="setDashboardColor('#e8f5e9')"></div>
-            <div class="color-swatch" style="background: #fff3e0" onclick="setDashboardColor('#fff3e0')"></div>
-        </div>
-        
-        <div class="custom-color">
-            <label>Custom Color:</label>
-            <input type="color" id="customColorInput" value="#ffffff">
-            <button class="apply-btn" onclick="applyCustomColor()">Apply</button>
         </div>
     </div>
 
@@ -187,18 +174,7 @@
                                     <source src="<?= $mediaUrl ?>" type="video/mp4">
                                 </video>
                             <?php else: ?>
-                                <img class="ad-media-stacked" src="<?= $mediaUrl ?>" alt="<?= esc($ad['ad_title'] ?? 'Advertisement') ?>">
-                            <?php endif; ?>
-                            
-                            <?php if (!empty($ad['ad_title']) || !empty($ad['ad_description'])): ?>
-                                <div class="ad-overlay-content">
-                                    <?php if (!empty($ad['ad_title'])): ?>
-                                        <h4 class="ad-overlay-title"><?= esc($ad['ad_title']) ?></h4>
-                                    <?php endif; ?>
-                                    <?php if (!empty($ad['ad_description'])): ?>
-                                        <p class="ad-overlay-description"><?= esc($ad['ad_description']) ?></p>
-                                    <?php endif; ?>
-                                </div>
+                                <img class="ad-media-stacked" src="<?= $mediaUrl ?>" alt="Advertisement">
                             <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
@@ -211,13 +187,6 @@
                 </div>
             <?php endif; ?>
         </div>
-    </div>
-
-    <!-- Dashboard Background Color Picker -->
-    <div class="color-fab" id="colorFab">
-        <button class="fab-button" onclick="toggleColorPicker()" title="Change Dashboard Color">
-            <i class="bi bi-palette-fill"></i>
-        </button>
     </div>
 
     <!-- Deposit Modal -->
@@ -262,7 +231,6 @@
 <script src="<?= base_url('js/dashboard/fortune-wheel.js') ?>"></script>
 <script src="<?= base_url('js/dashboard/dashboard-init.js') ?>"></script>
 <script src="<?= base_url('js/dashboard/dashboard-ads.js') ?>"></script>
-<script src="<?= base_url('js/dashboard/dashboard-color-picker.js') ?>"></script>   
 
 <!-- Dashboard Configuration from PHP -->
 <script>
@@ -290,13 +258,10 @@ const dashboardPhpConfig = {
     <?php endif; ?>
     ads: <?= json_encode($ads ?? []) ?>,
 };
-</script>
 
-<script>
-// Simple color picker initialization
+// Apply dashboard background color
 document.addEventListener('DOMContentLoaded', function() {
-    // Apply saved color if available
-    if (typeof dashboardPhpConfig !== 'undefined' && dashboardPhpConfig.dashboardBgColor) {
+    if (dashboardPhpConfig.dashboardBgColor) {
         document.body.style.backgroundColor = dashboardPhpConfig.dashboardBgColor;
         const container = document.querySelector('.dashboard-container');
         if (container) {
@@ -304,43 +269,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
-
-// Global functions for color picker
-function toggleColorPicker() {
-    const panel = document.getElementById('colorPickerPanel');
-    panel.classList.toggle('active');
-}
-
-function closeColorPicker() {
-    document.getElementById('colorPickerPanel').classList.remove('active');
-}
-
-function setDashboardColor(color) {
-    // Apply color
-    document.body.style.backgroundColor = color;
-    const container = document.querySelector('.dashboard-container');
-    if (container) {
-        container.style.backgroundColor = color;
-    }
-    
-    // Save to database
-    const formData = new FormData();
-    formData.append('color', color);
-    formData.append(dashboardPhpConfig.csrfName, dashboardPhpConfig.csrfToken);
-    
-    fetch(dashboardPhpConfig.baseUrl + 'customer/updateDashboardColor', {
-        method: 'POST',
-        headers: {'X-Requested-With': 'XMLHttpRequest'},
-        body: formData
-    });
-    
-    closeColorPicker();
-}
-
-function applyCustomColor() {
-    const color = document.getElementById('customColorInput').value;
-    setDashboardColor(color);
-}
 </script>
 
 <script>
@@ -379,9 +307,7 @@ function contactCustomerService(platform) {
     }
     
     // Show loading/success message
-    if (typeof DashboardUtils !== 'undefined' && DashboardUtils.showToast) {
-        DashboardUtils.showToast(`Redirecting to ${platform === 'whatsapp' ? 'WhatsApp' : 'Telegram'}...`, 'info');
-    }
+    console.log(`Redirecting to ${platform === 'whatsapp' ? 'WhatsApp' : 'Telegram'}...`);
     
     // Close modal
     const modal = bootstrap.Modal.getInstance(document.getElementById('depositModal'));

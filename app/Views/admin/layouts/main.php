@@ -11,6 +11,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <!-- Custom Admin CSS -->
     <link rel="stylesheet" href="<?= base_url('css/admin.css') ?>">
 </head>
@@ -61,7 +63,7 @@
                     </ul>
                 </div>
 
-                <!-- Wheel  Management Section -->
+                <!-- Wheel Management Section -->
                 <div class="nav-section">
                     <div class="nav-section-title"><?= t('Admin.nav.wheel_management') ?></div>
                     <ul class="nav flex-column">
@@ -82,6 +84,20 @@
                     </ul>
                 </div>
 
+                <!-- Customer Management Section -->
+                <div class="nav-section">
+                    <div class="nav-section-title">Customer Management</div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link <?= strpos(uri_string(), 'admin/customers') !== false ? 'active' : '' ?>" 
+                               href="<?= base_url('admin/customers') ?>">
+                                <i class="fas fa-users"></i>
+                                Customer List
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
                 <!-- Reward System Section -->
                 <div class="nav-section">
                     <div class="nav-section-title"><?= t('Admin.nav.reward_system') ?></div>
@@ -91,12 +107,6 @@
                             href="<?= base_url('admin/reward-system') ?>">
                                 <i class="bi bi-badge-ad"></i>
                                 <?= t('Admin.nav.reward_ads') ?>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?= base_url('admin/customers') ?>" class="nav-link">
-                                <i class="bi bi-person"></i>
-                                <p>Customer Management</p>
                             </a>
                         </li>
                     </ul>
