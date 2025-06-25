@@ -93,8 +93,8 @@
                             </div>
                         </div>
                         
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i>
+                        <div class="password-security-box mb-3">
+                            <i class="fas fa-shield-alt text-primary me-2"></i>
                             <strong>Password Security:</strong> Passwords are securely hashed and cannot be viewed. 
                             You can either change to a specific password or generate a random one.
                         </div>
@@ -544,6 +544,18 @@
     color: #28a745;
     font-size: 0.875rem;
     margin-top: 5px;
+}
+
+.password-security-box {
+    background: #e9f5ff;
+    border: 1px solid #b8daff;
+    border-left: 5px solid #0d6efd;
+    padding: 15px;
+    border-radius: 6px;
+    color: #084298;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
 }
 </style>
 
