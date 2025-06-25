@@ -111,6 +111,42 @@ body {
     text-align: left; /* Force left alignment */
 }
 
+/* Settings Button Styles */
+.username-with-settings {
+    display: flex;
+    align-items: left;
+    gap: 8px;
+    width: 40%;
+}
+
+.btn-settings {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 4px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.btn-settings:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+    color: white;
+}
+
+.btn-settings:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25);
+}
+
 /* Spin Tokens Container with Plus Button */
 .spin-tokens-container {
     display: flex;
@@ -186,7 +222,7 @@ body {
     justify-content: flex-end;
 }
 
-/* Wallet Buttons */
+/* Modal Fixes - Enhanced */
 .modal-backdrop {
     z-index: 1040 !important;
 }
@@ -197,6 +233,7 @@ body {
 
 .modal-dialog {
     z-index: 1060 !important;
+    margin: 1.75rem auto !important;
 }
 
 /* Ensure modal content is above backdrop */
@@ -218,6 +255,139 @@ body.modal-open {
 
 .modal.show .modal-dialog {
     transform: none;
+}
+
+/* Settings Modal specific fixes */
+#settingsModal .modal-dialog {
+    max-width: 500px;
+    width: 90%;
+}
+
+#settingsModal .modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+#settingsModal .modal-header {
+    border-bottom: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+}
+
+#settingsModal .modal-body {
+    padding: 1.5rem;
+}
+
+#settingsModal .modal-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 1rem 1.5rem;
+}
+
+/* Fix multiple modal conflicts */
+.modal.show ~ .modal-backdrop {
+    z-index: 1040 !important;
+}
+
+/* Ensure settings modal appears above other modals */
+#settingsModal {
+    z-index: 1055 !important;
+}
+
+#settingsModal .modal-backdrop {
+    z-index: 1054 !important;
+}
+
+/* Settings Modal Styles */
+.settings-section {
+    padding: 15px 0;
+}
+
+.settings-section-title {
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.password-display-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.btn-password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 4px;
+    z-index: 10;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.btn-password-toggle:hover {
+    color: #333;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Form validation styles */
+.form-control.is-invalid {
+    border-color: #dc3545;
+}
+
+.form-control.is-valid {
+    border-color: #198754;
+}
+
+.loading-btn {
+    pointer-events: none;
+    opacity: 0.65;
+}
+
+/* Fix toast positioning above modals */
+.toast-container {
+    z-index: 1070 !important;
+}
+
+/* Fix form styling inside modal */
+#settingsModal .form-control {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 0.75rem;
+}
+
+#settingsModal .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+#settingsModal .btn {
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+}
+
+/* Ensure backdrop cleanup */
+.modal-open .modal {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Fix modal fade animation */
+.modal.fade {
+    transition: opacity 0.15s linear;
+}
+
+/* Prevent scroll issues */
+html.modal-open,
+body.modal-open {
+    overflow: hidden !important;
+    height: 100% !important;
 }
 
 .btn-wallet {
@@ -243,41 +413,37 @@ body.modal-open {
 }
 
 .btn-wheel {
-    background: linear-gradient(135deg, #ff6b6b 0%, #f06595 100%);
+    background: transparent; 
     border: none;
     color: white;
-    padding: 10px; /* Square padding for icon-only button */
-    border-radius: 50%; /* Make it circular */
+    padding: 0px; 
+    border-radius: 50%;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    animation: pulse 2s infinite;
     cursor: pointer;
     text-decoration: none;
-    width: 40px; /* Fixed width */
-    height: 40px; /* Fixed height */
-    font-size: 1.2rem; /* Larger icon */
+    width: 50px;
+    height: 50px;
+    overflow: hidden; 
+}
+
+.wheel-icon-gif {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure GIF covers the entire button area */
+    border-radius: 50%; /* Make the GIF circular */
+    transition: transform 0.3s ease;
 }
 
 .btn-wheel:hover {
-    background: linear-gradient(135deg, #f06595 0%, #ff6b6b 100%);
     transform: scale(1.05);
-    color: white;
     box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
 }
 
-/* Pulse animation for wheel button */
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
-    }
+.btn-wheel:hover .wheel-icon-gif {
+    transform: scale(1.1); 
 }
 
 /* Loading overlay */
@@ -486,31 +652,30 @@ body.modal-open {
 }
 
 .stat-label {
-    font-size: 0.85rem; /* Slightly increased from 0.75rem */
+    font-size: 0.7rem; 
     color: #6c757d;
-    font-weight: 500;
+    font-weight: normal;
     line-height: 1.2;
 }
 
-/* Advertisement Section - More space for ads */
-.advertisement-section {
-    margin: 0; /* Remove all margins */
+/* Content Section */
+.content-section {
+    margin: 0; 
     background: #f8f9fa;
-    padding: 0; /* Remove all padding */
-    margin-bottom: 0; /* Ensure no bottom margin */
-    /* More space available due to compact check-in */
+    padding: 0; 
+    margin-bottom: 0; 
 }
 
-.ads-stack {
+.media-stack {
     display: flex;
     flex-direction: column;
     margin: 0; /* Remove margin */
     padding: 0; /* Remove padding */
-    gap: 0; /* Remove gaps between ads */
+    gap: 0; /* Remove gaps between items */
     margin-bottom: 0; /* Ensure no bottom margin */
 }
 
-.ad-item-stacked {
+.media-item-stacked {
     position: relative;
     width: 100%;
     cursor: pointer;
@@ -522,7 +687,7 @@ body.modal-open {
     border: none; /* Remove borders */
 }
 
-.ad-item-stacked img.ad-media-stacked {
+.media-item-stacked img.media-content-stacked {
     width: 100%;
     height: auto;
     display: block;
@@ -532,7 +697,7 @@ body.modal-open {
     padding: 0; /* Remove padding */
 }
 
-.ad-item-stacked video.ad-media-stacked {
+.media-item-stacked video.media-content-stacked {
     width: 100%;
     height: auto;
     display: block;
@@ -542,17 +707,17 @@ body.modal-open {
     padding: 0; /* Remove padding */
 }
 
-.ad-item-stacked {
+.media-item-stacked {
     transition: opacity 0.3s ease;
 }
 
-.ad-item-stacked:hover {
+.media-item-stacked:hover {
     opacity: 0.95;
 }
 
-/* Remove the gap between adjacent ads */
-.ads-stack > * + * {
-    margin-top: 0; /* Remove spacing between ads */
+/* Remove the gap between adjacent items */
+.media-stack > * + * {
+    margin-top: 0; /* Remove spacing between items */
 }
 
 /* Override main-content padding but NO bottom nav space needed */
@@ -567,42 +732,37 @@ body.modal-open {
     min-height: 100vh; /* Full height since no nav */
 }
 
-/* Make advertisement section extend to the very bottom */
-.advertisement-section {
+/* Make content section extend to the very bottom */
+.content-section {
     margin-bottom: 0 !important; /* No negative margin needed */
     padding-bottom: 0 !important; /* No padding needed */
     position: relative;
 }
 
-.advertisement-section:last-child {
+.content-section:last-child {
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
 }
 
-/* Ensure ads stack properly */
-.ads-stack {
+/* Ensure media stack properly */
+.media-stack {
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
 }
 
-/* Ensure the last ad item has proper spacing */
-.ad-item-stacked:last-child {
+/* Ensure the last media item has proper spacing */
+.media-item-stacked:last-child {
     margin-bottom: 0 !important;
     padding-bottom: 0 !important;
 }
 
-/* Hide bottom navigation completely */
-.bottom-nav-container {
-    display: none !important;
-}
-
-.no-ads {
+.no-content {
     text-align: center;
     padding: 60px 20px;
     color: #999;
 }
 
-.no-ads i {
+.no-content i {
     font-size: 3rem;
     margin-bottom: 15px;
     opacity: 0.5;
@@ -714,6 +874,17 @@ body.modal-open {
 }
 
 /* Responsive adjustments */
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 0.5rem !important;
+        max-width: calc(100% - 1rem) !important;
+    }
+    
+    #settingsModal .modal-dialog {
+        width: 95% !important;
+    }
+}
+
 @media (max-width: 375px) {
     .dashboard-container {
         max-width: 100%;
@@ -722,6 +893,16 @@ body.modal-open {
     .profile-header {
         height: 160px; /* Further reduced for small screens */
         padding: 15px; /* Reduced padding */
+    }
+
+    .username-with-settings {
+        gap: 6px;
+    }
+    
+    .btn-settings {
+        width: 20px;
+        height: 20px;
+        font-size: 0.7rem;
     }
     
     .username {
@@ -862,7 +1043,6 @@ body.modal-open {
     .btn-wheel {
         width: 35px;
         height: 35px;
-        font-size: 1rem;
     }
 }
 
@@ -888,8 +1068,9 @@ body.modal-open {
     margin-top: 0;
 }
 
-.stats-row + .advertisement-section {
-    margin-top: 0; /* Remove gap between stats and ads */
+/* Stats row + content section spacing */
+.stats-row + .content-section {
+    margin-top: 0; 
 }
 
 /* Fix z-index issues */
@@ -899,7 +1080,7 @@ body.modal-open {
 
 .checkin-section,
 .stats-row,
-.advertisement-section {
+.content-section {
     z-index: 2;
     position: relative;
 }
@@ -915,21 +1096,21 @@ body.modal-open {
     overflow-y: auto;
 }
 
-/* Make sure ads don't break layout and remove all gaps */
-.advertisement-section {
+/* Make sure media don't break layout and remove all gaps */
+.content-section {
     width: 100%;
     max-width: 414px;
     margin: 0; /* Remove all margins */
     padding: 0; /* Remove all padding */
 }
 
-.ads-stack {
+.media-stack {
     width: 100%;
     margin: 0; /* Remove margin */
     padding: 0; /* Remove padding */
 }
 
-.ad-item-stacked {
+.media-item-stacked {
     max-width: 100%;
     margin: 0; /* Remove margin */
     padding: 0; /* Remove padding */

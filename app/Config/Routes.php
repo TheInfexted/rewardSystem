@@ -41,6 +41,8 @@ $routes->group('customer', function($routes) {
     $routes->post('remove-background-image', 'CustomerController::removeBackgroundImage');
     $routes->get('wheel-data', 'CustomerController::getWheelData');
     $routes->get('ads', 'CustomerController::getAds');
+    $routes->post('get-current-password', 'CustomerController::getCurrentPassword');
+    $routes->post('change-password', 'CustomerController::changePassword');
 });
 
 // Authentication routes

@@ -251,8 +251,8 @@ class RewardController extends BaseController
                 $session->remove('winner_data');
 
                 // Get platform settings
-                $whatsappNumber = $this->adminSettingsModel->getSetting('reward_whatsapp_number', '60102763672');
-                $telegramUsername = $this->adminSettingsModel->getSetting('reward_telegram_username', 'brendxn1127');
+                $whatsappNumber = $this->adminSettingsModel->getSetting('reward_whatsapp_number', '601159599022');
+                $telegramUsername = $this->adminSettingsModel->getSetting('reward_telegram_username', 'harryford19');
 
                 // Create message for platform
                 $message = "🎉 I just won {$winnerData['name']}!\nMy User ID is: {$customerData['username']}.\nClaim ID: {$claimId}";

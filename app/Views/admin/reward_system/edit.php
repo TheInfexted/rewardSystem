@@ -5,7 +5,7 @@
     <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 text-gold">Edit Advertisement</h1>
-        <a href="<?= base_url('admin/reward-system') ?>" class="btn btn-outline-secondary">
+        <a href="<?= base_url('admin/reward-system') ?>" class="btn btn-outline-danger">
             <i class="bi bi-arrow-left"></i> Back to List
         </a>
     </div>

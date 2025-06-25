@@ -95,13 +95,6 @@
                                 Customer List
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link <?= strpos(uri_string(), 'admin/customers/checkin-settings') !== false ? 'active' : '' ?>" 
-                            href="#" onclick="showCheckinSettingsInfo()">
-                                <i class="fas fa-calendar-check"></i>
-                                Check-in Settings
-                            </a>
-                        </li>
                     </ul>
                 </div>
 

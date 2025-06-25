@@ -88,6 +88,225 @@ class CustomerController extends BaseController
         }
     }
 
+    /**
+     * Get current password (masked for security)
+     * Returns the actual password only for display toggle functionality
+     */
+    public function getCurrentPassword()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON(['error' => 'Invalid request']);
+        }
+        
+        $customerId = session()->get('customer_id');
+        if (!$customerId) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Please log in to continue'
+            ]);
+        }
+        
+        try {
+            $customer = $this->customerModel->find($customerId);
+            if (!$customer) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Customer not found'
+                ]);
+            }
+            
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Password is securely encrypted',
+                'password_secure' => true
+            ]);
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Get current password error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'An error occurred'
+            ]);
+        }
+    }
+    
+    /**
+     * Change customer password
+     */
+    public function changePassword()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON(['error' => 'Invalid request']);
+        }
+        
+        $customerId = session()->get('customer_id');
+        if (!$customerId) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Please log in to continue'
+            ]);
+        }
+        
+        // Get JSON input
+        $json = $this->request->getJSON(true);
+        $currentPassword = $json['current_password'] ?? '';
+        $newPassword = $json['new_password'] ?? '';
+        $confirmPassword = $json['confirm_password'] ?? '';
+        
+        // Validation
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'current_password' => 'required',
+            'new_password' => 'required|min_length[6]',
+            'confirm_password' => 'required|matches[new_password]'
+        ], [
+            'current_password' => [
+                'required' => 'Current password is required'
+            ],
+            'new_password' => [
+                'required' => 'New password is required',
+                'min_length' => 'New password must be at least 6 characters'
+            ],
+            'confirm_password' => [
+                'required' => 'Please confirm your new password',
+                'matches' => 'Password confirmation does not match'
+            ]
+        ]);
+        
+        if (!$validation->run([
+            'current_password' => $currentPassword,
+            'new_password' => $newPassword,
+            'confirm_password' => $confirmPassword
+        ])) {
+            $errors = $validation->getErrors();
+            $firstError = array_values($errors)[0];
+            $firstField = array_keys($errors)[0];
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => $firstError,
+                'field' => $firstField
+            ]);
+        }
+        
+        try {
+            // Get customer data
+            $customer = $this->customerModel->find($customerId);
+            if (!$customer) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Customer not found'
+                ]);
+            }
+            
+            // Verify current password
+            if (!password_verify($currentPassword, $customer['password'])) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Current password is incorrect',
+                    'field' => 'current_password'
+                ]);
+            }
+            
+            // Check if new password is different from current
+            if (password_verify($newPassword, $customer['password'])) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'New password must be different from current password',
+                    'field' => 'new_password'
+                ]);
+            }
+            
+            // Hash new password
+            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+            
+            // Update password
+            $updateData = [
+                'password' => $hashedPassword,
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+            
+            $result = $this->customerModel->update($customerId, $updateData);
+            
+            if ($result) {
+                // Log password change (optional)
+                $this->logPasswordChange($customerId);
+                
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Password updated successfully!'
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Failed to update password. Please try again.'
+                ]);
+            }
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Password change error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'An error occurred. Please try again.'
+            ]);
+        }
+    }
+    
+    /**
+     * Log password change for security audit
+     */
+    private function logPasswordChange($customerId)
+    {
+        try {
+            $db = \Config\Database::connect();
+            
+            // Create password_changes table if it doesn't exist
+            $forge = \Config\Database::forge();
+            if (!$db->tableExists('password_changes')) {
+                $fields = [
+                    'id' => [
+                        'type' => 'INT',
+                        'constraint' => 11,
+                        'unsigned' => true,
+                        'auto_increment' => true
+                    ],
+                    'customer_id' => [
+                        'type' => 'INT',
+                        'constraint' => 11,
+                        'unsigned' => true
+                    ],
+                    'ip_address' => [
+                        'type' => 'VARCHAR',
+                        'constraint' => 45
+                    ],
+                    'user_agent' => [
+                        'type' => 'TEXT'
+                    ],
+                    'changed_at' => [
+                        'type' => 'TIMESTAMP',
+                        'default' => 'CURRENT_TIMESTAMP'
+                    ]
+                ];
+                
+                $forge->addField($fields);
+                $forge->addKey('id', true);
+                $forge->addKey('customer_id');
+                $forge->createTable('password_changes');
+            }
+            
+            // Insert log entry
+            $db->table('password_changes')->insert([
+                'customer_id' => $customerId,
+                'ip_address' => $this->request->getIPAddress(),
+                'user_agent' => $this->request->getUserAgent()->getAgentString(),
+                'changed_at' => date('Y-m-d H:i:s')
+            ]);
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Failed to log password change: ' . $e->getMessage());
+        }
+    }
+
     public function updateDashboardColor()
     {
         if ($this->request->isAJAX()) {

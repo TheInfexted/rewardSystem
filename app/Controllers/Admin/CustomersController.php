@@ -224,6 +224,7 @@ class CustomersController extends BaseController
         
         $adminId = session()->get('user_id');
         
+        // Validation
         if ($amount <= 0) {
             return $this->response->setJSON([
                 'success' => false,
@@ -231,38 +232,61 @@ class CustomersController extends BaseController
             ]);
         }
         
-        $customer = $this->customerModel->find($customerId);
-        if (!$customer) {
+        if (!in_array($action, ['add', 'remove'])) {
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Customer not found'
+                'message' => 'Invalid action specified'
             ]);
         }
         
-        // Use the proper model methods for token management
-        $result = false;
-        
-        if ($action === 'add') {
-            $result = $this->customerModel->addSpinTokens($customerId, $amount, $adminId, $reason);
-        } elseif ($action === 'remove') {
-            $result = $this->customerModel->removeSpinTokens($customerId, $amount, $adminId, $reason);
-        }
-        
-        if ($result) {
-            // Get updated customer data
-            $updatedCustomer = $this->customerModel->find($customerId);
+        try {
+            $customer = $this->customerModel->find($customerId);
+            if (!$customer) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Customer not found'
+                ]);
+            }
             
+            // Use the proper model methods for token management
+            $result = false;
+            
+            if ($action === 'add') {
+                $result = $this->customerModel->addSpinTokens($customerId, $amount, $adminId, $reason);
+            } elseif ($action === 'remove') {
+                // Check if customer has enough tokens
+                if ($customer['spin_tokens'] < $amount) {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'Insufficient tokens. Customer only has ' . $customer['spin_tokens'] . ' tokens.'
+                    ]);
+                }
+                $result = $this->customerModel->removeSpinTokens($customerId, $amount, $adminId, $reason);
+            }
+            
+            if ($result) {
+                // Get updated customer data
+                $updatedCustomer = $this->customerModel->find($customerId);
+                
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => ucfirst($action) . ' operation completed successfully',
+                    'new_balance' => $updatedCustomer['spin_tokens']
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Failed to update tokens. Please check the error logs.'
+                ]);
+            }
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Token update error: ' . $e->getMessage());
             return $this->response->setJSON([
-                'success' => true,
-                'message' => 'Tokens updated successfully',
-                'new_balance' => $updatedCustomer['spin_tokens']
+                'success' => false,
+                'message' => 'An error occurred while updating tokens: ' . $e->getMessage()
             ]);
         }
-        
-        return $this->response->setJSON([
-            'success' => false,
-            'message' => 'Failed to update tokens. Please check the logs for details.'
-        ]);
     }
     
     public function delete($customerId)
