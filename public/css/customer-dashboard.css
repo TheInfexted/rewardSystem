@@ -111,14 +111,24 @@ body {
     text-align: left; /* Force left alignment */
 }
 
+/* Spin Tokens Container with Plus Button */
+.spin-tokens-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
 .spin-tokens {
     background: rgba(255, 255, 255, 0.2);
     padding: 5px 15px;
     border-radius: 20px;
-    display: inline-block;
+    display: inline-flex; 
+    align-items: center;
     font-size: 0.9rem;
-    margin-bottom: 8px; /* Reduced margin to bring buttons closer */
-    text-align: left; /* Force left alignment */
+    text-align: left;
+    flex: 0 0 auto; 
+    margin-bottom: 0; 
 }
 
 .spin-tokens i {
@@ -126,29 +136,89 @@ body {
     margin-right: 5px;
 }
 
+/* Plus Button Style */
+.btn-add-tokens {
+    background: #007bff;
+    border: none;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 0;
+    margin: 0;
+}
+
+.btn-add-tokens:hover {
+    background: #0056b3;
+    transform: scale(1.1);
+    color: white;
+}
+
+.btn-add-tokens:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Header Actions */
 .header-actions {
     display: flex;
-    justify-content: space-between; /* Space between left and right buttons */
-    align-items: center; /* Center align both groups */
+    justify-content: flex-end;
+    align-items: center;
     gap: 10px;
-    width: 100%; /* Ensure full width */
-    margin-top: 0; /* Remove top margin since it's now inside user-info */
+    width: 100%;
+    margin-top: 0;
 }
 
 .left-buttons {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    flex: 1; /* Take available space */
+    display: none; 
 }
 
-.right-buttons {
+.right-buttons-only {
     display: flex;
     align-items: center;
-    flex-shrink: 0; /* Don't shrink */
+    justify-content: flex-end;
 }
 
 /* Wallet Buttons */
+.modal-backdrop {
+    z-index: 1040 !important;
+}
+
+.modal {
+    z-index: 1050 !important;
+}
+
+.modal-dialog {
+    z-index: 1060 !important;
+}
+
+/* Ensure modal content is above backdrop */
+.modal-content {
+    position: relative;
+    z-index: 1070 !important;
+}
+
+body.modal-open {
+    overflow: hidden !important;
+    padding-right: 0 !important;
+}
+
+/* Fix modal positioning */
+.modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out;
+    transform: translate(0, -50px);
+}
+
+.modal.show .modal-dialog {
+    transform: none;
+}
+
 .btn-wallet {
     background: rgba(255,255,255,0.2);
     border: 1px solid rgba(255,255,255,0.3);
@@ -590,6 +660,58 @@ body {
     color: white;
 }
 
+/* Wallet Selection Modal Styles */
+.wallet-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.btn-wallet-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border: 2px solid #e9ecef;
+    border-radius: 15px;
+    background: white;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: #333;
+    cursor: pointer;
+    width: 100%;
+}
+
+.btn-wallet-option:hover {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+    color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.btn-wallet-option i {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+    color: #667eea;
+}
+
+.btn-wallet-option span {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.btn-wallet-option small {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+.btn-wallet-option:hover i {
+    color: #667eea;
+}
+
 /* Responsive adjustments */
 @media (max-width: 375px) {
     .dashboard-container {
@@ -678,13 +800,42 @@ body {
     .btn-platform i {
         font-size: 2rem;
     }
+
+    .spin-tokens-container {
+        gap: 6px;
+    }
+
+    .btn-add-tokens {
+        width: 20px;
+        height: 20px;
+        font-size: 0.7rem;
+    }
+
+    .spin-tokens {
+        padding: 4px 12px;
+        font-size: 0.8rem;
+    }
+
+    .header-actions {
+        justify-content: flex-end;
+    }
+
+    .wallet-selection {
+        gap: 12px;
+    }
+
+    .btn-wallet-option {
+        padding: 15px;
+    }
+
+    .btn-wallet-option i {
+        font-size: 2rem;
+    }
 }
 
 @media (max-width: 480px) {
     .header-actions {
-        flex-direction: row; /* Keep horizontal layout */
-        justify-content: space-between;
-        align-items: center;
+        justify-content: flex-end; 
         gap: 8px;
     }
     
@@ -694,7 +845,7 @@ body {
         gap: 6px; /* Slightly smaller gap on mobile */
     }
     
-    .right-buttons {
+    .right-buttons-only { 
         flex-shrink: 0;
     }
     
@@ -707,7 +858,7 @@ body {
     }
     
     .btn-wheel {
-        width: 35px; /* Slightly smaller on mobile */
+        width: 35px;
         height: 35px;
         font-size: 1rem;
     }
@@ -821,6 +972,17 @@ button[onclick] {
     .btn-wheel {
         font-size: 0.75rem;
         padding: 6px 8px;
+    }
+
+    .spin-tokens {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+    }
+
+    .btn-add-tokens {
+        width: 18px;
+        height: 18px;
+        font-size: 0.6rem;
     }
     
     .stat-card {

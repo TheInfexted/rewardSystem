@@ -32,10 +32,16 @@
                     <div class="user-details">
                         <h4 class="username"><?= esc($username) ?></h4>
                         <p class="user-subtitle">Premium Member</p>
-                        <p class="spin-tokens">
-                            <i class="bi bi-coin"></i> 
-                            <span id="spinTokensCount"><?= $spin_tokens ?></span> Spin Tokens
-                        </p>
+                        <!-- Updated Spin Tokens with Plus Button -->
+                        <div class="spin-tokens-container">
+                            <div class="spin-tokens">
+                                <i class="bi bi-coin"></i> 
+                                <span id="spinTokensCount"><?= $spin_tokens ?></span> Spin Tokens
+                            </div>
+                            <button class="btn-add-tokens" onclick="openWalletModal()">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="logout-section">
                         <button class="btn-logout" onclick="window.location.href='<?= base_url('reward/logout') ?>'">
@@ -45,17 +51,8 @@
                 </div>
                 
                 <div class="header-actions">
-                    <div class="left-buttons">
-                        <button class="btn btn-wallet" onclick="openDepositModal('spin')">
-                            <i class="bi bi-wallet2 me-1"></i>
-                            Spin Wallet
-                        </button>
-                        <button class="btn btn-wallet" onclick="openDepositModal('user')">
-                            <i class="bi bi-cash-coin me-1"></i>
-                            User Wallet
-                        </button>
-                    </div>
-                    <div class="right-buttons">
+                    <!-- Removed wallet buttons - only wheel button remains -->
+                    <div class="right-buttons-only">
                         <button class="btn-wheel" onclick="openWheelModal()">
                             <i class="bi bi-bullseye"></i>
                         </button>
@@ -167,12 +164,41 @@
         </div>
     </div>
 
-    <!-- Deposit Modal -->
-    <div class="modal fade" id="depositModal" tabindex="-1" aria-hidden="true">
+    <!-- Wallet Selection Modal -->
+    <div class="modal fade" id="walletModal" tabindex="-1" aria-labelledby="walletModalLabel" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="depositModalTitle">Contact Customer Service</h5>
+                    <h5 class="modal-title" id="walletModalLabel">Choose Wallet</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="mb-4">Which wallet would you like to deposit into?</p>
+                    
+                    <div class="wallet-selection">
+                        <button class="btn btn-wallet-option" onclick="selectWallet('spin')">
+                            <i class="bi bi-coin"></i>
+                            <span>Spin Wallet</span>
+                            <small>For spinning the wheel</small>
+                        </button>
+                        
+                        <button class="btn btn-wallet-option" onclick="selectWallet('user')">
+                            <i class="bi bi-cash-coin"></i>
+                            <span>User Wallet</span>
+                            <small>Main balance</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Platform Selection Modal -->
+    <div class="modal fade" id="platformModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="platformModalTitle">Contact Customer Service</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
@@ -254,16 +280,46 @@ document.addEventListener('DOMContentLoaded', function() {
 // Store the selected wallet type
 let selectedWalletType = '';
 
-// Open deposit modal
-function openDepositModal(walletType) {
+// Open wallet selection modal (triggered by + button)
+function openWalletModal() {
+    // Ensure any existing modals are closed first
+    const existingModals = document.querySelectorAll('.modal.show');
+    existingModals.forEach(modal => {
+        const modalInstance = bootstrap.Modal.getInstance(modal);
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+    });
+    
+    // Small delay to ensure cleanup, then open wallet modal
+    setTimeout(() => {
+        const walletModal = new bootstrap.Modal(document.getElementById('walletModal'), {
+            backdrop: true,
+            keyboard: true,
+            focus: true
+        });
+        walletModal.show();
+    }, 100);
+}
+
+// Select wallet and proceed to platform selection
+function selectWallet(walletType) {
     selectedWalletType = walletType;
-    const modal = new bootstrap.Modal(document.getElementById('depositModal'));
     
-    // Update modal title based on wallet type
-    const modalTitle = document.getElementById('depositModalTitle');
-    modalTitle.textContent = `Deposit to ${walletType === 'spin' ? 'Spin Wallet' : 'User Wallet'}`;
+    // Close wallet modal
+    const walletModal = bootstrap.Modal.getInstance(document.getElementById('walletModal'));
+    if (walletModal) {
+        walletModal.hide();
+    }
     
-    modal.show();
+    // Update platform modal title and show
+    setTimeout(() => {
+        const platformModalTitle = document.getElementById('platformModalTitle');
+        platformModalTitle.textContent = `Deposit to ${walletType === 'spin' ? 'Spin Wallet' : 'User Wallet'}`;
+        
+        const platformModal = new bootstrap.Modal(document.getElementById('platformModal'));
+        platformModal.show();
+    }, 300); // Small delay for smooth transition
 }
 
 // Contact customer service
@@ -289,7 +345,7 @@ function contactCustomerService(platform) {
     console.log(`Redirecting to ${platform === 'whatsapp' ? 'WhatsApp' : 'Telegram'}...`);
     
     // Close modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById('depositModal'));
+    const modal = bootstrap.Modal.getInstance(document.getElementById('platformModal'));
     if (modal) {
         modal.hide();
     }

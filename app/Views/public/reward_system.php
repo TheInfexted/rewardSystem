@@ -178,15 +178,8 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                         <?php endif; ?>
                     </div>
 
-                    <div class="no-prize-message">
-                        <h3><i class="bi bi-info-circle"></i> No Active Rewards</h3>
-                        <p>You don't have any pending rewards to claim right now.</p>
-                        <p class="text-muted">Spin the wheel to win exciting prizes!</p>
-                        
-                        <div class="d-grid gap-2 mt-4">
-                            <a href="<?= base_url('/') ?>" class="btn btn-claim">
-                                <i class="bi bi-arrow-left"></i> Back to Game
-                            </a>
+                    <div class="no-prize-message">                        
+                        <div class="d-grid gap-2 mt-2">
                             <a href="<?= base_url('customer/dashboard') ?>" class="btn btn-platform">
                                 <i class="bi bi-speedometer2"></i> View Dashboard
                             </a>
