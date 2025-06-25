@@ -98,7 +98,7 @@
                                                     <?= $dayData['is_today'] ? 'today' : '' ?>
                                                     <?= $dayData['is_future'] ? 'future' : '' ?>">
                             <div class="day-name"><?= $dayData['day_short'] ?></div>
-                            <div class="day-number"><?= $day ?></div>
+                            <div class="day-number"><?= $dayData['day'] ?></div>
                             <div class="day-points">
                                 <?php if ($dayData['checked_in']): ?>
                                     <span class="earned">+<?= $dayData['actual_points'] ?></span>

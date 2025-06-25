@@ -823,7 +823,7 @@ class CustomerController extends BaseController
             for ($i = 1; $i <= 7; $i++) {
                 $date = date('Y-m-d', strtotime($weekDates['week_start'] . ' +' . ($i-1) . ' days'));
                 $weeklyProgress[$i] = [
-                    'day' => $i,
+                    'day' => date('j', strtotime($date)),
                     'date' => $date,
                     'day_name' => date('l', strtotime($date)),
                     'day_short' => date('D', strtotime($date)),
