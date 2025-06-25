@@ -388,11 +388,12 @@ body {
 
 /* Alerts - Dashboard Style */
 .alert {
-    border-radius: 10px;
+    border-radius: 20px;
     margin-bottom: 15px;
     font-size: 0.9rem;
     border: 1px solid;
     padding: 15px;
+    padding-right: 2.5rem;
 }
 
 .alert-success {
