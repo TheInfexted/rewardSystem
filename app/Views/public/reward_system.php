@@ -247,9 +247,9 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                             </div>
 
                             <div class="d-grid gap-2 mt-3">
-                                <a href="<?= base_url('customer/dashboard') ?>" class="btn btn-claim">
-                                    <i class="bi bi-speedometer2"></i> Go to Dashboard
-                                </a>
+                                <button type="button" class="btn btn-claim" onclick="autoLoginAfterRegister()">
+                                    <i class="bi bi-box-arrow-in-right"></i> Login
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -482,6 +482,48 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                 });
             });
         });
+
+        function autoLoginAfterRegister() {
+        const username = document.getElementById('displayUsername')?.textContent?.trim();
+        const password = document.getElementById('displayPassword')?.textContent?.trim();
+
+        if (!username || !password) {
+            showAlert('Missing credentials. Please try again.', 'danger');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('password', password);
+        formData.append(csrfName, csrfToken);
+
+        showLoading(true);
+
+        fetch('<?= base_url('reward/login') ?>', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            showLoading(false);
+            if (data.success) {
+                showAlert(data.message, 'success');
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, 1000);
+            } else {
+                showAlert(data.message || 'Login failed.', 'danger');
+            }
+        })
+        .catch(error => {
+            showLoading(false);
+            showAlert('Login error. Please try again.', 'danger');
+            console.error('Auto login error:', error);
+        });
+    }
 
         // Debug: Log session data on page load
         console.log('Reward page loaded');

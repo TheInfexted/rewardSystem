@@ -80,18 +80,6 @@ class RewardController extends BaseController
             $result = $this->customerModel->createAutoCustomer();
             
             if ($result) {
-                // Set session data for the new customer
-                $session->set([
-                    'customer_id' => $result['id'],
-                    'customer_logged_in' => true,
-                    'customer_data' => [
-                        'id' => $result['id'],
-                        'username' => $result['username'],
-                        'name' => $result['username'],
-                        'phone' => $result['username'],
-                        'points' => 0  // New customers start with 0 points
-                    ]
-                ]);
 
                 return $this->response->setJSON([
                     'success' => true,
