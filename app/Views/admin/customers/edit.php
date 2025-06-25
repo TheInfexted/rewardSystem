@@ -5,9 +5,13 @@
     <div class="row">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title">Edit Customer - <?= esc($customer['username']) ?></h4>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="card-title mb-0">Edit Customer - <?= esc($customer['username']) ?></h4>
+                    <a href="<?= base_url('admin/customers/view/' . $customer['id']) ?>" class="btn btn-warning btn-sm text-dark">
+                        <i class="fas fa-cogs"></i> Feature Settings
+                    </a>
                 </div>
+                
                 <div class="card-body">
                     <?php if (session()->getFlashdata('errors')): ?>
                         <div class="alert alert-danger">
