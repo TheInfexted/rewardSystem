@@ -227,9 +227,9 @@ body {
     display: flex;
 }
 
-/* Weekly Check-in Section */
+/* COMPACT Weekly Check-in Section */
 .checkin-section {
-    padding: 20px;
+    padding: 15px 20px; /* Reduced from 20px to 15px */
     background: white;
 }
 
@@ -238,27 +238,21 @@ body {
     align-items: center;
     font-size: 1.1rem;
     font-weight: 600;
-    margin-bottom: 15px;
+    margin-bottom: 12px; /* Reduced from 15px */
     color: #333;
 }
 
-.checkin-card {
+/* New Compact Check-in Layout */
+.compact-checkin {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 15px;
-    padding: 20px;
+    padding: 15px; /* Reduced from 20px */
     color: white;
+    margin-bottom: 15px; /* Reduced margin */
+}
+
+.checkin-action {
     text-align: center;
-    margin-bottom: 20px;
-}
-
-.checkin-streak {
-    font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.streak-text {
-    opacity: 0.9;
     margin-bottom: 15px;
 }
 
@@ -266,11 +260,12 @@ body {
     background: rgba(255,255,255,0.2);
     border: 1px solid rgba(255,255,255,0.3);
     color: white;
-    padding: 10px 20px;
+    padding: 8px 20px; /* Reduced padding */
     border-radius: 25px;
     font-weight: 600;
     width: 100%;
     cursor: pointer;
+    font-size: 0.9rem; /* Slightly smaller text */
 }
 
 .btn-checkin:disabled {
@@ -282,150 +277,14 @@ body {
     background: rgba(255,255,255,0.3);
 }
 
-/* Weekly Calendar */
-.weekly-calendar {
-    background: #f8f9fa;
-    border-radius: 15px;
-    padding: 20px;
-    margin-top: 15px;
-}
-
-.week-header {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.week-header span {
-    font-weight: 600;
-    color: #333;
-    font-size: 1.1rem;
-}
-
-.week-header small {
-    display: block;
-    color: #6c757d;
-    margin-top: 5px;
-    font-size: 0.8rem;
-}
-
-.week-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-    margin-bottom: 20px;
-}
-
-.day-item {
-    background: white;
-    border: 2px solid #e9ecef;
-    border-radius: 12px;
-    padding: 10px 6px;
-    text-align: center;
-    transition: all 0.3s ease;
-    position: relative;
-    min-height: 80px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.day-item.completed {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    border-color: #28a745;
-    color: white;
-    transform: scale(1.02);
-}
-
-.day-item.today {
-    border-color: #007bff;
-    border-width: 3px;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
-
-.day-item.future {
-    opacity: 0.6;
-    background: #f8f9fa;
-}
-
-.day-name {
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    margin-bottom: 2px;
-}
-
-.day-number {
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin: 5px 0;
-}
-
-.day-points {
-    font-size: 0.7rem;
-    margin-top: auto;
-}
-
-.day-points .earned {
-    color: #fff;
-    font-weight: bold;
-}
-
-.day-points .available {
-    color: #28a745;
-    font-weight: 600;
-}
-
-.day-points .future {
-    color: #6c757d;
-}
-
-.check-mark {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: #ffc107;
-    color: #000;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7rem;
-    font-weight: bold;
-}
-
-.week-summary {
-    display: flex;
-    justify-content: space-between;
-    padding-top: 15px;
-    border-top: 1px solid #dee2e6;
-}
-
-.summary-item {
-    text-align: center;
-}
-
-.summary-item .label {
-    font-size: 0.8rem;
-    color: #6c757d;
-    display: block;
-}
-
-.summary-item .value {
-    font-weight: 600;
-    color: #333;
-    font-size: 0.9rem;
-}
-
 .perfect-week-badge {
     background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
     color: #333;
-    padding: 8px 15px;
+    padding: 6px 12px; /* Reduced padding */
     border-radius: 20px;
     font-weight: bold;
-    font-size: 0.9rem;
-    margin-top: 10px;
+    font-size: 0.8rem; /* Smaller text */
+    margin-top: 8px;
     animation: badge-pulse 2s infinite;
 }
 
@@ -435,12 +294,100 @@ body {
     100% { transform: scale(1); }
 }
 
+/* Inline Weekly Calendar - More Compact */
+.week-days-inline {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px; /* Reduced gap */
+}
+
+.day-item-compact {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px; /* Smaller radius */
+    padding: 6px 4px; /* Reduced padding */
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    min-height: 60px; /* Reduced height */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.day-item-compact.completed {
+    background: rgba(40, 167, 69, 0.3);
+    border-color: rgba(40, 167, 69, 0.5);
+    color: white;
+    transform: scale(1.02);
+}
+
+.day-item-compact.today {
+    border-color: rgba(255, 255, 255, 0.8);
+    border-width: 2px;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+.day-item-compact.future {
+    opacity: 0.6;
+}
+
+.day-item-compact .day-name {
+    font-size: 0.6rem; /* Smaller text */
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.day-item-compact .day-number {
+    font-size: 0.9rem; /* Smaller text */
+    font-weight: bold;
+    margin: 3px 0;
+    color: white;
+}
+
+.day-item-compact .day-points {
+    font-size: 0.6rem; /* Smaller text */
+    margin-top: auto;
+}
+
+.day-item-compact .day-points .earned {
+    color: #ffd700;
+    font-weight: bold;
+}
+
+.day-item-compact .day-points .available {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+}
+
+.day-item-compact .day-points .future {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.day-item-compact .check-mark {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background: #ffc107;
+    color: #000;
+    width: 14px; /* Smaller check mark */
+    height: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    font-weight: bold;
+}
+
 /* Statistics Cards */
 .stats-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 15px; /* Reduced from 20px */
     padding: 0 20px;
 }
 
@@ -474,12 +421,13 @@ body {
     line-height: 1.2;
 }
 
-/* Advertisement Section - NO GAPS - EXTENDS TO BOTTOM */
+/* Advertisement Section - More space for ads */
 .advertisement-section {
     margin: 0; /* Remove all margins */
     background: #f8f9fa;
     padding: 0; /* Remove all padding */
     margin-bottom: 0; /* Ensure no bottom margin */
+    /* More space available due to compact check-in */
 }
 
 .ads-stack {
@@ -553,6 +501,11 @@ body {
     margin-bottom: 0 !important; /* No negative margin needed */
     padding-bottom: 0 !important; /* No padding needed */
     position: relative;
+}
+
+.advertisement-section:last-child {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
 }
 
 /* Ensure ads stack properly */
@@ -667,33 +620,32 @@ body {
         height: 30px;
         font-size: 0.9rem;
     }
-}
     
-    .week-days {
-        gap: 5px;
+    .week-days-inline {
+        gap: 4px;
     }
     
-    .day-item {
-        padding: 8px 4px;
-        min-height: 70px;
+    .day-item-compact {
+        padding: 5px 3px;
+        min-height: 50px;
     }
     
-    .day-name {
-        font-size: 0.6rem;
+    .day-item-compact .day-name {
+        font-size: 0.55rem;
     }
     
-    .day-number {
-        font-size: 1rem;
+    .day-item-compact .day-number {
+        font-size: 0.8rem;
     }
     
-    .day-points {
-        font-size: 0.6rem;
+    .day-item-compact .day-points {
+        font-size: 0.55rem;
     }
     
-    .check-mark {
-        width: 16px;
-        height: 16px;
-        font-size: 0.6rem;
+    .day-item-compact .check-mark {
+        width: 12px;
+        height: 12px;
+        font-size: 0.5rem;
     }
     
     .stats-row {
@@ -726,6 +678,7 @@ body {
     .btn-platform i {
         font-size: 2rem;
     }
+}
 
 @media (max-width: 480px) {
     .header-actions {
@@ -839,7 +792,7 @@ button[onclick] {
     user-select: none;
 }
 
-.day-item {
+.day-item-compact {
     user-select: none;
 }
 
@@ -860,12 +813,8 @@ button[onclick] {
         padding: 0 15px;
     }
     
-    .checkin-card {
-        padding: 15px;
-    }
-    
-    .weekly-calendar {
-        padding: 15px;
+    .compact-checkin {
+        padding: 12px;
     }
     
     .btn-wallet,
@@ -917,34 +866,6 @@ body {
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
     min-height: 100vh; /* Full height since no nav */
-}
-
-/* Make ads extend to the very bottom */
-.advertisement-section {
-    margin-bottom: 0 !important; /* No negative margin needed */
-    padding-bottom: 0 !important; /* No padding needed */
-    position: relative;
-}
-
-.advertisement-section:last-child {
-    margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
-}
-
-/* Remove gaps from ads */
-.ads-stack {
-    margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
-}
-
-.ad-item-stacked:last-child {
-    margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
-}
-
-/* Hide bottom navigation completely */
-.bottom-nav-container {
-    display: none !important;
 }
 
 /* Override any global spacing on dashboard */

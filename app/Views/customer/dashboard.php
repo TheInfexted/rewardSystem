@@ -65,42 +65,36 @@
         </div>
     </div>
 
-    <!-- Weekly Check-in Section for Dashboard -->
+    <!-- Compact Weekly Check-in Section -->
     <div class="checkin-section">
         <h5 class="section-title">
             <i class="bi bi-calendar-check text-primary me-2"></i>
             Weekly Check-in (<?= date('M j', strtotime($current_week_start)) ?> - <?= date('M j', strtotime($current_week_end)) ?>)
         </h5>
         
-        <div class="checkin-card">
-            <div class="checkin-streak"><?= $checkin_streak ?>/7</div>
-            <div class="streak-text">Days Completed</div>
-            <button class="btn btn-checkin" 
-                    onclick="performCheckin()" 
-                    <?= $today_checkin ? 'disabled' : '' ?>>
-                <?= $today_checkin ? 'Already Checked In' : 'Check In Now' ?>
-            </button>
-            
-            <?php if ($checkin_streak >= 7): ?>
-                <div class="perfect-week-badge">
-                    🎉 PERFECT WEEK!
-                </div>
-            <?php endif; ?>
-        </div>
-        
-        <!-- Weekly Check-in Calendar -->
-        <div class="weekly-calendar">
-            <div class="week-header">
-                <span>This Week's Progress</span>
-                <small>Monday resets weekly progress</small>
+        <!-- Compact Check-in with Calendar -->
+        <div class="compact-checkin">
+            <div class="checkin-action">
+                <button class="btn btn-checkin" 
+                        onclick="performCheckin()" 
+                        <?= $today_checkin ? 'disabled' : '' ?>>
+                    <?= $today_checkin ? 'Already Checked In' : 'Check In Now' ?>
+                </button>
+                
+                <?php if ($checkin_streak >= 7): ?>
+                    <div class="perfect-week-badge">
+                        🎉 PERFECT WEEK!
+                    </div>
+                <?php endif; ?>
             </div>
             
-            <div class="week-days">
+            <!-- Inline Weekly Calendar -->
+            <div class="week-days-inline">
                 <?php if (is_array($weekly_progress)): ?>
                     <?php foreach ($weekly_progress as $day => $dayData): ?>
-                        <div class="day-item <?= $dayData['checked_in'] ? 'completed' : '' ?> 
-                                            <?= $dayData['is_today'] ? 'today' : '' ?>
-                                            <?= $dayData['is_future'] ? 'future' : '' ?>">
+                        <div class="day-item-compact <?= $dayData['checked_in'] ? 'completed' : '' ?> 
+                                                    <?= $dayData['is_today'] ? 'today' : '' ?>
+                                                    <?= $dayData['is_future'] ? 'future' : '' ?>">
                             <div class="day-name"><?= $dayData['day_short'] ?></div>
                             <div class="day-number"><?= $day ?></div>
                             <div class="day-points">
@@ -119,22 +113,6 @@
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
-            </div>
-            
-            <div class="week-summary">
-                <div class="summary-item">
-                    <span class="label">This Week:</span>
-                    <span class="value"><?= $checkin_streak ?>/7 days</span>
-                </div>
-                <div class="summary-item">
-                    <span class="label">Next Reset:</span>
-                    <span class="value">
-                        <?php 
-                        $nextMonday = date('M j', strtotime('next monday'));
-                        echo $nextMonday;
-                        ?>
-                    </span>
-                </div>
             </div>
         </div>
     </div>

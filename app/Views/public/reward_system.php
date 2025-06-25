@@ -390,12 +390,6 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                     
                     showAlert(data.message, 'success');
                     
-                    // Auto-redirect to dashboard after showing credentials
-                    if (data.redirect) {
-                        setTimeout(() => {
-                            window.location.href = data.redirect;
-                        }, 5000); // Give user 3 seconds to see and save credentials
-                    }
                 } else {
                     showAlert(data.message || 'Registration failed. Please try again.', 'danger');
                 }

@@ -95,7 +95,7 @@ class RewardController extends BaseController
 
                 return $this->response->setJSON([
                     'success' => true,
-                    'message' => 'Account created successfully! Redirecting to dashboard in 5 seconds...',
+                    'message' => 'Account created successfully!',
                     'customer_data' => [
                         'username' => $result['username'],
                         'password' => $result['password'],

@@ -1,464 +1,513 @@
-        /* Force portrait mode styling - same as landing page */
-        * {
-            touch-action: manipulation;
-        }
-        
-        html, body {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            background-color: #000;
-            touch-action: pan-x pan-y;
-        }
-        
-        /* Prevent zooming on input focus (iOS) */
-        input, textarea, select {
-            font-size: 16px !important;
-        }
-        
-        /* Additional zoom prevention */
-        body {
-            -ms-touch-action: manipulation;
-            touch-action: manipulation;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            overflow-x: hidden;
-        }
-        
-        /* Portrait container - same as landing page */
-        .portrait-container {
-            width: 100%;
-            max-width: 414px;
-            background-color: #000;
-            min-height: 100vh;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* Header Section */
-        .reward-header {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            padding: 20px 15px;
-            text-align: center;
-            border-bottom: 3px solid #ffd700;
-            flex-shrink: 0;
-        }
-        
-        .reward-header h1 {
-            color: #ffd700;
-            font-size: 2rem;
-            font-weight: bold;
-            margin: 0;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-        
-        @keyframes glow {
-            from {
-                text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #ffd700, 0 0 40px #ffd700;
-            }
-            to {
-                text-shadow: 0 0 20px #fff, 0 0 30px #ffd700, 0 0 40px #ffd700, 0 0 50px #ffd700;
-            }
-        }
-        
-        /* Main Content Area */
-        .reward-content {
-            flex: 1;
-            padding: 20px 15px;
-            background: url('<?= base_url("img/fortune_wheel/bg_spin.png") ?>') no-repeat center center;
-            background-size: cover;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* Reward Card */
-        .reward-card {
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid #ffd700;
-            border-radius: 15px;
-            padding: 25px 20px;
-            width: 100%;
-            max-width: 350px;
-            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.3);
-            animation: slideIn 0.5s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        
-        /* Prize Display */
-        .prize-display {
-            background: linear-gradient(135deg, #ffd700, #ffb347);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .prize-display::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
-            animation: shine 3s infinite;
-        }
-        
-        @keyframes shine {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .prize-text {
-            color: #000;
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin: 0;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .prize-amount {
-            color: #000;
-            font-size: 2rem;
-            font-weight: bold;
-            margin: 10px 0 0 0;
-            position: relative;
-            z-index: 1;
-        }
-        
-        /* Customer Welcome */
-        .customer-welcome {
-            background: rgba(255, 215, 0, 0.1);
-            border: 2px solid #ffd700;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .customer-info {
-            color: #ffd700;
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-        }
-        
-        .points-display {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 15px;
-            display: inline-block;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-        
-        /* Buttons */
-        .btn-claim {
-            background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
-            border: 2px solid #b8860b;
-            color: #000;
-            font-weight: bold;
-            font-size: 1.1rem;
-            padding: 15px 25px;
-            border-radius: 8px;
-            width: 100%;
-            margin: 10px 0;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-claim:hover,
-        .btn-claim:focus {
-            background: linear-gradient(135deg, #ffb347 0%, #ffd700 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.5);
-            color: #000;
-        }
-        
-        .btn-platform {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid #444;
-            color: #fff;
-            font-weight: bold;
-            padding: 15px;
-            border-radius: 8px;
-            width: 100%;
-            margin: 8px 0;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-platform:hover {
-            border-color: #ffd700;
-            background: rgba(255, 215, 0, 0.1);
-            color: #ffd700;
-            transform: translateY(-2px);
-        }
-        
-        .btn-whatsapp:hover {
-            border-color: #25D366;
-            background: rgba(37, 211, 102, 0.1);
-            color: #25D366;
-        }
-        
-        .btn-telegram:hover {
-            border-color: #0088cc;
-            background: rgba(0, 136, 204, 0.1);
-            color: #0088cc;
-        }
-        
-        /* Form Elements */
-        .form-control {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid #444;
-            border-radius: 8px;
-            color: #fff;
-            padding: 12px 15px;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-        
-        .form-control:focus {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: #ffd700;
-            box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
-            color: #fff;
-        }
-        
-        .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-        
-        /* Credentials Display */
-        .credentials-box {
-            background: rgba(255, 215, 0, 0.1);
-            border: 2px dashed #ffd700;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        
-        .credential-item {
-            margin: 10px 0;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 5px;
-            font-family: monospace;
-            font-size: 1.1rem;
-            color: #ffd700;
-            word-break: break-all;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-        
-        .credential-item:hover {
-            background: rgba(255, 215, 0, 0.1);
-        }
-        
-        .credential-label {
-            color: #888;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-        }
-        
-        /* Platform Selection */
-        .platform-selection {
-            display: flex;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        
-        .platform-btn {
-            flex: 1;
-            padding: 20px 10px;
-            border: 2px solid #444;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            color: #fff;
-        }
-        
-        .platform-btn:hover {
-            border-color: #ffd700;
-            background: rgba(255, 215, 0, 0.1);
-            transform: translateY(-2px);
-        }
-        
-        .platform-btn i {
-            font-size: 2.5rem;
-            margin-bottom: 8px;
-            display: block;
-        }
-        
-        .platform-btn.whatsapp:hover {
-            border-color: #25D366;
-            background: rgba(37, 211, 102, 0.1);
-            color: #25D366;
-        }
-        
-        .platform-btn.telegram:hover {
-            border-color: #0088cc;
-            background: rgba(0, 136, 204, 0.1);
-            color: #0088cc;
-        }
-        
-        /* Toggle Links */
-        .toggle-link {
-            text-align: center;
-            margin: 15px 0;
-        }
-        
-        .toggle-link a {
-            color: #ffd700;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
-        }
-        
-        .toggle-link a:hover {
-            color: #ffb347;
-            text-decoration: underline;
-        }
-        
-        /* Loading Spinner */
-        .loading-spinner {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-        }
-        
-        .loading-spinner.active {
-            display: block;
-        }
-        
-        .spinner-border {
-            width: 3rem;
-            height: 3rem;
-            border-color: #ffd700;
-            border-right-color: transparent;
-        }
-        
-        /* Alerts */
-        .alert {
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-        }
-        
-        .alert-success {
-            background: rgba(40, 167, 69, 0.2);
-            border: 1px solid #28a745;
-            color: #28a745;
-        }
-        
-        .alert-danger {
-            background: rgba(220, 53, 69, 0.2);
-            border: 1px solid #dc3545;
-            color: #dc3545;
-        }
-        
-        .alert-info {
-            background: rgba(23, 162, 184, 0.2);
-            border: 1px solid #17a2b8;
-            color: #17a2b8;
-        }
-        
-        /* Important Note */
-        .important-note {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid rgba(255, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-            color: #ff6b6b;
-            font-size: 0.9rem;
-            text-align: center;
-        }
-        
-        .important-note i {
-            color: #ff4444;
-        }
-        
-        /* No Prize Message */
-        .no-prize-message {
-            text-align: center;
-            color: #fff;
-            padding: 40px 20px;
-        }
-        
-        .no-prize-message h3 {
-            color: #ffd700;
-            margin-bottom: 20px;
-        }
-        
-        /* Footer */
-        .reward-footer {
-            background: #1a1a1a;
-            padding: 15px;
-            text-align: center;
-            border-top: 1px solid #333;
-            flex-shrink: 0;
-        }
-        
-        .reward-footer p {
-            margin: 0;
-            color: #888;
-            font-size: 0.9rem;
-        }
-        
-        /* Mobile Responsive */
-        @media (max-width: 375px) {
-            .reward-card {
-                padding: 20px 15px;
-                margin: 0 10px;
-            }
-            
-            .reward-header h1 {
-                font-size: 1.5rem;
-            }
-            
-            .prize-text {
-                font-size: 1.3rem;
-            }
-            
-            .prize-amount {
-                font-size: 1.8rem;
-            }
-            
-            .platform-btn {
-                padding: 15px 8px;
-            }
-            
-            .platform-btn i {
-                font-size: 2rem;
-            }
-        }
+/* Mobile-first responsive design for reward system - Dashboard Theme */
+* {
+    touch-action: manipulation;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    background: #f8f9fa; /* Dashboard background */
+    touch-action: pan-x pan-y;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Prevent zooming on input focus (iOS) */
+input, textarea, select {
+    font-size: 16px !important;
+}
+
+/* Additional zoom prevention */
+body {
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    overflow-x: hidden;
+}
+
+/* Portrait container - same as dashboard */
+.portrait-container {
+    width: 100%;
+    max-width: 414px;
+    background: white; /* Dashboard white background */
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1); /* Dashboard shadow */
+}
+
+/* Header Section - Dashboard Style */
+.reward-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Dashboard gradient */
+    padding: 25px 20px;
+    text-align: center;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.reward-header h1 {
+    color: white; /* White text like dashboard */
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+    text-shadow: none; /* Remove glow effect */
+}
+
+.reward-header h1 i {
+    margin-right: 10px;
+    color: #ffd700; /* Gold icon */
+}
+
+/* Main Content Area - Dashboard Style */
+.reward-content {
+    flex: 1;
+    padding: 20px;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Align to top like dashboard */
+}
+
+/* Reward Card - Dashboard Style */
+.reward-card {
+    background: white;
+    border: 1px solid #e9ecef; /* Dashboard border style */
+    border-radius: 15px; /* Dashboard border radius */
+    padding: 25px 20px;
+    width: 100%;
+    max-width: 350px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Dashboard shadow */
+    margin-bottom: 20px;
+}
+
+/* Prize Display - Dashboard Style */
+.prize-display {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Dashboard gradient */
+    border-radius: 15px;
+    padding: 25px 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    position: relative;
+    color: white;
+}
+
+.prize-display::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: subtle-shine 4s infinite;
+}
+
+@keyframes subtle-shine {
+    0% { transform: rotate(0deg); opacity: 0.3; }
+    50% { opacity: 0.1; }
+    100% { transform: rotate(360deg); opacity: 0.3; }
+}
+
+.prize-text {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    position: relative;
+    z-index: 1;
+}
+
+.prize-amount {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin: 10px 0 0 0;
+    position: relative;
+    z-index: 1;
+}
+
+/* Customer Welcome - Dashboard Style */
+.customer-welcome {
+    background: #f8f9fa; /* Dashboard light background */
+    border: 1px solid #e9ecef;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.customer-info {
+    color: #333; /* Dashboard text color */
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.customer-info i {
+    color: #667eea; /* Dashboard primary color */
+    margin-right: 8px;
+}
+
+.points-display {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px; /* Dashboard rounded style */
+    display: inline-block;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Buttons - Dashboard Style */
+.btn-claim {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Dashboard gradient */
+    border: none;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 12px 25px;
+    border-radius: 25px; /* Dashboard rounded buttons */
+    width: 100%;
+    margin: 10px 0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-claim:hover,
+.btn-claim:focus {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    color: white;
+}
+
+.btn-platform {
+    background: white;
+    border: 2px solid #e9ecef;
+    color: #333;
+    font-weight: 500;
+    padding: 15px;
+    border-radius: 15px; /* Dashboard border radius */
+    width: 100%;
+    margin: 8px 0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-platform:hover {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+    color: #667eea;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.btn-whatsapp:hover {
+    border-color: #25D366;
+    background: rgba(37, 211, 102, 0.05);
+    color: #25D366;
+}
+
+.btn-telegram:hover {
+    border-color: #0088cc;
+    background: rgba(0, 136, 204, 0.05);
+    color: #0088cc;
+}
+
+/* Form Elements - Dashboard Style */
+.form-control {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    color: #333;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    background: white;
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    color: #333;
+    outline: none;
+}
+
+.form-control::placeholder {
+    color: #6c757d;
+}
+
+/* Credentials Display - Dashboard Style */
+.credentials-box {
+    background: #f8f9fa;
+    border: 2px dashed #667eea;
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.credential-item {
+    margin: 10px 0;
+    padding: 12px;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    font-family: monospace;
+    font-size: 1rem;
+    color: #333;
+    word-break: break-all;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.credential-item:hover {
+    background: rgba(102, 126, 234, 0.05);
+    border-color: #667eea;
+}
+
+.credential-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+/* Platform Selection - Dashboard Style */
+.platform-selection {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.platform-btn {
+    flex: 1;
+    padding: 20px 15px;
+    border: 2px solid #e9ecef;
+    background: white;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    color: #333;
+}
+
+.platform-btn:hover {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.platform-btn i {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+    display: block;
+    color: #667eea;
+}
+
+.platform-btn.whatsapp:hover {
+    border-color: #25D366;
+    background: rgba(37, 211, 102, 0.05);
+}
+
+.platform-btn.whatsapp:hover i {
+    color: #25D366;
+}
+
+.platform-btn.telegram:hover {
+    border-color: #0088cc;
+    background: rgba(0, 136, 204, 0.05);
+}
+
+.platform-btn.telegram:hover i {
+    color: #0088cc;
+}
+
+/* Toggle Links - Dashboard Style */
+.toggle-link {
+    text-align: center;
+    margin: 15px 0;
+}
+
+.toggle-link a {
+    color: #667eea;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.toggle-link a:hover {
+    color: #764ba2;
+    text-decoration: underline;
+}
+
+/* Loading Spinner - Dashboard Style */
+.loading-spinner {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    border: 1px solid #e9ecef;
+}
+
+.loading-spinner.active {
+    display: block;
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-color: #667eea;
+    border-right-color: transparent;
+}
+
+.loading-spinner p {
+    color: #333;
+    margin-top: 15px;
+    font-weight: 500;
+}
+
+/* Alerts - Dashboard Style */
+.alert {
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    border: 1px solid;
+    padding: 15px;
+}
+
+.alert-success {
+    background: rgba(40, 167, 69, 0.1);
+    border-color: #28a745;
+    color: #155724;
+}
+
+.alert-danger {
+    background: rgba(220, 53, 69, 0.1);
+    border-color: #dc3545;
+    color: #721c24;
+}
+
+.alert-info {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: #667eea;
+    color: #004085;
+}
+
+/* Important Note - Dashboard Style */
+.important-note {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid #ffc107;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+    color: #856404;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.important-note i {
+    color: #ffc107;
+    margin-right: 5px;
+}
+
+/* No Prize Message - Dashboard Style */
+.no-prize-message {
+    text-align: center;
+    color: #6c757d;
+    padding: 40px 20px;
+}
+
+.no-prize-message h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+/* Footer - Dashboard Style */
+.reward-footer {
+    background: #f8f9fa;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #e9ecef;
+    flex-shrink: 0;
+}
+
+.reward-footer p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 375px) {
+    .reward-card {
+        padding: 20px 15px;
+        margin: 0 10px;
+    }
+    
+    .reward-header {
+        padding: 20px 15px;
+    }
+    
+    .reward-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .prize-text {
+        font-size: 1.1rem;
+    }
+    
+    .prize-amount {
+        font-size: 1.6rem;
+    }
+    
+    .platform-btn {
+        padding: 15px 10px;
+    }
+    
+    .platform-btn i {
+        font-size: 2rem;
+    }
+    
+    .platform-selection {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 320px) {
+    .reward-content {
+        padding: 15px;
+    }
+    
+    .reward-card {
+        padding: 15px;
+    }
+    
+    .prize-display {
+        padding: 20px 15px;
+    }
+    
+    .customer-welcome {
+        padding: 15px;
+    }
+}
