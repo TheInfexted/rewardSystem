@@ -255,7 +255,7 @@ class RewardController extends BaseController
                 $telegramUsername = $this->adminSettingsModel->getSetting('reward_telegram_username', 'brendxn1127');
 
                 // Create message for platform
-                $message = "🎉 I just won {$winnerData['name']}! My User ID is: {$customerData['username']}. Claim ID: {$claimId}";
+                $message = "🎉 I just won {$winnerData['name']}!\nMy User ID is: {$customerData['username']}.\nClaim ID: {$claimId}";
                 $encodedMessage = urlencode($message);
                 
                 // Platform URLs

@@ -6,7 +6,7 @@
 
 <?= $this->section('content') ?>
 
-<link rel="stylesheet" href="<?= base_url('css/customer-dashboard.css') ?>">
+<link rel="stylesheet" href="<?= base_url('css/customer-dashboard.css') ?>?v=<?= time() ?>">
 
 <div class="dashboard-container">
     <!-- User Profile Header -->
@@ -326,7 +326,7 @@ function selectWallet(walletType) {
 function contactCustomerService(platform) {
     // Prepare the message based on wallet type
     const walletName = selectedWalletType === 'spin' ? 'Spin Wallet' : 'User Wallet';
-    const message = `Hi, I want to deposit into my ${walletName}. My User ID is: ${dashboardPhpConfig.username}`;
+    const message = `Hi, I want to deposit into my ${walletName}.\nMy User ID is: ${dashboardPhpConfig.username}`;
     const encodedMessage = encodeURIComponent(message);
     
     // Get contact details from config or use defaults

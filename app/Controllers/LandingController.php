@@ -11,7 +11,6 @@ use App\Models\LandingPageMusicModel;
 use App\Models\WheelSoundModel;
 use App\Models\CustomerModel;
 
-
 class LandingController extends BaseController
 {
     protected $landingPageModel;
@@ -117,7 +116,8 @@ class LandingController extends BaseController
                 }
 
                 $spinsToday = $session->get('spins_today') ?? 0;
-                $maxSpinsPerDay = $this->getSettingValue('max_daily_spins', 3);
+                
+                $maxSpinsPerDay = $this->adminSettingsModel->getSetting('max_daily_spins', 3);
 
                 if ($spinsToday >= $maxSpinsPerDay) {
                     return $this->response->setJSON([
@@ -129,9 +129,7 @@ class LandingController extends BaseController
 
                 $session->set('spins_today', $spinsToday + 1);
                 $remainingTokens = $maxSpinsPerDay - ($spinsToday + 1);
-            };
-
-        
+            }
             
             return $this->response->setJSON([
                 'success' => true,
@@ -510,6 +508,7 @@ class LandingController extends BaseController
         
         return redirect()->to('/');
     }
+
     public function storeWinner()
     {
         if ($this->request->isAJAX()) {

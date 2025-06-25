@@ -14,24 +14,24 @@ body {
     min-height: 100vh;
     box-shadow: 0 0 20px rgba(0,0,0,0.1);
     position: relative;
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-x: hidden; 
 }
 
-/* Profile Header with background image support - REDUCED HEIGHT */
+/* Profile Header with background image support */
 .profile-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 20px; /* Reduced padding */
-    text-align: left; /* Changed to left alignment */
+    padding: 20px; 
+    text-align: left; 
     position: relative;
     overflow: hidden;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    height: 180px; /* Reduced height from 250px to 180px */
+    height: 140px; 
     display: flex;
-    align-items: flex-start; /* Align to top */
-    justify-content: flex-start; /* Align to left */
+    align-items: flex-start; 
+    justify-content: flex-start; 
 }
 
 /* Overlay for better text readability */
@@ -125,6 +125,7 @@ body {
     border-radius: 20px;
     display: inline-flex; 
     align-items: center;
+    gap: 4px;
     font-size: 0.9rem;
     text-align: left;
     flex: 0 0 auto; 
@@ -172,7 +173,7 @@ body {
     align-items: center;
     gap: 10px;
     width: 100%;
-    margin-top: 0;
+    margin-top: -50px;
 }
 
 .left-buttons {
@@ -814,6 +815,7 @@ body.modal-open {
     .spin-tokens {
         padding: 4px 12px;
         font-size: 0.8rem;
+        gap: 3px;
     }
 
     .header-actions {
@@ -977,6 +979,7 @@ button[onclick] {
     .spin-tokens {
         font-size: 0.75rem;
         padding: 4px 10px;
+        gap: 2px;
     }
 
     .btn-add-tokens {

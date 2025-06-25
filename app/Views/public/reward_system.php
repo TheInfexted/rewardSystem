@@ -11,7 +11,7 @@ $isLoggedIn = isset($logged_in) && $logged_in;
     <title><?= $title ?? 'Claim Your Reward' ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="<?= base_url('css/reward-system.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('css/reward-system.css')?>?v=<?= time() ?>">
 
 </head>
 <body>
@@ -79,15 +79,6 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                                     <span>Telegram</span>
                                 </div>
                             </div>
-                            
-                            <div class="text-center mt-3">
-                                <a href="<?= base_url('customer/dashboard') ?>" class="btn btn-platform btn-sm me-2">
-                                    <i class="bi bi-speedometer2"></i> Dashboard
-                                </a>
-                                <button type="button" class="btn btn-platform btn-sm" onclick="logout()">
-                                    <i class="bi bi-box-arrow-right"></i> Logout
-                                </button>
-                            </div>
                         </div>
 
                     <?php else: ?>
@@ -119,7 +110,7 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                             <!-- Registration Options (Initially Visible) -->
                             <div id="registrationOptions">
                                 <h5 class="text-center text-warning mb-3">Create Account to Claim</h5>
-                                <p class="text-center text-light mb-4">We'll create an instant account for you!</p>
+                                <p class="text-center text-dark mb-4">We'll create an instant account for you!</p>
                                 
                                 <button type="button" class="btn btn-claim" onclick="autoRegister()">
                                     <i class="bi bi-lightning-fill"></i> Create New Account
@@ -149,7 +140,7 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                                     Important: Save these credentials to access your account later!
                                 </div>
 
-                                <h5 class="text-center text-warning mb-3">Choose Platform to Contact:</h5>
+                                <h5 class="text-center text-warning mb-4">Contact Customer Service to Claim Your Prize</h5>
                                 <div class="platform-selection">
                                     <div class="platform-btn whatsapp" onclick="claimReward('whatsapp')">
                                         <i class="bi bi-whatsapp"></i>
@@ -421,7 +412,7 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                         window.open(data.redirect_url, '_blank');
                         // Redirect to home page after opening platform
                         setTimeout(() => {
-                            window.location.href = '<?= base_url('/') ?>';
+                            window.location.href = '<?= base_url('/customer/dashboard') ?>';
                         }, 2000);
                     }, 1500);
                 } else {
