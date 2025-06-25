@@ -227,7 +227,7 @@ class CustomersController extends BaseController
                 // Log the profile changes
                 $this->logProfileChanges($customerId, $customer, $updateData);
                 
-                return redirect()->to('/admin/customers/view/' . $customerId)
+                return redirect()->to('admin/customers/edit/' . $customerId)
                     ->with('success', 'Customer updated successfully');
             } else {
                 return redirect()->back()->withInput()
