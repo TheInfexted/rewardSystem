@@ -52,7 +52,7 @@ $routes->get('logout', 'AuthController::logout');
 $routes->get('register', 'AuthController::register');
 $routes->post('register', 'AuthController::attemptRegister');
 
-//User Dashboard routes (protected by auth filter)
+//User Dashboard routes 
 $routes->group('user', ['filter' => 'auth'], function($routes) {
     $routes->get('dashboard', 'UserController::dashboard');
     $routes->post('checkin', 'UserController::checkin');
@@ -60,7 +60,7 @@ $routes->group('user', ['filter' => 'auth'], function($routes) {
     $routes->get('wheel-data', 'UserController::getWheelData');
 });
 
-// Admin routes group (protected by auth filter)
+// Admin routes group
 $routes->group('admin', ['filter' => 'auth'], function($routes) {
     // Dashboard
     $routes->get('/', 'Admin\DashboardController::index');
@@ -106,7 +106,7 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
         $routes->get('delete/(:num)', 'Admin\WheelController::delete/$1');
     });
     
-    // Bonus management routes - FIXED AND EXPANDED
+    // Bonus management routes
     $routes->group('bonus', function($routes) {
         $routes->get('/', 'Admin\BonusController::index');
         $routes->post('settings', 'Admin\BonusController::updateSettings');
@@ -153,13 +153,21 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
         $routes->post('import', 'Admin\LanguageController::import');
     });
 
-    // Customer management
+    // Customer management routes
     $routes->get('customers', 'Admin\CustomersController::index');
     $routes->get('customers/view/(:num)', 'Admin\CustomersController::view/$1');
     $routes->get('customers/edit/(:num)', 'Admin\CustomersController::edit/$1');
     $routes->post('customers/update/(:num)', 'Admin\CustomersController::update/$1');
+    
+    // Password management routes
+    $routes->post('customers/changePassword/(:num)', 'Admin\CustomersController::changePassword/$1');
+    $routes->post('customers/generatePassword/(:num)', 'Admin\CustomersController::generatePassword/$1');
+    
+    // Token management routes
     $routes->get('customers/tokens/(:num)', 'Admin\CustomersController::manageTokens/$1');
     $routes->post('customers/updateTokens', 'Admin\CustomersController::updateTokens');
+    
+    // Customer status and dashboard management
     $routes->post('customers/resetDashboard/(:num)', 'Admin\CustomersController::resetDashboard/$1');
     $routes->post('customers/delete/(:num)', 'Admin\CustomersController::delete/$1');
     $routes->post('customers/deactivate/(:num)', 'Admin\CustomersController::deactivate/$1');

@@ -146,13 +146,36 @@ class RewardController extends BaseController
         $username = $this->request->getPost('username');
         $password = $this->request->getPost('password');
         
+        // Debug logging
+        log_message('info', 'Login attempt for username: ' . $username);
+        log_message('info', 'Password provided length: ' . strlen($password));
+        
         try {
             // Find customer by username
             $customer = $this->customerModel->where('username', $username)
-                                          ->where('is_active', 1)
-                                          ->first();
+                                        ->where('is_active', 1)
+                                        ->first();
             
-            if ($customer && password_verify($password, $customer['password'])) {
+            if (!$customer) {
+                log_message('info', 'Customer not found: ' . $username);
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Invalid username or password.'
+                ]);
+            }
+            
+            log_message('info', 'Customer found, stored password hash: ' . substr($customer['password'], 0, 20) . '...');
+            
+            // Verify password
+            $passwordValid = password_verify($password, $customer['password']);
+            log_message('info', 'Password verification result: ' . ($passwordValid ? 'VALID' : 'INVALID'));
+            
+            if ($passwordValid) {
+                // Update last login
+                $this->customerModel->update($customer['id'], [
+                    'last_login' => date('Y-m-d H:i:s')
+                ]);
+                
                 // Set session data
                 session()->set([
                     'customer_id' => $customer['id'],
@@ -166,6 +189,8 @@ class RewardController extends BaseController
                     ]
                 ]);
 
+                log_message('info', 'Login successful for customer ID: ' . $customer['id']);
+
                 return $this->response->setJSON([
                     'success' => true,
                     'message' => 'Login successful!',
@@ -173,6 +198,7 @@ class RewardController extends BaseController
                 ]);
             }
             
+            log_message('info', 'Password verification failed for username: ' . $username);
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Invalid username or password.'
@@ -180,6 +206,7 @@ class RewardController extends BaseController
             
         } catch (\Exception $e) {
             log_message('error', 'Login error: ' . $e->getMessage());
+            log_message('error', 'Stack trace: ' . $e->getTraceAsString());
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Login failed. Please try again.'

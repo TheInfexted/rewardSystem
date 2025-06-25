@@ -29,7 +29,6 @@ class CustomerModel extends Model
         'last_login'
     ];
 
-
     protected bool $allowEmptyInserts = false;
 
     // Dates
@@ -71,20 +70,173 @@ class CustomerModel extends Model
     protected $skipValidation = false;
     protected $cleanValidationRules = true;
 
-    // Callbacks
+    // Callbacks - FIXED: Only hash on insert, not update
     protected $allowCallbacks = true;
     protected $beforeInsert = ['hashPassword'];
-    protected $beforeUpdate = ['hashPassword'];
+    // REMOVED: protected $beforeUpdate = ['hashPassword']; // This was causing double hashing!
 
     /**
-     * Hash password before insert/update
+     * Hash password before insert ONLY
+     * For updates, handle hashing manually in the controller
      */
     protected function hashPassword(array $data)
     {
         if (isset($data['data']['password'])) {
-            $data['data']['password'] = password_hash($data['data']['password'], PASSWORD_DEFAULT);
+            // Only hash if it doesn't look like it's already hashed
+            $password = $data['data']['password'];
+            
+            // Check if it's already a bcrypt hash (starts with $2y$ and is ~60 chars)
+            if (!preg_match('/^\$2y\$/', $password) || strlen($password) < 50) {
+                $data['data']['password'] = password_hash($password, PASSWORD_DEFAULT);
+                log_message('info', 'Password hashed by model callback for insert');
+            } else {
+                log_message('info', 'Password already hashed, skipping model callback');
+            }
         }
         return $data;
+    }
+
+    /**
+     * Update password without automatic hashing (for manual control)
+     * This method ensures passwords are updated safely without double-hashing
+     */
+    public function updatePasswordRaw(int $customerId, string $hashedPassword): bool
+    {
+        try {
+            // Skip validation and callbacks for this specific update
+            $this->skipValidation(true);
+            $this->allowCallbacks(false);
+            
+            $result = $this->update($customerId, [
+                'password' => $hashedPassword,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+            
+            // Reset validation and callbacks
+            $this->skipValidation(false);
+            $this->allowCallbacks(true);
+            
+            if ($result) {
+                log_message('info', "Password updated successfully for customer ID: {$customerId}");
+            } else {
+                log_message('error', "Failed to update password for customer ID: {$customerId}");
+            }
+            
+            return $result;
+            
+        } catch (\Exception $e) {
+            // Reset validation and callbacks in case of error
+            $this->skipValidation(false);
+            $this->allowCallbacks(true);
+            
+            log_message('error', 'Error updating password: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Change customer password with security logging
+     */
+    public function changePassword(int $customerId, string $newPassword, int $adminId = null, string $reason = ''): bool
+    {
+        try {
+            // Get current customer data for logging
+            $customer = $this->find($customerId);
+            if (!$customer) {
+                log_message('error', "Customer not found for password change: {$customerId}");
+                return false;
+            }
+            
+            // Hash the new password
+            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+            
+            // Update password using raw method
+            $result = $this->updatePasswordRaw($customerId, $hashedPassword);
+            
+            if ($result) {
+                // Log the password change
+                $this->logPasswordChange($customerId, $adminId, $reason);
+                
+                log_message('info', "Password changed successfully for customer: {$customer['username']} (ID: {$customerId})");
+            }
+            
+            return $result;
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Error in changePassword: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Generate and set a random password for customer
+     */
+    public function generateRandomPassword(int $customerId, int $adminId = null, string $reason = '', int $length = 8): array|false
+    {
+        try {
+            // Generate random password
+            $newPassword = $this->createRandomPassword($length);
+            
+            // Change the password
+            $result = $this->changePassword($customerId, $newPassword, $adminId, $reason ?: 'Random password generated');
+            
+            if ($result) {
+                return [
+                    'success' => true,
+                    'password' => $newPassword
+                ];
+            }
+            
+            return false;
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Error in generateRandomPassword: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Log password changes for security audit
+     */
+    private function logPasswordChange(int $customerId, int $adminId = null, string $reason = '')
+    {
+        $db = \Config\Database::connect();
+        
+        try {
+            // Log to security_log table
+            $securityData = [
+                'customer_id' => $customerId,
+                'event_type' => 'password_changed',
+                'event_details' => json_encode([
+                    'admin_id' => $adminId,
+                    'reason' => $reason,
+                    'timestamp' => date('Y-m-d H:i:s'),
+                    'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
+                ]),
+                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? null,
+                'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? null
+            ];
+            
+            $db->table('security_log')->insert($securityData);
+            
+            // Also log to customer_profile_changes if the table exists
+            $profileChangeData = [
+                'customer_id' => $customerId,
+                'admin_id' => $adminId,
+                'field_changed' => 'password',
+                'old_value' => '[HIDDEN]',
+                'new_value' => '[HIDDEN]',
+                'change_reason' => $reason ?: 'Password changed',
+                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? null,
+                'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? null
+            ];
+            
+            $db->table('customer_profile_changes')->insert($profileChangeData);
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Failed to log password change: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -120,7 +272,7 @@ class CustomerModel extends Model
         try {
             // Generate unique username and password
             $username = $this->generateUniqueUsername();
-            $password = $this->generateRandomPassword();
+            $password = $this->createRandomPassword();
             
             // Prepare customer data
             $customerData = [
@@ -157,34 +309,99 @@ class CustomerModel extends Model
     }
 
     /**
-     * Generate random password
+     * Generate random password with customizable complexity
      */
-    private function generateRandomPassword(int $length = 8): string
+    private function createRandomPassword(int $length = 8): string
     {
-        $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        return substr(str_shuffle($chars), 0, $length);
+        // Character sets for password generation
+        $lowercase = 'abcdefghijklmnopqrstuvwxyz';
+        $uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $numbers = '0123456789';
+        $special = '!@#$%^&*';
+        
+        // Ensure password has at least one character from each set for strength
+        $password = '';
+        $password .= $lowercase[rand(0, strlen($lowercase) - 1)];
+        $password .= $uppercase[rand(0, strlen($uppercase) - 1)];
+        $password .= $numbers[rand(0, strlen($numbers) - 1)];
+        
+        // Fill the rest with random characters from all sets
+        $allChars = $lowercase . $uppercase . $numbers;
+        for ($i = 3; $i < $length; $i++) {
+            $password .= $allChars[rand(0, strlen($allChars) - 1)];
+        }
+        
+        // Shuffle the password to randomize character positions
+        return str_shuffle($password);
     }
 
     /**
-     * Authenticate customer
+     * Authenticate customer with enhanced security
      */
     public function authenticate(string $username, string $password): array|false
     {
-        $customer = $this->where('username', $username)
-                         ->where('is_active', 1)
-                         ->first();
-        
-        if ($customer && password_verify($password, $customer['password'])) {
-            // Update last login
-            $this->update($customer['id'], ['last_login' => date('Y-m-d H:i:s')]);
+        try {
+            $customer = $this->where('username', $username)
+                             ->where('is_active', 1)
+                             ->first();
             
-            // Remove password from returned data
-            unset($customer['password']);
+            if ($customer && password_verify($password, $customer['password'])) {
+                // Update last login
+                $this->update($customer['id'], ['last_login' => date('Y-m-d H:i:s')]);
+                
+                // Log successful login
+                $this->logSecurityEvent($customer['id'], 'login_success', [
+                    'username' => $username,
+                    'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+                ]);
+                
+                // Remove password from returned data
+                unset($customer['password']);
+                
+                return $customer;
+            } else {
+                // Log failed login attempt
+                if ($customer) {
+                    $this->logSecurityEvent($customer['id'], 'login_failed', [
+                        'username' => $username,
+                        'reason' => 'invalid_password',
+                        'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+                    ]);
+                } else {
+                    // Log attempt for non-existent user
+                    log_message('warning', "Login attempt for non-existent user: {$username}");
+                }
+            }
             
-            return $customer;
+            return false;
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Authentication error: ' . $e->getMessage());
+            return false;
         }
+    }
+
+    /**
+     * Log security events
+     */
+    private function logSecurityEvent(int $customerId, string $eventType, array $details)
+    {
+        $db = \Config\Database::connect();
         
-        return false;
+        try {
+            $securityData = [
+                'customer_id' => $customerId,
+                'event_type' => $eventType,
+                'event_details' => json_encode($details),
+                'ip_address' => $details['ip_address'] ?? $_SERVER['REMOTE_ADDR'] ?? null,
+                'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? null
+            ];
+            
+            $db->table('security_log')->insert($securityData);
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Failed to log security event: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -276,6 +493,52 @@ class CustomerModel extends Model
                     ->findAll($limit);
     }
 
+    /**
+     * Get password security statistics
+     */
+    public function getPasswordSecurityStats(int $customerId): array
+    {
+        $db = \Config\Database::connect();
+        
+        try {
+            // Get password change history
+            $query = $db->query("
+                SELECT COUNT(*) as password_changes,
+                       MAX(created_at) as last_password_change
+                FROM security_log 
+                WHERE customer_id = ? 
+                AND event_type = 'password_changed'
+            ", [$customerId]);
+            
+            $stats = $query->getRowArray();
+            
+            // Get recent security events
+            $recentQuery = $db->query("
+                SELECT event_type, created_at, event_details
+                FROM security_log 
+                WHERE customer_id = ? 
+                ORDER BY created_at DESC 
+                LIMIT 10
+            ", [$customerId]);
+            
+            $recentEvents = $recentQuery->getResultArray();
+            
+            return [
+                'password_changes' => $stats['password_changes'] ?? 0,
+                'last_password_change' => $stats['last_password_change'],
+                'recent_events' => $recentEvents
+            ];
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Error getting password security stats: ' . $e->getMessage());
+            return [
+                'password_changes' => 0,
+                'last_password_change' => null,
+                'recent_events' => []
+            ];
+        }
+    }
+    
     /**
      * Add spin tokens to customer
      */

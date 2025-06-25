@@ -218,24 +218,30 @@ class CustomerController extends BaseController
             }
             
             // Hash new password
-            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+            $hashedPassword = password_hash($newPassword, PASSWORD_BCRYPT, ['cost' => 10]);
             
-            // Update password
-            $updateData = [
-                'password' => $hashedPassword,
-                'updated_at' => date('Y-m-d H:i:s')
-            ];
-            
-            $result = $this->customerModel->update($customerId, $updateData);
+            // Update password using the new method that skips the model callback
+            $result = $this->customerModel->updatePasswordRaw($customerId, $hashedPassword);
             
             if ($result) {
-                // Log password change (optional)
-                $this->logPasswordChange($customerId);
+                // Verify the update worked
+                $updatedCustomer = $this->customerModel->find($customerId);
+                $verificationPassed = password_verify($newPassword, $updatedCustomer['password']);
                 
-                return $this->response->setJSON([
-                    'success' => true,
-                    'message' => 'Password updated successfully!'
-                ]);
+                if ($verificationPassed) {
+                    // Log password change for security audit
+                    $this->logPasswordChange($customerId);
+                    
+                    return $this->response->setJSON([
+                        'success' => true,
+                        'message' => 'Password updated successfully!'
+                    ]);
+                } else {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'Password verification failed after update.'
+                    ]);
+                }
             } else {
                 return $this->response->setJSON([
                     'success' => false,
@@ -251,6 +257,7 @@ class CustomerController extends BaseController
             ]);
         }
     }
+
     
     /**
      * Log password change for security audit

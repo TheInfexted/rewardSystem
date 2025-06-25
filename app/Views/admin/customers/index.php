@@ -101,6 +101,12 @@
                                                class="btn btn-warning" title="Edit Customer">
                                                 <i class="fas fa-edit"></i>
                                             </a>
+                                            <button type="button" 
+                                                    class="btn btn-secondary" 
+                                                    title="Change Password"
+                                                    onclick="openPasswordModal(<?= $customer['id'] ?>, '<?= esc($customer['username']) ?>')">
+                                                <i class="fas fa-key"></i>
+                                            </button>
                                             <a href="<?= base_url('admin/customers/tokens/' . $customer['id']) ?>" 
                                                class="btn btn-primary" title="Manage Tokens">
                                                 <i class="fas fa-coins"></i>
@@ -137,6 +143,143 @@
                     
                     <?= $pager->links() ?>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Password Change Modal -->
+<div class="modal fade" id="quickPasswordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-key"></i>
+                    Quick Password Management
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    Managing password for customer: <strong id="quickPasswordCustomerName"></strong>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-edit fa-2x text-warning mb-3"></i>
+                                <h6>Set Custom Password</h6>
+                                <p class="text-muted">Choose a specific password for the customer</p>
+                                <button type="button" class="btn btn-warning" onclick="openCustomPasswordForm()">
+                                    <i class="fas fa-edit"></i> Custom Password
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-random fa-2x text-info mb-3"></i>
+                                <h6>Generate Random Password</h6>
+                                <p class="text-muted">Automatically generate a secure password</p>
+                                <button type="button" class="btn btn-info" onclick="quickGeneratePassword()">
+                                    <i class="fas fa-random"></i> Generate Password
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Custom Password Form -->
+                <div id="customPasswordForm" style="display: none;">
+                    <hr>
+                    <h6><i class="fas fa-edit"></i> Set Custom Password</h6>
+                    <form id="quickPasswordForm">
+                        <div class="mb-3">
+                            <label for="quick_new_password" class="form-label">New Password</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="quick_new_password" 
+                                       placeholder="Enter new password" minlength="4" required>
+                                <button type="button" class="btn btn-outline-secondary" onclick="toggleQuickPasswordVisibility('quick_new_password')">
+                                    <i class="fas fa-eye" id="quick_new_password_icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="quick_confirm_password" class="form-label">Confirm Password</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="quick_confirm_password" 
+                                       placeholder="Confirm new password" minlength="4" required>
+                                <button type="button" class="btn btn-outline-secondary" onclick="toggleQuickPasswordVisibility('quick_confirm_password')">
+                                    <i class="fas fa-eye" id="quick_confirm_password_icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="quick_reason" class="form-label">Reason (Optional)</label>
+                            <input type="text" class="form-control" id="quick_reason" 
+                                   placeholder="e.g., Customer request, account recovery">
+                        </div>
+                        
+                        <button type="button" class="btn btn-warning" onclick="submitQuickPasswordChange()">
+                            <i class="fas fa-save"></i> Change Password
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="cancelCustomPasswordForm()">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Password Result Modal -->
+<div class="modal fade" id="quickPasswordResultModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-check-circle"></i>
+                    Password Updated Successfully
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="quickPasswordResultMessage"></span>
+                </div>
+                
+                <div id="quickGeneratedPasswordDisplay" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Generated Password:</strong></label>
+                        <div class="input-group">
+                            <input type="text" class="form-control font-monospace" id="quickGeneratedPasswordField" readonly>
+                            <button type="button" class="btn btn-outline-secondary" onclick="copyToClipboard('quickGeneratedPasswordField')">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <small class="form-text text-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Please save this password securely. It cannot be retrieved again.
+                        </small>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-shield-alt"></i>
+                    <strong>Security Note:</strong> The password has been securely hashed in the database.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+                    <i class="fas fa-check"></i> Understood
+                </button>
             </div>
         </div>
     </div>
@@ -280,11 +423,157 @@
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+.card.h-100 {
+    height: 100% !important;
+}
+
+.font-monospace {
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: 1px;
+}
 </style>
 
 <script>
 let currentCustomerId = null;
 let currentCustomerUsername = null;
+
+// Quick password management functions
+function openPasswordModal(customerId, username) {
+    currentCustomerId = customerId;
+    currentCustomerUsername = username;
+    
+    // Update modal content
+    document.getElementById('quickPasswordCustomerName').textContent = username;
+    
+    // Reset form visibility
+    document.getElementById('customPasswordForm').style.display = 'none';
+    document.getElementById('quickPasswordForm').reset();
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('quickPasswordModal'));
+    modal.show();
+}
+
+function openCustomPasswordForm() {
+    document.getElementById('customPasswordForm').style.display = 'block';
+    document.getElementById('quick_new_password').focus();
+}
+
+function cancelCustomPasswordForm() {
+    document.getElementById('customPasswordForm').style.display = 'none';
+    document.getElementById('quickPasswordForm').reset();
+}
+
+function toggleQuickPasswordVisibility(fieldId) {
+    const field = document.getElementById(fieldId);
+    const icon = document.getElementById(fieldId + '_icon');
+    
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        field.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+}
+
+function submitQuickPasswordChange() {
+    const newPassword = document.getElementById('quick_new_password').value;
+    const confirmPassword = document.getElementById('quick_confirm_password').value;
+    const reason = document.getElementById('quick_reason').value;
+    
+    // Validation
+    if (!newPassword || newPassword.length < 4) {
+        showToast('Password must be at least 4 characters long', 'error');
+        return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+        showToast('Password confirmation does not match', 'error');
+        return;
+    }
+    
+    // Send change password request
+    fetch(`<?= base_url('admin/customers/changePassword/') ?>${currentCustomerId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: new URLSearchParams({
+            new_password: newPassword,
+            confirm_password: confirmPassword,
+            reason: reason
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Hide current modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('quickPasswordModal'));
+            modal.hide();
+            
+            // Show success result
+            showQuickPasswordResult(data.message);
+        } else {
+            showToast('Error: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Password change error:', error);
+        showToast('An error occurred while changing the password.', 'error');
+    });
+}
+
+function quickGeneratePassword() {
+    // Send generate password request
+    fetch(`<?= base_url('admin/customers/generatePassword/') ?>${currentCustomerId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: new URLSearchParams({
+            reason: 'Quick password generation from customer list'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Hide current modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('quickPasswordModal'));
+            modal.hide();
+            
+            // Show success result with generated password
+            showQuickPasswordResult(data.message, data.new_password);
+        } else {
+            showToast('Error: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Password generation error:', error);
+        showToast('An error occurred while generating the password.', 'error');
+    });
+}
+
+function showQuickPasswordResult(message, generatedPassword = null) {
+    const modal = new bootstrap.Modal(document.getElementById('quickPasswordResultModal'));
+    const messageElement = document.getElementById('quickPasswordResultMessage');
+    const generatedPasswordDisplay = document.getElementById('quickGeneratedPasswordDisplay');
+    const generatedPasswordField = document.getElementById('quickGeneratedPasswordField');
+    
+    messageElement.textContent = message;
+    
+    if (generatedPassword) {
+        generatedPasswordField.value = generatedPassword;
+        generatedPasswordDisplay.style.display = 'block';
+    } else {
+        generatedPasswordDisplay.style.display = 'none';
+    }
+    
+    modal.show();
+}
 
 function deleteCustomer(customerId, username) {
     currentCustomerId = customerId;
@@ -455,6 +744,19 @@ function toggleCustomerStatus(customerId, currentStatus) {
         console.error('Status update error:', error);
         showToast('An error occurred while updating customer status.', 'error');
     });
+}
+
+function copyToClipboard(fieldId) {
+    const field = document.getElementById(fieldId);
+    field.select();
+    field.setSelectionRange(0, 99999);
+    
+    try {
+        document.execCommand('copy');
+        showToast('Password copied to clipboard!', 'success');
+    } catch (err) {
+        showToast('Failed to copy password', 'error');
+    }
 }
 
 function showToast(message, type) {

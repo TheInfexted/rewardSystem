@@ -79,6 +79,26 @@
                             </div>
                         </div>
                         
+                        <!-- Password Management Section -->
+                        <hr>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="mb-0">Password Management</h5>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-warning btn-sm" onclick="openChangePasswordModal()">
+                                    <i class="fas fa-key"></i> Change Password
+                                </button>
+                                <button type="button" class="btn btn-info btn-sm" onclick="generateNewPassword()">
+                                    <i class="fas fa-random"></i> Generate New Password
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Password Security:</strong> Passwords are securely hashed and cannot be viewed. 
+                            You can either change to a specific password or generate a random one.
+                        </div>
+                        
                         <!-- Appearance Settings -->
                         <hr>
                         <h5 class="mb-3">Appearance Settings</h5>
@@ -196,6 +216,163 @@
     </div>
 </div>
 
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title">
+                    <i class="fas fa-key"></i>
+                    Change Customer Password
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Security Notice:</strong> You are about to change the password for customer: 
+                        <strong><?= esc($customer['username']) ?></strong>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="new_password" class="form-label">New Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="new_password" name="new_password" 
+                                   placeholder="Enter new password" minlength="4" required>
+                            <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('new_password')">
+                                <i class="fas fa-eye" id="new_password_icon"></i>
+                            </button>
+                        </div>
+                        <small class="form-text text-muted">Minimum 4 characters required</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Confirm New Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
+                                   placeholder="Confirm new password" minlength="4" required>
+                            <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('confirm_password')">
+                                <i class="fas fa-eye" id="confirm_password_icon"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password_reason" class="form-label">Reason for Change (Optional)</label>
+                        <textarea class="form-control" id="password_reason" name="reason" rows="2" 
+                                  placeholder="e.g., Customer forgot password, security concern, etc."></textarea>
+                    </div>
+                    
+                    <div class="password-strength-indicator">
+                        <small class="text-muted">Password strength: </small>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar" id="passwordStrengthBar" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <small id="passwordStrengthText" class="text-muted"></small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-warning" id="confirmChangePasswordBtn">
+                    <i class="fas fa-save"></i> Change Password
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Generate Password Modal -->
+<div class="modal fade" id="generatePasswordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-random"></i>
+                    Generate New Password
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    A secure random password will be generated for customer: <strong><?= esc($customer['username']) ?></strong>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="generation_reason" class="form-label">Reason for Generation (Optional)</label>
+                    <textarea class="form-control" id="generation_reason" name="reason" rows="2" 
+                              placeholder="e.g., Initial setup, account recovery, etc."></textarea>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Important:</strong> Make sure to securely share the generated password with the customer.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="button" class="btn btn-info" id="confirmGeneratePasswordBtn">
+                    <i class="fas fa-random"></i> Generate Password
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Password Result Modal -->
+<div class="modal fade" id="passwordResultModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-check-circle"></i>
+                    Password Updated Successfully
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i>
+                    Password has been successfully updated for customer: <strong><?= esc($customer['username']) ?></strong>
+                </div>
+                
+                <div id="generatedPasswordDisplay" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Generated Password:</strong></label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="generatedPasswordField" readonly>
+                            <button type="button" class="btn btn-outline-secondary" onclick="copyToClipboard('generatedPasswordField')">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        <small class="form-text text-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Please save this password securely. It cannot be retrieved again.
+                        </small>
+                    </div>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-shield-alt"></i>
+                    <strong>Security Note:</strong> The password has been securely hashed in the database. 
+                    This is the last time it will be displayed in plain text.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+                    <i class="fas fa-check"></i> Understood
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
 /* Live Preview Styles */
 .preview-section h6 {
@@ -281,6 +458,27 @@
     background: <?= $customer['dashboard_bg_color'] ?>;
 }
 
+/* Password Management Styles */
+.password-strength-indicator {
+    margin-top: 10px;
+}
+
+.progress-bar {
+    transition: all 0.3s ease;
+}
+
+.password-strength-weak {
+    background-color: #dc3545;
+}
+
+.password-strength-medium {
+    background-color: #ffc107;
+}
+
+.password-strength-strong {
+    background-color: #28a745;
+}
+
 /* Background themes for preview */
 .default-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
 .blue-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
@@ -314,6 +512,38 @@
     font-weight: 600;
     color: #333;
     margin-bottom: 0.5rem;
+}
+
+/* Loading states for buttons */
+.btn.loading {
+    position: relative;
+    color: transparent !important;
+}
+
+.btn.loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.copied-feedback {
+    color: #28a745;
+    font-size: 0.875rem;
+    margin-top: 5px;
 }
 </style>
 
@@ -391,6 +621,249 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize previews
     updateProfilePreview();
     updateDashboardPreview();
+    
+    // Password strength checker
+    const newPasswordInput = document.getElementById('new_password');
+    const confirmPasswordInput = document.getElementById('confirm_password');
+    
+    if (newPasswordInput) {
+        newPasswordInput.addEventListener('input', checkPasswordStrength);
+        confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+    }
 });
+
+// Password management functions
+function openChangePasswordModal() {
+    const modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+    
+    // Reset form
+    document.getElementById('changePasswordForm').reset();
+    document.getElementById('passwordStrengthBar').style.width = '0%';
+    document.getElementById('passwordStrengthText').textContent = '';
+    
+    modal.show();
+}
+
+function generateNewPassword() {
+    const modal = new bootstrap.Modal(document.getElementById('generatePasswordModal'));
+    
+    // Reset reason field
+    document.getElementById('generation_reason').value = '';
+    
+    modal.show();
+}
+
+function togglePasswordVisibility(fieldId) {
+    const field = document.getElementById(fieldId);
+    const icon = document.getElementById(fieldId + '_icon');
+    
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        field.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+}
+
+function checkPasswordStrength() {
+    const password = document.getElementById('new_password').value;
+    const strengthBar = document.getElementById('passwordStrengthBar');
+    const strengthText = document.getElementById('passwordStrengthText');
+    
+    let strength = 0;
+    let feedback = '';
+    
+    if (password.length >= 4) strength += 25;
+    if (password.length >= 8) strength += 25;
+    if (/[A-Z]/.test(password)) strength += 25;
+    if (/[0-9]/.test(password)) strength += 25;
+    
+    strengthBar.style.width = strength + '%';
+    
+    if (strength <= 25) {
+        strengthBar.className = 'progress-bar password-strength-weak';
+        feedback = 'Weak';
+    } else if (strength <= 50) {
+        strengthBar.className = 'progress-bar password-strength-medium';
+        feedback = 'Medium';
+    } else {
+        strengthBar.className = 'progress-bar password-strength-strong';
+        feedback = 'Strong';
+    }
+    
+    strengthText.textContent = feedback;
+}
+
+function checkPasswordMatch() {
+    const password = document.getElementById('new_password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    const confirmField = document.getElementById('confirm_password');
+    
+    if (confirmPassword && password !== confirmPassword) {
+        confirmField.classList.add('is-invalid');
+    } else {
+        confirmField.classList.remove('is-invalid');
+    }
+}
+
+// Handle password change
+document.getElementById('confirmChangePasswordBtn').addEventListener('click', function() {
+    const form = document.getElementById('changePasswordForm');
+    const newPassword = document.getElementById('new_password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    const reason = document.getElementById('password_reason').value;
+    
+    // Validation
+    if (!newPassword || newPassword.length < 4) {
+        showToast('Password must be at least 4 characters long', 'error');
+        return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+        showToast('Password confirmation does not match', 'error');
+        return;
+    }
+    
+    const changeBtn = this;
+    const originalHtml = changeBtn.innerHTML;
+    changeBtn.classList.add('loading');
+    changeBtn.disabled = true;
+    
+    // Send change password request
+    fetch(`<?= base_url('admin/customers/changePassword/' . $customer['id']) ?>`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: new URLSearchParams({
+            new_password: newPassword,
+            confirm_password: confirmPassword,
+            reason: reason
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        changeBtn.classList.remove('loading');
+        changeBtn.disabled = false;
+        changeBtn.innerHTML = originalHtml;
+        
+        if (data.success) {
+            // Hide change password modal
+            const changeModal = bootstrap.Modal.getInstance(document.getElementById('changePasswordModal'));
+            changeModal.hide();
+            
+            // Show success modal
+            showPasswordResult(data.message);
+        } else {
+            showToast('Error: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        changeBtn.classList.remove('loading');
+        changeBtn.disabled = false;
+        changeBtn.innerHTML = originalHtml;
+        
+        console.error('Password change error:', error);
+        showToast('An error occurred while changing the password.', 'error');
+    });
+});
+
+// Handle password generation
+document.getElementById('confirmGeneratePasswordBtn').addEventListener('click', function() {
+    const reason = document.getElementById('generation_reason').value;
+    
+    const generateBtn = this;
+    const originalHtml = generateBtn.innerHTML;
+    generateBtn.classList.add('loading');
+    generateBtn.disabled = true;
+    
+    // Send generate password request
+    fetch(`<?= base_url('admin/customers/generatePassword/' . $customer['id']) ?>`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: new URLSearchParams({
+            reason: reason
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        generateBtn.classList.remove('loading');
+        generateBtn.disabled = false;
+        generateBtn.innerHTML = originalHtml;
+        
+        if (data.success) {
+            // Hide generate password modal
+            const generateModal = bootstrap.Modal.getInstance(document.getElementById('generatePasswordModal'));
+            generateModal.hide();
+            
+            // Show success modal with generated password
+            showPasswordResult(data.message, data.new_password);
+        } else {
+            showToast('Error: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        generateBtn.classList.remove('loading');
+        generateBtn.disabled = false;
+        generateBtn.innerHTML = originalHtml;
+        
+        console.error('Password generation error:', error);
+        showToast('An error occurred while generating the password.', 'error');
+    });
+});
+
+function showPasswordResult(message, generatedPassword = null) {
+    const modal = new bootstrap.Modal(document.getElementById('passwordResultModal'));
+    const generatedPasswordDisplay = document.getElementById('generatedPasswordDisplay');
+    const generatedPasswordField = document.getElementById('generatedPasswordField');
+    
+    if (generatedPassword) {
+        generatedPasswordField.value = generatedPassword;
+        generatedPasswordDisplay.style.display = 'block';
+    } else {
+        generatedPasswordDisplay.style.display = 'none';
+    }
+    
+    modal.show();
+}
+
+function copyToClipboard(fieldId) {
+    const field = document.getElementById(fieldId);
+    field.select();
+    field.setSelectionRange(0, 99999);
+    
+    try {
+        document.execCommand('copy');
+        showToast('Password copied to clipboard!', 'success');
+    } catch (err) {
+        showToast('Failed to copy password', 'error');
+    }
+}
+
+function showToast(message, type) {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'error' ? 'danger' : 'success'} alert-dismissible fade show position-fixed`;
+    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.remove();
+        }
+    }, 4000);
+}
 </script>
 <?= $this->endSection() ?>
