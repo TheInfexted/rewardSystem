@@ -124,12 +124,6 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                                 <button type="button" class="btn btn-claim" onclick="autoRegister()">
                                     <i class="bi bi-lightning-fill"></i> Create New Account
                                 </button>
-
-                                <div class="toggle-link">
-                                    <a href="#" onclick="showLogin()">
-                                        Already have an account? Login here
-                                    </a>
-                                </div>
                             </div>
                             
                             <!-- Account Created Step (Hidden Initially) -->

@@ -220,7 +220,7 @@ class CustomersController extends BaseController
         $customerId = $this->request->getPost('customer_id');
         $action = $this->request->getPost('action');
         $amount = (int) $this->request->getPost('amount');
-        $reason = $this->request->getPost('reason');
+        $reason = $this->request->getPost('reason') ?: 'Admin adjustment';
         
         $adminId = session()->get('user_id');
         
@@ -239,32 +239,29 @@ class CustomersController extends BaseController
             ]);
         }
         
-        $currentTokens = $customer['spin_tokens'];
-        $newTokens = $currentTokens;
+        // Use the proper model methods for token management
+        $result = false;
         
         if ($action === 'add') {
-            $newTokens = $currentTokens + $amount;
+            $result = $this->customerModel->addSpinTokens($customerId, $amount, $adminId, $reason);
         } elseif ($action === 'remove') {
-            $newTokens = max(0, $currentTokens - $amount);
+            $result = $this->customerModel->removeSpinTokens($customerId, $amount, $adminId, $reason);
         }
         
-        // Update tokens
-        $result = $this->customerModel->update($customerId, ['spin_tokens' => $newTokens]);
-        
         if ($result) {
-            // Log the transaction
-            $this->logTokenTransaction($customerId, $action, $amount, $currentTokens, $newTokens, $adminId, $reason);
+            // Get updated customer data
+            $updatedCustomer = $this->customerModel->find($customerId);
             
             return $this->response->setJSON([
                 'success' => true,
                 'message' => 'Tokens updated successfully',
-                'new_balance' => $newTokens
+                'new_balance' => $updatedCustomer['spin_tokens']
             ]);
         }
         
         return $this->response->setJSON([
             'success' => false,
-            'message' => 'Failed to update tokens'
+            'message' => 'Failed to update tokens. Please check the logs for details.'
         ]);
     }
     

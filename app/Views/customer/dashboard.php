@@ -246,6 +246,7 @@ const dashboardPhpConfig = {
     dashboardBgColor: '<?= $dashboard_bg_color ?? '#ffffff' ?>',
     whatsappNumber: '<?= $whatsapp_number ?>',  
     telegramUsername: '<?= $telegram_username ?>',
+    spinTokens: <?= $spin_tokens ?? 0 ?>,
     <?php if (isset($weekly_progress) && is_array($weekly_progress)): ?>
     weeklyProgress: <?= json_encode($weekly_progress) ?>,
     <?php else: ?>

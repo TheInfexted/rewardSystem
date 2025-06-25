@@ -45,57 +45,288 @@ class FortuneWheel {
         });
     }
 
-    // Main entry point for opening wheel modal
-    openModal() {
-        if (!this.scriptsLoaded) {
-            DashboardUtils.showToast('Loading wheel game...', 'info');
-            
-            this.loadWheelScripts()
-                .then(() => {
-                    this.scriptsLoaded = true;
-                    console.log('All wheel scripts loaded successfully');
-                    this.fetchDataAndShow();
-                })
-                .catch((error) => {
-                    console.error('Failed to load wheel scripts:', error);
-                    DashboardUtils.showToast('Failed to load game. Please try again.', 'error');
+    // Add this to your Fortune Wheel class - Aggressive backdrop prevention
+    startBackdropMonitor() {
+        console.log('Starting backdrop monitor...');
+        
+        // Clear any existing monitor
+        if (this.backdropMonitor) {
+            clearInterval(this.backdropMonitor);
+        }
+        
+        // Monitor for backdrops every 100ms and remove them
+        this.backdropMonitor = setInterval(() => {
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            if (backdrops.length > 0) {
+                console.log(`Found ${backdrops.length} backdrop(s), removing...`);
+                backdrops.forEach((backdrop, index) => {
+                    console.log(`Removing backdrop ${index}:`, backdrop.className);
+                    backdrop.remove();
                 });
-        } else {
-            this.fetchDataAndShow();
+                
+                // Also reset body state
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+            }
+        }, 100);
+        
+        // Stop monitoring after 10 seconds
+        setTimeout(() => {
+            if (this.backdropMonitor) {
+                clearInterval(this.backdropMonitor);
+                this.backdropMonitor = null;
+                console.log('Stopped backdrop monitor');
+            }
+        }, 10000);
+    }
+
+    stopBackdropMonitor() {
+        if (this.backdropMonitor) {
+            clearInterval(this.backdropMonitor);
+            this.backdropMonitor = null;
+            console.log('Backdrop monitor stopped');
         }
     }
 
-    // Fetch wheel data from server
     fetchDataAndShow() {
+        console.log('Fetching wheel data from:', DashboardConfig.endpoints.wheelData);
+        
+        // Start monitoring for backdrops immediately
+        this.startBackdropMonitor();
+        
         fetch(DashboardConfig.endpoints.wheelData, {
             method: 'GET',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Wheel data response status:', response.status);
+            return response.json();
+        })
         .then(data => {
+            console.log('Wheel data received:', data);
+            
             if (data.success) {
                 this.spinsRemaining = data.spins_remaining || 0;
                 this.wheelItems = data.wheel_items || [];
                 this.tickSoundEnabled = data.spin_sound?.enabled || false;
                 this.winSoundEnabled = data.win_sound?.enabled || false;
                 
+                console.log(`Spins remaining: ${this.spinsRemaining}`);
+                console.log(`Wheel items count: ${this.wheelItems.length}`);
+                
+                // Force cleanup before creating modal
+                this.forceCleanupBackdrops();
+                
+                // Create modal without backdrop
                 this.createModal();
-                const wheelModal = new bootstrap.Modal(document.getElementById('wheelModal'));
-                wheelModal.show();
                 
                 setTimeout(() => {
-                    this.initialize();
-                }, DashboardConfig.settings.wheelRefreshDelay);
+                    const wheelModalElement = document.getElementById('wheelModal');
+                    if (!wheelModalElement) {
+                        console.error('Wheel modal element not found after creation!');
+                        return;
+                    }
+                    
+                    // Create modal with NO BACKDROP to prevent the issue
+                    const wheelModal = new bootstrap.Modal(wheelModalElement, {
+                        backdrop: false,  // DISABLE BACKDROP COMPLETELY
+                        keyboard: true,
+                        focus: true
+                    });
+                    
+                    // Add event listeners
+                    wheelModalElement.addEventListener('shown.bs.modal', () => {
+                        console.log('Modal shown, initializing wheel...');
+                        // Continue backdrop monitoring while modal is open
+                        setTimeout(() => {
+                            this.initialize();
+                        }, DashboardConfig.settings.wheelRefreshDelay);
+                    });
+                    
+                    wheelModalElement.addEventListener('hidden.bs.modal', () => {
+                        console.log('Modal hidden, cleaning up...');
+                        this.stopBackdropMonitor();
+                        this.cleanupWheel();
+                        this.forceCleanupBackdrops();
+                    });
+                    
+                    wheelModal.show();
+                    
+                }, 200);
+                
             } else {
+                this.stopBackdropMonitor();
+                console.error('Wheel data fetch failed:', data.message);
                 DashboardUtils.showToast(data.message || 'Failed to load wheel data', 'error');
             }
         })
         .catch(error => {
+            this.stopBackdropMonitor();
             console.error('Error fetching wheel data:', error);
             DashboardUtils.showToast('Failed to load wheel data', 'error');
         });
+    }
+
+    // Force cleanup method
+    forceCleanupBackdrops() {
+        console.log('Force cleaning backdrops...');
+        
+        // Remove all backdrops
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach((backdrop, index) => {
+            console.log(`Force removing backdrop ${index}`);
+            backdrop.remove();
+        });
+        
+        // Reset body completely
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+        document.body.style.marginRight = '';
+        
+        // Remove any other modal-related classes
+        document.documentElement.classList.remove('modal-open');
+        
+        console.log('Force cleanup completed');
+    }
+    
+    openModal() {
+        console.log('Opening wheel modal...');
+        
+        // Force cleanup any existing backdrops first
+        this.forceCleanupBackdrops();
+        
+        // Check if libraries are already loaded (from CDN)
+        if (window.Winwheel && window.TweenMax) {
+            console.log('Libraries already loaded from CDN, proceeding directly...');
+            this.scriptsLoaded = true;
+            this.fetchDataAndShow();
+            return;
+        }
+        
+        // Fallback to dynamic loading if not loaded
+        if (!this.scriptsLoaded) {
+            DashboardUtils.showToast('Loading wheel game...', 'info', null, true);
+            
+            this.loadWheelScripts()
+                .then(() => {
+                    this.scriptsLoaded = true;
+                    console.log('All wheel scripts loaded successfully');
+                    DashboardUtils.dismissAllToasts();
+                    
+                    setTimeout(() => {
+                        this.fetchDataAndShow();
+                    }, 100);
+                })
+                .catch((error) => {
+                    console.error('Failed to load wheel scripts:', error);
+                    DashboardUtils.dismissAllToasts();
+                    DashboardUtils.showToast('Failed to load game. Please try again.', 'error', 5000, true);
+                });
+        } else {
+            this.fetchDataAndShow();
+        }
+    }
+
+    // Enhanced modal cleanup with better timing
+    cleanupAllModals() {
+        console.log('Cleaning up all modals...');
+        
+        return new Promise((resolve) => {
+            // 1. Hide and dispose all existing modals
+            const existingModals = document.querySelectorAll('#wheelModal');
+            const disposalPromises = [];
+            
+            existingModals.forEach(modal => {
+                const instance = bootstrap.Modal.getInstance(modal);
+                if (instance) {
+                    try {
+                        const disposalPromise = new Promise((resolveDisposal) => {
+                            // Listen for modal to be fully hidden
+                            modal.addEventListener('hidden.bs.modal', () => {
+                                try {
+                                    instance.dispose();
+                                    console.log('Disposed modal instance');
+                                } catch (e) {
+                                    console.log('Modal instance disposal error:', e);
+                                }
+                                resolveDisposal();
+                            }, { once: true });
+                            
+                            // Hide the modal
+                            instance.hide();
+                        });
+                        
+                        disposalPromises.push(disposalPromise);
+                    } catch (e) {
+                        console.log('Modal hide error:', e);
+                    }
+                }
+                modal.remove();
+                console.log('Removed modal element');
+            });
+            
+            // 2. Wait for all disposals to complete, then clean up
+            Promise.all(disposalPromises).finally(() => {
+                // Force cleanup after disposals
+                setTimeout(() => {
+                    // Remove all modal backdrops
+                    const backdrops = document.querySelectorAll('.modal-backdrop');
+                    backdrops.forEach(backdrop => {
+                        backdrop.remove();
+                        console.log('Removed backdrop');
+                    });
+                    
+                    // Reset body styles
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                    
+                    // Remove any leftover modal styles
+                    const modalOpenElements = document.querySelectorAll('.modal-open');
+                    modalOpenElements.forEach(element => {
+                        element.classList.remove('modal-open');
+                    });
+                    
+                    console.log('Modal cleanup completed');
+                    resolve();
+                }, 100); // Small delay to ensure Bootstrap cleanup is done
+            });
+            
+            // If no modals to dispose, resolve immediately
+            if (disposalPromises.length === 0) {
+                setTimeout(() => {
+                    // Still clean up any leftover backdrops
+                    const backdrops = document.querySelectorAll('.modal-backdrop');
+                    backdrops.forEach(backdrop => backdrop.remove());
+                    document.body.classList.remove('modal-open');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                    
+                    console.log('Modal cleanup completed (no existing modals)');
+                    resolve();
+                }, 50);
+            }
+        });
+    }
+
+    // NEW METHOD: Cleanup wheel instance
+    cleanupWheel() {
+        if (this.wheel) {
+            try {
+                // If Winwheel has a destroy method, use it
+                if (typeof this.wheel.destroy === 'function') {
+                    this.wheel.destroy();
+                }
+                this.wheel = null;
+                console.log('Wheel instance cleaned up');
+            } catch (e) {
+                console.log('Wheel cleanup error:', e);
+            }
+        }
     }
 
     // Create wheel modal HTML
@@ -310,6 +541,8 @@ class FortuneWheel {
 
     // Initialize wheel after modal is shown
     initialize() {
+        console.log('Initializing wheel...');
+        
         const canvas = document.getElementById('fortuneWheelModal');
         if (!canvas) {
             console.error('Modal wheel canvas not found!');
@@ -327,7 +560,7 @@ class FortuneWheel {
         // Sort items by order first to ensure correct positioning
         const sortedItems = [...this.wheelItems].sort((a, b) => (a.order || 0) - (b.order || 0));
         
-        // Create segments array for the wheel - SAME AS ORIGINAL
+        // Create segments array for the wheel
         const segments = [];
         sortedItems.forEach((item, index) => {
             const useRedBackground = index % 2 === 0;
@@ -350,46 +583,73 @@ class FortuneWheel {
 
         console.log('Creating modal wheel with segments:', segments);
 
-        // Create the wheel - MATCH ORIGINAL SETTINGS
-        this.wheel = new Winwheel({
-            'canvasId': 'fortuneWheelModal',
-            'numSegments': segments.length,
-            'outerRadius': 200,  // Match original
-            'responsive': true,
-            'drawMode': 'segmentImage',
-            'drawText': true,
-            'textFontSize': 16,  // Match original
-            'textFontWeight': 'bold',
-            'textOrientation': 'horizontal',
-            'textAlignment': 'center',
-            'textDirection': 'reversed',
-            'textMargin': 15,
-            'textFontFamily': 'Arial, sans-serif',
-            'segments': segments,
-            'pins': {
-                'number': segments.length * 2,
-                'outerRadius': 5,  // Match original
-                'responsive': true,
-                'margin': 5,
-                'fillStyle': '#f8b500',
-                'strokeStyle': '#f8b500'
-            },
-            'animation': {
-                'type': 'spinToStop',
-                'duration': 8,  // Match original
-                'spins': 12,    // Match original
-                'callbackFinished': (indicatedSegment) => this.alertPrize(indicatedSegment),
-                'callbackBefore': () => this.animationBefore(),
-                'callbackAfter': () => this.animationAfter(),
-                'easing': 'Power3.easeOut'
-            }
-        });
-
-        console.log('Modal wheel created successfully:', this.wheel);
-        this.updateSpinsCounter();
+        // Detect mobile device
+        const isMobile = window.innerWidth <= 768;
+        const isSmallMobile = window.innerWidth <= 480;
         
-        // Add modal-specific styles
-        this.addModalStyles();
+        // Adjust wheel size based on screen size
+        let wheelRadius = 200;
+        let textFontSize = 16;
+        
+        if (isSmallMobile) {
+            wheelRadius = 125;
+            textFontSize = 12;
+        } else if (isMobile) {
+            wheelRadius = 140;
+            textFontSize = 14;
+        }
+
+        try {
+            // Create the wheel with mobile-responsive settings
+            this.wheel = new Winwheel({
+                'canvasId': 'fortuneWheelModal',
+                'numSegments': segments.length,
+                'outerRadius': wheelRadius,
+                'responsive': true,
+                'drawMode': 'segmentImage',
+                'drawText': true,
+                'textFontSize': textFontSize,
+                'textFontWeight': 'bold',
+                'textOrientation': 'horizontal',
+                'textAlignment': 'center',
+                'textDirection': 'reversed',
+                'textMargin': isMobile ? 10 : 15,
+                'textFontFamily': 'Arial, sans-serif',
+                'segments': segments,
+                'pins': {
+                    'number': segments.length * 2,
+                    'outerRadius': isMobile ? 3 : 5,
+                    'responsive': true,
+                    'margin': isMobile ? 3 : 5,
+                    'fillStyle': '#f8b500',
+                    'strokeStyle': '#f8b500'
+                },
+                'animation': {
+                    'type': 'spinToStop',
+                    'duration': 8,
+                    'spins': 12,
+                    'callbackFinished': (indicatedSegment) => this.alertPrize(indicatedSegment),
+                    'callbackBefore': () => this.animationBefore(),
+                    'callbackAfter': () => this.animationAfter(),
+                    'easing': 'Power3.easeOut'
+                }
+            });
+
+            console.log('✅ Modal wheel created successfully:', this.wheel);
+            this.updateSpinsCounter();
+            this.addModalStyles();
+            
+            // Force canvas redraw for mobile
+            if (isMobile) {
+                setTimeout(() => {
+                    this.wheel.draw();
+                }, 100);
+            }
+            
+        } catch (error) {
+            console.error('❌ Failed to create wheel:', error);
+            DashboardUtils.showToast('Failed to initialize wheel', 'error');
+        }
     }
 
     // Start spinning the wheel

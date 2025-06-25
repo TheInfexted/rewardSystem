@@ -5,31 +5,103 @@
 
 class DashboardUtils {
     
-    // Toast notification function
-    static showToast(message, type = 'info') {
+    // Toast notification function with optional close button
+    static showToast(message, type = 'info', duration = null, showCloseButton = false) {
+        // Remove any existing toasts first
+        const existingToasts = document.querySelectorAll('.dashboard-toast');
+        existingToasts.forEach(toast => toast.remove());
+        
         const toast = document.createElement('div');
-        toast.className = `alert alert-${type === 'error' ? 'danger' : type} position-fixed`;
+        toast.className = `alert alert-${type === 'error' ? 'danger' : type} position-fixed dashboard-toast d-flex align-items-center justify-content-between`;
         toast.style.cssText = `
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 9999;
             min-width: 250px;
-            text-align: center;
+            max-width: 400px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             padding: 12px 20px;
             font-weight: 500;
+            animation: slideDown 0.3s ease;
         `;
-        toast.textContent = message;
+        
+        // Create message container
+        const messageSpan = document.createElement('span');
+        messageSpan.textContent = message;
+        messageSpan.style.flex = '1';
+        toast.appendChild(messageSpan);
+        
+        // Add close button if requested
+        if (showCloseButton) {
+            const closeButton = document.createElement('button');
+            closeButton.innerHTML = '&times;';
+            closeButton.className = 'btn-close ms-2';
+            closeButton.style.cssText = `
+                background: none;
+                border: none;
+                color: inherit;
+                font-size: 1.2rem;
+                cursor: pointer;
+                padding: 0;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 0.7;
+            `;
+            
+            closeButton.onclick = () => {
+                if (toast.parentNode) {
+                    toast.style.animation = 'slideUp 0.3s ease';
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.remove();
+                        }
+                    }, 300);
+                }
+            };
+            
+            closeButton.onmouseover = () => {
+                closeButton.style.opacity = '1';
+            };
+            
+            closeButton.onmouseout = () => {
+                closeButton.style.opacity = '0.7';
+            };
+            
+            toast.appendChild(closeButton);
+        }
         
         document.body.appendChild(toast);
         
-        setTimeout(() => {
+        // Auto-dismiss if duration is provided
+        if (duration !== null) {
+            const toastDuration = duration || (DashboardConfig?.settings?.toastDuration || 3000);
+            
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.style.animation = 'slideUp 0.3s ease';
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.remove();
+                        }
+                    }, 300);
+                }
+            }, toastDuration);
+        }
+    }
+
+    // Dismiss all toasts (useful for clearing loading messages)
+    static dismissAllToasts() {
+        const existingToasts = document.querySelectorAll('.dashboard-toast');
+        existingToasts.forEach(toast => {
             if (toast.parentNode) {
                 toast.remove();
             }
-        }, DashboardConfig.settings.toastDuration);
+        });
     }
 
     // Confirm action with callback
@@ -66,6 +138,28 @@ class DashboardUtils {
                 @keyframes ripple-animation {
                     to {
                         transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+                
+                @keyframes slideDown {
+                    from {
+                        transform: translateX(-50%) translateY(-100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(-50%) translateY(0);
+                        opacity: 1;
+                    }
+                }
+                
+                @keyframes slideUp {
+                    from {
+                        transform: translateX(-50%) translateY(0);
+                        opacity: 1;
+                    }
+                    to {
+                        transform: translateX(-50%) translateY(-100%);
                         opacity: 0;
                     }
                 }
