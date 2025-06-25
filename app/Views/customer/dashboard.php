@@ -307,6 +307,7 @@
 <script src="<?= base_url('js/dashboard/dashboard-init.js') ?>"></script>
 <script src="<?= base_url('js/dashboard/dashboard-ads.js') ?>"></script>
 <script src="<?= base_url('js/dashboard/dashboard-password.js') ?>"></script>
+<script src="<?= base_url('js/dashboard/dashboard-theme.js') ?>?v=<?= time() ?>"></script>
 
 <!-- Dashboard Configuration from PHP -->
 <script>
@@ -320,6 +321,7 @@ const dashboardPhpConfig = {
     monthlyCheckins: <?= $monthly_checkins ?>,
     todayCheckin: <?= $today_checkin ? 'true' : 'false' ?>,
     dashboardBgColor: '<?= $dashboard_bg_color ?? '#ffffff' ?>',
+    profileBackground: '<?= $profile_background ?? 'default' ?>', 
     whatsappNumber: '<?= $whatsapp_number ?>',  
     telegramUsername: '<?= $telegram_username ?>',
     spinTokens: <?= $spin_tokens ?? 0 ?>,
@@ -336,14 +338,26 @@ const dashboardPhpConfig = {
     ads: <?= json_encode($ads ?? []) ?>,
 };
 
-// Apply dashboard background color
+// Apply dashboard background color and theme
 document.addEventListener('DOMContentLoaded', function() {
+    // Apply background color to body
     if (dashboardPhpConfig.dashboardBgColor) {
         document.body.style.backgroundColor = dashboardPhpConfig.dashboardBgColor;
         const container = document.querySelector('.dashboard-container');
         if (container) {
             container.style.backgroundColor = dashboardPhpConfig.dashboardBgColor;
         }
+    }
+    
+    // Apply theme classes for dynamic theming
+    const profileBackground = dashboardPhpConfig.profileBackground || 'default';
+    document.body.setAttribute('data-theme', profileBackground);
+    
+    // Add theme class to dashboard container for CSS targeting
+    const dashboardContainer = document.querySelector('.dashboard-container');
+    if (dashboardContainer) {
+        dashboardContainer.classList.add(`theme-${profileBackground}`);
+        dashboardContainer.setAttribute('data-theme', profileBackground);
     }
 });
 </script>

@@ -43,6 +43,7 @@ $routes->group('customer', function($routes) {
     $routes->get('ads', 'CustomerController::getAds');
     $routes->post('get-current-password', 'CustomerController::getCurrentPassword');
     $routes->post('change-password', 'CustomerController::changePassword');
+    $routes->get('getTheme', 'CustomerController::getTheme');
 });
 
 // Authentication routes

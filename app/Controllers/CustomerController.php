@@ -580,6 +580,51 @@ class CustomerController extends BaseController
             ]);
         }
     }
+
+    /**
+     * Get current theme for customer (for auto-sync)
+     */
+    public function getTheme()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->to('/customer/dashboard');
+        }
+
+        $session = session();
+        $customerId = $session->get('customer_id');
+        
+        if (!$customerId) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Please login first'
+            ]);
+        }
+
+        try {
+            $customer = $this->customerModel->find($customerId);
+            
+            if (!$customer) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Customer not found'
+                ]);
+            }
+
+            return $this->response->setJSON([
+                'success' => true,
+                'theme' => $customer['profile_background'] ?? 'default',
+                'dashboard_bg_color' => $customer['dashboard_bg_color'] ?? '#ffffff'
+            ]);
+
+        } catch (\Exception $e) {
+            log_message('error', 'Get theme error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'An error occurred'
+            ]);
+        }
+    }
+
     /**
      * Get current week check-in data
      */
