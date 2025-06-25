@@ -9,8 +9,8 @@
     <!-- Bootstrap Icons CSS-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?= base_url('css/landing-page.css') ?>">
-    <link rel="stylesheet" href="<?= base_url('css/wheel-fortune.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('css/landing-page.css') ?>?v=<?= time() ?>">
+    <link rel="stylesheet" href="<?= base_url('css/wheel-fortune.css') ?>?v=<?= time() ?>">
     <style>
         /* Prevent zooming on mobile devices */
         * {
@@ -591,7 +591,7 @@
     </script>
     <?php endif; ?>
     
-<script>
+    <script>
         // Global variables
         let theWheel;
         let wheelSpinning = false;
@@ -688,6 +688,11 @@
             console.log('Initializing wheel with items:', wheelItems);
             initializeWheel();
             updateSpinsCounter();
+            
+            // Check spin status on page load to ensure sync
+            setTimeout(() => {
+                updateSpinStatus();
+            }, 500);
         });
 
         // Initialize the wheel
@@ -767,7 +772,29 @@
             // Called after each frame update
         }
 
-        // Main spin function
+        // Function to check and update spin status from server
+        function updateSpinStatus() {
+            fetch('<?= base_url('spin-status') ?>', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    spinsRemaining = data.spins_remaining;
+                    updateSpinsCounter();
+                    updateSpinButton();
+                    console.log('Spin status updated:', spinsRemaining);
+                }
+            })
+            .catch(error => {
+                console.error('Error checking spin status:', error);
+            });
+        }
+
+        // Main spin function - UPDATED
         function startSpin() {
             console.log('startSpin() called');
             console.log('wheelSpinning:', wheelSpinning);
@@ -805,7 +832,48 @@
                 spinButton.textContent = 'SPINNING...';
             }
 
-            // Alternative: Manual tick sound interval (fallback if callback doesn't work)
+            // MAKE AJAX CALL TO BACKEND FIRST
+            fetch('<?= base_url('spin') ?>', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: '<?= csrf_token() ?>=<?= csrf_hash() ?>'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update spins remaining from server response
+                    spinsRemaining = data.spins_remaining;
+                    console.log('Server updated spins remaining to:', spinsRemaining);
+                    
+                    // Continue with wheel spin animation
+                    performWheelSpin();
+                } else {
+                    // Reset if spin failed
+                    wheelSpinning = false;
+                    spinButton.disabled = false;
+                    if (spinButtonText) {
+                        spinButtonText.textContent = 'Spin the Wheel';
+                    }
+                    alert(data.message || 'Spin failed. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Spin request failed:', error);
+                wheelSpinning = false;
+                spinButton.disabled = false;
+                if (spinButtonText) {
+                    spinButtonText.textContent = 'Spin the Wheel';
+                }
+                alert('Network error. Please try again.');
+            });
+        }
+
+        // NEW function for wheel animation
+        function performWheelSpin() {
+            // Manual tick sound interval (fallback if callback doesn't work)
             if (tickSoundEnabled) {
                 let tickCount = 0;
                 const totalTicks = 100; // Approximate number of ticks during spin
@@ -850,12 +918,8 @@
             // Start the animation
             theWheel.startAnimation();
             
-            // Decrease spins remaining
-            spinsRemaining--;
+            // Update spins counter immediately (already decremented on server)
             updateSpinsCounter();
-            
-            // Record spin result
-            recordSpinResult(winnerItem);
         }
 
         // Determine winner based on winning rates
@@ -1067,34 +1131,41 @@
             winModal.show();
         }
 
-        // Reset spin button
-        function resetSpinButton() {
-            wheelSpinning = false;
+        // NEW function to update spin button state
+        function updateSpinButton() {
             const spinButton = document.getElementById('spinButton');
             const spinButtonText = document.getElementById('spinButtonText');
-            
-            if (spinsRemaining > 0) {
-                spinButton.disabled = false;
-                if (spinButtonText) {
-                    spinButtonText.textContent = 'Spin the Wheel';
+
+            if (!wheelSpinning) {
+                if (spinsRemaining > 0) {
+                    spinButton.disabled = false;
+                    if (spinButtonText) {
+                        spinButtonText.textContent = 'Spin the Wheel';
+                    } else {
+                        spinButton.textContent = 'Spin the Wheel';
+                    }
+                    spinButton.style.background = '';
+                    spinButton.style.color = '';
                 } else {
-                    spinButton.textContent = 'Spin the Wheel';
+                    spinButton.disabled = true;
+                    if (spinButtonText) {
+                        spinButtonText.textContent = 'Out of Spins';
+                    } else {
+                        spinButton.textContent = 'Out of Spins';
+                    }
+                    spinButton.style.background = 'linear-gradient(135deg, #6c757d 0%, #495057 100%)';
+                    spinButton.style.color = '#fff';
                 }
-                spinButton.style.background = '';
-                spinButton.style.color = '';
-            } else {
-                spinButton.disabled = true;
-                if (spinButtonText) {
-                    spinButtonText.textContent = 'Out of Spins';
-                } else {
-                    spinButton.textContent = 'Out of Spins';
-                }
-                spinButton.style.background = 'linear-gradient(135deg, #6c757d 0%, #495057 100%)';
-                spinButton.style.color = '#fff';
             }
         }
 
-        // Update spins counter
+        // Reset spin button - UPDATED
+        function resetSpinButton() {
+            wheelSpinning = false;
+            updateSpinButton();
+        }
+
+        // Update spins counter - UPDATED
         function updateSpinsCounter() {
             const spinsCount = document.getElementById('spinsCount');
             const freeSpinsText = document.getElementById('freeSpinsText');
@@ -1105,33 +1176,15 @@
             if (freeSpinsText) {
                 freeSpinsText.textContent = spinsRemaining;
             }
+            
+            // Also update button state
+            updateSpinButton();
         }
 
-        // Record spin result
+        // Record spin result - SIMPLIFIED (no longer needed for tracking spins)
         function recordSpinResult(winner) {
-            const formData = new FormData();
-            formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
-            formData.append('predetermined_outcome', JSON.stringify({
-                item_name: winner.name,
-                item_prize: winner.prize,
-                item_types: winner.type,
-                index: winner.order
-            }));
-
-            fetch('<?= base_url('spin') ?>', {
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Spin recorded:', data);
-            })
-            .catch(error => {
-                console.error('Error recording spin:', error);
-            });
+            // This is now optional - just for logging purposes
+            console.log('Spin result recorded:', winner);
         }
 
         // Sound functions
@@ -1177,6 +1230,13 @@
             playTickSound();
         }
 
+        // Periodic sync with server (every 30 seconds)
+        setInterval(() => {
+            if (!wheelSpinning) {
+                updateSpinStatus();
+            }
+        }, 30000);
+
         // Add some CSS for better visual effects
         const style = document.createElement('style');
         style.textContent = `
@@ -1201,6 +1261,6 @@
             }
         `;
         document.head.appendChild(style);
-    </script>
+    </script>   
 </body>
 </html>

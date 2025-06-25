@@ -13,9 +13,13 @@ $routes->get('/', 'LandingController::index');
 $routes->post('spin', 'LandingController::spin');
 $routes->post('claim-bonus', 'LandingController::claimBonus');
 $routes->post('store-winner', 'LandingController::storeWinner'); 
+$routes->get('spin-status', 'LandingController::getSpinStatus');
 
 // API Routes
 $routes->get('api/wheel-data', 'CustomerController::getWheelData');
+$routes->get('api/recent-wins', 'LandingController::getRecentWins');
+$routes->get('api/user-stats', 'LandingController::getUserStats');
+$routes->post('api/reset-spins', 'LandingController::resetSpins');
 
 //Reward System routes
 $routes->group('reward', function($routes) {

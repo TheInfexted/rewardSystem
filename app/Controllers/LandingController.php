@@ -40,20 +40,30 @@ class LandingController extends BaseController
         // Get session to track spins
         $session = session();
         
-        // Initialize session spins if not set
-        if (!$session->has('spins_today')) {
-            $session->set('spins_today', 0);
-            $session->set('spin_date', date('Y-m-d'));
-        }
+        $customerId = $session->get('customer_id');
         
-        // Reset spins if it's a new day
-        if ($session->get('spin_date') != date('Y-m-d')) {
-            $session->set('spins_today', 0);
-            $session->set('spin_date', date('Y-m-d'));
+        if ($customerId) {
+            // Customer is logged in - use token-based spins
+            $customer = $this->customerModel->find($customerId);
+            $spinsRemaining = $customer ? ($customer['spin_tokens'] ?? 0) : 0;
+        } else {
+            // Guest user - use session-based spins
+            // Initialize session spins if not set
+            if (!$session->has('spins_today')) {
+                $session->set('spins_today', 0);
+                $session->set('spin_date', date('Y-m-d'));
+            }
+            
+            // Reset spins if it's a new day
+            if ($session->get('spin_date') != date('Y-m-d')) {
+                $session->set('spins_today', 0);
+                $session->set('spin_date', date('Y-m-d'));
+            }
+            
+            $spinsToday = $session->get('spins_today');
+            $maxSpinsPerDay = $this->adminSettingsModel->getSetting('max_daily_spins', 3);
+            $spinsRemaining = max(0, $maxSpinsPerDay - $spinsToday);
         }
-        
-        $spinsToday = $session->get('spins_today');
-        $spinsRemaining = max(0, 3 - $spinsToday);
         
         // Get bonus settings
         $bonusSettings = $this->adminSettingsModel->getBonusSettings();
@@ -105,7 +115,6 @@ class LandingController extends BaseController
 
                 // Get updated token balance
                 $updatedCustomer = $this->customerModel->find($customerId);
-                $spinsToday = 0; // no session tracking needed for logged-in
                 $remainingTokens = $updatedCustomer['spin_tokens'] ?? 0;
 
             } else {
@@ -116,7 +125,6 @@ class LandingController extends BaseController
                 }
 
                 $spinsToday = $session->get('spins_today') ?? 0;
-                
                 $maxSpinsPerDay = $this->adminSettingsModel->getSetting('max_daily_spins', 3);
 
                 if ($spinsToday >= $maxSpinsPerDay) {
@@ -127,8 +135,10 @@ class LandingController extends BaseController
                     ]);
                 }
 
-                $session->set('spins_today', $spinsToday + 1);
-                $remainingTokens = $maxSpinsPerDay - ($spinsToday + 1);
+                // INCREMENT the spins count BEFORE calculating remaining
+                $newSpinsCount = $spinsToday + 1;
+                $session->set('spins_today', $newSpinsCount);
+                $remainingTokens = max(0, $maxSpinsPerDay - $newSpinsCount);
             }
             
             return $this->response->setJSON([
@@ -139,6 +149,38 @@ class LandingController extends BaseController
         }
         
         return redirect()->to('/');
+    }
+
+    /**
+     * Get current spin status (for AJAX checks)
+     */
+    public function getSpinStatus()
+    {
+        if ($this->request->isAJAX()) {
+            $session = session();
+            $customerId = $session->get('customer_id');
+            
+            if ($customerId) {
+                // Customer is logged in - use token-based spins
+                $customer = $this->customerModel->find($customerId);
+                $spinsRemaining = $customer ? ($customer['spin_tokens'] ?? 0) : 0;
+            } else {
+                // Guest user - use session-based spins
+                $spinsToday = $session->get('spins_today') ?? 0;
+                $maxSpinsPerDay = $this->adminSettingsModel->getSetting('max_daily_spins', 3);
+                $spinsRemaining = max(0, $maxSpinsPerDay - $spinsToday);
+            }
+            
+            return $this->response->setJSON([
+                'success' => true,
+                'spins_remaining' => $spinsRemaining
+            ]);
+        }
+        
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => 'Invalid request'
+        ]);
     }
 
     /**
