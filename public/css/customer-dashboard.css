@@ -2,7 +2,7 @@
 body {
     margin: 0;
     padding: 0;
-    background: #f8f9fa;
+    background: #f8f9fa !important; /* Keep body neutral */
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
@@ -14,7 +14,8 @@ body {
     min-height: 100vh;
     box-shadow: 0 0 20px rgba(0,0,0,0.1);
     position: relative;
-    overflow-x: hidden; 
+    overflow-x: hidden;
+    isolation: isolate;
 }
 
 /* Profile Header with background image support */
@@ -557,17 +558,39 @@ body.modal-open {
 
 /* COMPACT Weekly Check-in Section */
 .checkin-section {
-    padding: 15px 20px; /* Reduced from 20px to 15px */
-    background: white;
+    padding: 20px;
+    background: inherit; /* Inherit from dashboard container */
+    position: relative;
 }
 
+/* Subtle overlay for better content readability when using colored backgrounds */
+.checkin-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.05);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Ensure content is above overlay */
+.checkin-section > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* Section title styling for colored backgrounds */
 .section-title {
     display: flex;
     align-items: center;
     font-size: 1.1rem;
     font-weight: 600;
-    margin-bottom: 12px; /* Reduced from 15px */
-    color: #333;
+    margin-bottom: 15px;
+    color: rgba(51, 51, 51, 0.9); /* Slightly transparent for better visibility */
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8); /* White text shadow for readability */
 }
 
 /* New Compact Check-in Layout */
@@ -677,6 +700,32 @@ body.modal-open {
     100% { transform: scale(1); }
 }
 
+/* Weekly Calendar */
+.weekly-calendar {
+    background: rgba(248, 249, 250, 0.7); /* Semi-transparent background */
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 15px;
+    backdrop-filter: blur(10px); /* Add blur effect for modern look */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Week header text improvements for colored backgrounds */
+.week-header span {
+    font-weight: 600;
+    color: rgba(51, 51, 51, 0.9);
+    font-size: 1.1rem;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.week-header small {
+    display: block;
+    color: rgba(108, 117, 125, 0.8);
+    margin-top: 5px;
+    font-size: 0.8rem;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
 /* Inline Weekly Calendar - More Compact */
 .week-days-inline {
     display: grid;
@@ -685,6 +734,21 @@ body.modal-open {
 }
 
 /* Day items styling */
+.day-item {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(233, 236, 239, 0.6);
+    border-radius: 12px;
+    padding: 10px 6px;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    backdrop-filter: blur(5px);
+}
+
 .day-item-compact {
     background: rgba(255, 255, 255, 0.15) !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;

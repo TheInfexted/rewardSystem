@@ -7,6 +7,7 @@
 <?= $this->section('content') ?>
 
 <link rel="stylesheet" href="<?= base_url('css/customer-dashboard.css') ?>?v=<?= time() ?>">
+<link rel="stylesheet" href="<?= base_url('css/dashboard-theme.css') ?>?v=<?= time() ?>">
 
 <div class="dashboard-container">
     <!-- User Profile Header -->
@@ -340,26 +341,51 @@ const dashboardPhpConfig = {
 
 // Apply dashboard background color and theme
 document.addEventListener('DOMContentLoaded', function() {
-    // Apply background color to body
-    if (dashboardPhpConfig.dashboardBgColor) {
-        document.body.style.backgroundColor = dashboardPhpConfig.dashboardBgColor;
-        const container = document.querySelector('.dashboard-container');
-        if (container) {
-            container.style.backgroundColor = dashboardPhpConfig.dashboardBgColor;
+    if (dashboardPhpConfig.dashboardBgColor && dashboardPhpConfig.dashboardBgColor !== '#ffffff') {
+        // Apply background only to dashboard container, not body
+        const dashboardContainer = document.querySelector('.dashboard-container');
+        if (dashboardContainer) {
+            dashboardContainer.style.backgroundColor = dashboardPhpConfig.dashboardBgColor;
+            
+            // Add themed class for better styling
+            dashboardContainer.classList.add('custom-background');
+            
+            // Determine if background is dark for text contrast
+            const luminance = getColorLuminance(dashboardPhpConfig.dashboardBgColor);
+            if (luminance < 0.5) {
+                dashboardContainer.classList.add('dark-bg');
+            } else {
+                dashboardContainer.classList.add('light-bg');
+            }
+        }
+        
+        // Apply theme to weekly check-in section
+        const checkinSection = document.querySelector('.checkin-section');
+        if (checkinSection) {
+            checkinSection.classList.add('themed-section');
+        }
+        
+        // Apply theme to stats section
+        const statsRow = document.querySelector('.stats-row');
+        if (statsRow) {
+            statsRow.classList.add('themed-section');
         }
     }
-    
-    // Apply theme classes for dynamic theming
-    const profileBackground = dashboardPhpConfig.profileBackground || 'default';
-    document.body.setAttribute('data-theme', profileBackground);
-    
-    // Add theme class to dashboard container for CSS targeting
-    const dashboardContainer = document.querySelector('.dashboard-container');
-    if (dashboardContainer) {
-        dashboardContainer.classList.add(`theme-${profileBackground}`);
-        dashboardContainer.setAttribute('data-theme', profileBackground);
-    }
 });
+
+// Helper function to calculate color luminance
+function getColorLuminance(hexColor) {
+    const hex = hexColor.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16) / 255;
+    const g = parseInt(hex.substr(2, 2), 16) / 255;
+    const b = parseInt(hex.substr(4, 2), 16) / 255;
+    
+    const a = [r, g, b].map(v => {
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+    
+    return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+}
 </script>
 
 <script>

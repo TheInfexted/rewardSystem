@@ -44,6 +44,13 @@ $routes->group('customer', function($routes) {
     $routes->post('get-current-password', 'CustomerController::getCurrentPassword');
     $routes->post('change-password', 'CustomerController::changePassword');
     $routes->get('getTheme', 'CustomerController::getTheme');
+    $routes->get('dashboard-themes', 'Admin\CustomersController::dashboardThemes');
+    $routes->post('(:num)/update-dashboard', 'Admin\CustomersController::updateCustomerDashboard/$1');
+    $routes->post('(:num)/reset-dashboard', 'Admin\CustomersController::resetCustomerDashboard/$1');
+    $routes->get('(:num)/dashboard-preview', 'Admin\CustomersController::dashboardPreview/$1');
+    $routes->get('theme-statistics', 'Admin\CustomersController::themeStatistics');
+    $routes->post('bulk-reset-themes', 'Admin\CustomersController::bulkResetThemes');
+    $routes->get('theme-colors', 'Admin\CustomersController::getAvailableThemeColors');
 });
 
 // Authentication routes
@@ -155,26 +162,40 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
     });
 
     // Customer management routes
-    $routes->get('customers', 'Admin\CustomersController::index');
-    $routes->get('customers/view/(:num)', 'Admin\CustomersController::view/$1');
-    $routes->get('customers/edit/(:num)', 'Admin\CustomersController::edit/$1');
-    $routes->post('customers/update/(:num)', 'Admin\CustomersController::update/$1');
-    
-    // Password management routes
-    $routes->post('customers/changePassword/(:num)', 'Admin\CustomersController::changePassword/$1');
-    $routes->post('customers/generatePassword/(:num)', 'Admin\CustomersController::generatePassword/$1');
-    
-    // Token management routes
-    $routes->get('customers/tokens/(:num)', 'Admin\CustomersController::manageTokens/$1');
-    $routes->post('customers/updateTokens', 'Admin\CustomersController::updateTokens');
-    
-    // Customer status and dashboard management
-    $routes->post('customers/resetDashboard/(:num)', 'Admin\CustomersController::resetDashboard/$1');
-    $routes->post('customers/delete/(:num)', 'Admin\CustomersController::delete/$1');
-    $routes->post('customers/deactivate/(:num)', 'Admin\CustomersController::deactivate/$1');
-    
-    // Check-in Settings Routes
-    $routes->get('customers/checkin-settings/(:num)', 'Admin\CustomersController::checkinSettings/$1');
-    $routes->post('customers/updateCheckinSettings', 'Admin\CustomersController::updateCheckinSettings');
-    $routes->post('customers/resetCheckinProgress/(:num)', 'Admin\CustomersController::resetCheckinProgress/$1');
+    $routes->group('customers', function($routes) {
+        // Basic customer management
+        $routes->get('/', 'Admin\CustomersController::index');
+        $routes->get('view/(:num)', 'Admin\CustomersController::view/$1');
+        $routes->get('edit/(:num)', 'Admin\CustomersController::edit/$1');
+        $routes->post('update/(:num)', 'Admin\CustomersController::update/$1');
+        
+        // Password management
+        $routes->post('changePassword/(:num)', 'Admin\CustomersController::changePassword/$1');
+        $routes->post('generatePassword/(:num)', 'Admin\CustomersController::generatePassword/$1');
+        
+        // Token management
+        $routes->get('tokens/(:num)', 'Admin\CustomersController::manageTokens/$1');
+        $routes->post('updateTokens', 'Admin\CustomersController::updateTokens');
+        
+        // Customer status management
+        $routes->post('delete/(:num)', 'Admin\CustomersController::delete/$1');
+        $routes->post('deactivate/(:num)', 'Admin\CustomersController::deactivate/$1');
+        
+        // Check-in management
+        $routes->get('checkin-settings/(:num)', 'Admin\CustomersController::checkinSettings/$1');
+        $routes->post('updateCheckinSettings', 'Admin\CustomersController::updateCheckinSettings');
+        $routes->post('resetCheckinProgress/(:num)', 'Admin\CustomersController::resetCheckinProgress/$1');
+        
+        // Dashboard theme management 
+        $routes->get('dashboard-themes', 'Admin\CustomersController::dashboardThemes');
+        $routes->post('(:num)/update-dashboard', 'Admin\CustomersController::updateCustomerDashboard/$1');
+        $routes->post('(:num)/reset-dashboard', 'Admin\CustomersController::resetCustomerDashboard/$1');
+        $routes->get('(:num)/dashboard-preview', 'Admin\CustomersController::dashboardPreview/$1');
+        $routes->get('theme-statistics', 'Admin\CustomersController::themeStatistics');
+        $routes->post('bulk-reset-themes', 'Admin\CustomersController::bulkResetThemes');
+        $routes->get('theme-colors', 'Admin\CustomersController::getAvailableThemeColors');
+        
+        // Legacy route support 
+        $routes->post('resetDashboard/(:num)', 'Admin\CustomersController::resetDashboard/$1');
+    });
 });

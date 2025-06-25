@@ -1,0 +1,147 @@
+/* ===================================================
+   ADDITIONAL THEME CLASSES FOR DASHBOARD
+   File: public/css/dashboard-theme.css (new file)
+   
+   Add these classes to support better theming
+   =================================================== */
+
+/* Custom background theme classes */
+.dashboard-container.custom-background {
+    transition: background-color 0.3s ease;
+}
+
+/* Dark background adjustments */
+.dashboard-container.dark-bg .section-title {
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.dashboard-container.dark-bg .week-header span {
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.dashboard-container.dark-bg .week-header small {
+    color: rgba(255, 255, 255, 0.8);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Light background adjustments */
+.dashboard-container.light-bg .section-title {
+    color: rgba(51, 51, 51, 0.95);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.dashboard-container.light-bg .week-header span {
+    color: rgba(51, 51, 51, 0.95);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.dashboard-container.light-bg .week-header small {
+    color: rgba(108, 117, 125, 0.9);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+/* Themed section enhancements */
+.themed-section {
+    position: relative;
+}
+
+.themed-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.03);
+    pointer-events: none;
+    border-radius: 15px;
+    z-index: 1;
+}
+
+.themed-section > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* Enhanced weekly calendar for custom backgrounds */
+.custom-background .weekly-calendar {
+    background: rgba(248, 249, 250, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced stat cards for custom backgrounds */
+.custom-background .stat-card {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.custom-background .stat-card:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Day items enhancement for custom backgrounds */
+.custom-background .day-item {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.custom-background .day-item.completed {
+    background: linear-gradient(135deg, rgba(40, 167, 69, 0.8) 0%, rgba(32, 201, 151, 0.8) 100%);
+    border-color: rgba(40, 167, 69, 0.9);
+    backdrop-filter: blur(10px);
+}
+
+.custom-background .day-item.today {
+    border-color: rgba(0, 123, 255, 0.9);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+/* Check-in card enhancement for custom backgrounds */
+.custom-background .checkin-card {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Profile header adjustments for custom dashboard backgrounds */
+.custom-background .profile-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Animation for theme transitions */
+@keyframes themeTransition {
+    from {
+        opacity: 0.8;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.custom-background .themed-section {
+    animation: themeTransition 0.5s ease-in-out;
+}
+
+/* Responsive adjustments for themes */
+@media (max-width: 480px) {
+    .custom-background .weekly-calendar {
+        background: rgba(248, 249, 250, 0.2);
+        backdrop-filter: blur(10px);
+    }
+    
+    .custom-background .stat-card {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+    }
+}

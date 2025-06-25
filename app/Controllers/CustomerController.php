@@ -316,28 +316,193 @@ class CustomerController extends BaseController
 
     public function updateDashboardColor()
     {
-        if ($this->request->isAJAX()) {
-            $customerId = session()->get('customer_id');
-            $color = $this->request->getPost('color');
-            
-            // Validate color format
-            if (preg_match('/^#[0-9A-F]{6}$/i', $color)) {
-                $customerModel = new CustomerModel();
-                $result = $customerModel->update($customerId, ['dashboard_bg_color' => $color]);
-                
-                return $this->response->setJSON([
-                    'success' => $result,
-                    'message' => $result ? 'Color updated' : 'Failed to update'
-                ]);
-            }
-            
+        if (!$this->request->isAJAX()) {
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Invalid color format'
+                'message' => 'Invalid request method'
             ]);
         }
+
+        $customerId = session()->get('customer_id');
+        if (!$customerId) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'User not authenticated'
+            ]);
+        }
+
+        $color = $this->request->getPost('color');
         
-        return redirect()->to('/customer/dashboard');
+        // Validate color format (hex color)
+        if (!$this->isValidHexColor($color)) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Invalid color format. Please use hex color format (#RRGGBB)'
+            ]);
+        }
+
+        try {
+            $customerModel = new CustomerModel();
+            $result = $customerModel->update($customerId, [
+                'dashboard_bg_color' => $color,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+            
+            if ($result) {
+                // Log the color change for audit purposes
+                log_message('info', "Customer {$customerId} updated dashboard color to {$color}");
+                
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Dashboard background color updated successfully',
+                    'color' => $color
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Failed to update dashboard color in database'
+                ]);
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Dashboard color update error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'An error occurred while updating the color'
+            ]);
+        }
+    }
+
+    /**
+     * Reset dashboard to default theme
+     */
+    public function resetDashboardTheme()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Invalid request method'
+            ]);
+        }
+
+        $customerId = session()->get('customer_id');
+        if (!$customerId) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'User not authenticated'
+            ]);
+        }
+
+        try {
+            $customerModel = new CustomerModel();
+            $result = $customerModel->update($customerId, [
+                'dashboard_bg_color' => '#ffffff',
+                'profile_background_image' => null,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+            
+            if ($result) {
+                log_message('info', "Customer {$customerId} reset dashboard theme to default");
+                
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Dashboard theme reset to default successfully'
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Failed to reset dashboard theme'
+                ]);
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Dashboard theme reset error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'An error occurred while resetting the theme'
+            ]);
+        }
+    }
+
+    /**
+     * Get current dashboard theme settings
+     */
+    public function getDashboardTheme()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Invalid request method'
+            ]);
+        }
+
+        $customerId = session()->get('customer_id');
+        if (!$customerId) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'User not authenticated'
+            ]);
+        }
+
+        try {
+            $customerModel = new CustomerModel();
+            $customer = $customerModel->find($customerId);
+            
+            if ($customer) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'theme' => [
+                        'dashboard_bg_color' => $customer['dashboard_bg_color'] ?? '#ffffff',
+                        'profile_background_image' => $customer['profile_background_image'] ?? null,
+                        'theme_updated_at' => $customer['updated_at'] ?? null
+                    ]
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Customer not found'
+                ]);
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Get dashboard theme error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'An error occurred while retrieving theme settings'
+            ]);
+        }
+    }
+
+    /**
+     * Validate hex color format
+     * 
+     * @param string $color
+     * @return bool
+     */
+    private function isValidHexColor($color)
+    {
+        return preg_match('/^#[0-9A-Fa-f]{6}$/', $color);
+    }
+
+    /**
+     * Get predefined theme colors
+     */
+    public function getThemeColors()
+    {
+        $themeColors = [
+            'default' => '#ffffff',
+            'blue' => '#667eea',
+            'purple' => '#764ba2',
+            'green' => '#11998e',
+            'orange' => '#ff9a56',
+            'pink' => '#f093fb',
+            'dark' => '#2c3e50',
+            'teal' => '#38ef7d',
+            'red' => '#ff6b6b',
+            'gold' => '#ffd700'
+        ];
+
+        return $this->response->setJSON([
+            'success' => true,
+            'colors' => $themeColors
+        ]);
     }
 
     /**

@@ -50,14 +50,56 @@ class CustomersController extends BaseController
         
         // Get customer statistics
         $stats = $this->getCustomerStats($customerId);
+
+        $themeData = [
+            'current_bg_color' => $customer['dashboard_bg_color'] ?? '#ffffff',
+            'current_bg_image' => $customer['profile_background_image'] ?? null,
+            'theme_history' => $this->getCustomerThemeHistory($customerId)
+        ];
         
         $data = [
             'title' => 'Customer Details - ' . $customer['username'],
             'customer' => $customer,
-            'stats' => $stats
+            'stats' => $stats,
+            'theme_data' => $themeData
         ];
         
         return view('admin/customers/view', $data);
+    }
+
+    /**
+     * Get customer theme change history
+     */
+    private function getCustomerThemeHistory($customerId, $limit = 10)
+    {
+        $db = \Config\Database::connect();
+        
+        try {
+            $query = $db->query("
+                SELECT 
+                    action_type,
+                    old_bg_color,
+                    new_bg_color,
+                    old_bg_image,
+                    new_bg_image,
+                    change_reason,
+                    created_at,
+                    CASE 
+                        WHEN admin_id IS NOT NULL THEN 'Admin'
+                        ELSE 'Customer'
+                    END as changed_by
+                FROM dashboard_theme_history 
+                WHERE customer_id = ? 
+                ORDER BY created_at DESC 
+                LIMIT ?
+            ", [$customerId, $limit]);
+            
+            return $query->getResultArray();
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Failed to get theme history: ' . $e->getMessage());
+            return [];
+        }
     }
     
     public function edit($customerId)
@@ -72,7 +114,13 @@ class CustomersController extends BaseController
             'title' => 'Edit Customer - ' . $customer['username'],
             'customer' => $customer,
             'profile_backgrounds' => $this->getProfileBackgrounds(),
-            'validation' => \Config\Services::validation()
+            'validation' => \Config\Services::validation(),
+            // ADD THESE NEW LINES:
+            'theme_colors' => $this->getThemeColors(),
+            'current_theme' => [
+                'bg_color' => $customer['dashboard_bg_color'] ?? '#ffffff',
+                'bg_image' => $customer['profile_background_image'] ?? null
+            ]
         ];
         
         return view('admin/customers/edit', $data);
@@ -91,7 +139,7 @@ class CustomersController extends BaseController
             'name' => 'permit_empty|max_length[100]',
             'email' => 'permit_empty|valid_email|max_length[100]',
             'profile_background' => 'required|in_list[default,blue,purple,green,orange,pink,dark]',
-            'dashboard_bg_color' => 'required|regex_match[/^#[0-9A-F]{6}$/i]',
+            'dashboard_bg_color' => 'permit_empty|regex_match[/^#[0-9A-F]{6}$/i]',
             'points' => 'required|integer|greater_than_equal_to[0]',
             'spin_tokens' => 'required|integer|greater_than_equal_to[0]',
             'is_active' => 'required|in_list[0,1]'
@@ -108,16 +156,17 @@ class CustomersController extends BaseController
         }
         
         try {
-            // Prepare update data
             $updateData = [
                 'name' => $this->request->getPost('name') ?: null,
                 'email' => $this->request->getPost('email') ?: null,
                 'profile_background' => $this->request->getPost('profile_background'),
-                'dashboard_bg_color' => $this->request->getPost('dashboard_bg_color'),
                 'points' => (int) $this->request->getPost('points'),
                 'spin_tokens' => (int) $this->request->getPost('spin_tokens'),
                 'is_active' => (int) $this->request->getPost('is_active')
             ];
+
+            // DASHBOARD THEME HANDLING
+            $this->handleDashboardThemeUpdate($customerId, $customer, $updateData);
             
             // Handle profile background image upload
             if ($profileImage && $profileImage->isValid() && !$profileImage->hasMoved()) {
@@ -192,6 +241,64 @@ class CustomersController extends BaseController
             return redirect()->back()->withInput()
                 ->with('error', 'An error occurred while updating the customer: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Handle dashboard theme updates in your existing update method
+     */
+    private function handleDashboardThemeUpdate($customerId, $customer, &$updateData)
+    {
+        // Handle dashboard background color
+        $bgColor = $this->request->getPost('dashboard_bg_color');
+        if (!empty($bgColor)) {
+            $validColor = $this->customerModel->validateDashboardColor($bgColor);
+            if ($validColor !== false) {
+                $updateData['dashboard_bg_color'] = $validColor;
+            }
+        }
+        
+        // Handle background image upload
+        $profileImage = $this->request->getFile('profile_background_image');
+        if ($profileImage && $profileImage->isValid() && !$profileImage->hasMoved()) {
+            $uploadResult = $this->handleBackgroundImageUpload($profileImage, $customerId, $customer);
+            if ($uploadResult['success']) {
+                $updateData['profile_background_image'] = $uploadResult['filename'];
+            } else {
+                throw new \Exception($uploadResult['message']);
+            }
+        }
+        
+        // Handle remove background image
+        if ($this->request->getPost('remove_background_image') === '1') {
+            if (!empty($customer['profile_background_image'])) {
+                $oldImagePath = FCPATH . 'uploads/profile_backgrounds/' . $customer['profile_background_image'];
+                if (file_exists($oldImagePath)) {
+                    @unlink($oldImagePath);
+                }
+            }
+            $updateData['profile_background_image'] = null;
+        }
+    }
+
+    /**
+     * Get available theme colors
+     */
+    private function getThemeColors()
+    {
+        return [
+            '#ffffff' => 'Default White',
+            '#667eea' => 'Blue Gradient',
+            '#764ba2' => 'Purple Gradient', 
+            '#11998e' => 'Teal Gradient',
+            '#ff9a56' => 'Orange Gradient',
+            '#f093fb' => 'Pink Gradient',
+            '#2c3e50' => 'Dark Blue',
+            '#e74c3c' => 'Red',
+            '#f39c12' => 'Orange',
+            '#27ae60' => 'Green',
+            '#9b59b6' => 'Purple',
+            '#34495e' => 'Dark Gray'
+        ];
     }
     
     /**
@@ -566,26 +673,20 @@ class CustomersController extends BaseController
                 ]);
             }
             
-            // Reset to defaults
-            $resetData = [
-                'profile_background' => 'default',
-                'profile_background_image' => null,
-                'dashboard_bg_color' => '#ffffff'
-            ];
-            
-            // Remove background image file if exists
-            if (!empty($customer['profile_background_image'])) {
-                $imagePath = FCPATH . 'uploads/profile_backgrounds/' . $customer['profile_background_image'];
-                if (file_exists($imagePath)) {
-                    @unlink($imagePath);
-                }
-            }
-            
-            $result = $this->customerModel->update($customerId, $resetData);
+            // Use the enhanced model method
+            $result = $this->customerModel->resetDashboardTheme($customerId);
             
             if ($result) {
-                // Log the changes
-                $this->logProfileChanges($customerId, $customer, $resetData);
+                // Log the reset using enhanced logging
+                $adminId = session()->get('user_id');
+                $this->logDashboardThemeChange($customerId, 'theme_reset', [
+                    'old_color' => $customer['dashboard_bg_color'],
+                    'old_image' => $customer['profile_background_image'],
+                    'new_color' => '#ffffff',
+                    'new_image' => null,
+                    'admin_id' => $adminId,
+                    'reason' => 'Dashboard reset by admin'
+                ]);
                 
                 return $this->response->setJSON([
                     'success' => true,
@@ -1172,6 +1273,34 @@ class CustomersController extends BaseController
             ", [$adminId, $action, $details]);
         } catch (\Exception $e) {
             log_message('error', 'Failed to log settings change: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Log dashboard theme changes
+     */
+    private function logDashboardThemeChange($customerId, $actionType, $details)
+    {
+        $db = \Config\Database::connect();
+        
+        try {
+            $logData = [
+                'customer_id' => $customerId,
+                'admin_id' => $details['admin_id'] ?? null,
+                'action_type' => $actionType,
+                'old_bg_color' => $details['old_color'] ?? null,
+                'new_bg_color' => $details['new_color'] ?? null,
+                'old_bg_image' => $details['old_image'] ?? null,
+                'new_bg_image' => $details['new_image'] ?? null,
+                'change_reason' => $details['reason'] ?? null,
+                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? null,
+                'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? null
+            ];
+            
+            $db->table('dashboard_theme_history')->insert($logData);
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Failed to log theme change: ' . $e->getMessage());
         }
     }
 }

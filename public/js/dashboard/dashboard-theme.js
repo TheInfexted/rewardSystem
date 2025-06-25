@@ -216,6 +216,113 @@ if (typeof dashboardPhpConfig !== 'undefined') {
     setTimeout(startThemeAutoSync, 5000);
 }
 
+// Enhanced dashboard background color application
+function applyDashboardBackground(bgColor) {
+    if (!bgColor || bgColor === '#ffffff') {
+        // Default white background
+        applyDefaultTheme();
+        return;
+    }
+
+    // Apply background only to dashboard container
+    const dashboardContainer = document.querySelector('.dashboard-container');
+    if (dashboardContainer) {
+        dashboardContainer.style.backgroundColor = bgColor;
+        dashboardContainer.style.backgroundImage = 'none'; // Clear any existing background image
+    }
+
+    // Apply theme-aware styling to check-in section
+    const checkinSection = document.querySelector('.checkin-section');
+    if (checkinSection) {
+        // The CSS inheritance will handle the background
+        // Add any additional theme-specific classes if needed
+        checkinSection.classList.add('themed-background');
+    }
+
+    // Apply theme to weekly calendar
+    const weeklyCalendar = document.querySelector('.weekly-calendar');
+    if (weeklyCalendar) {
+        weeklyCalendar.classList.add('themed-background');
+    }
+
+    // Apply theme to stats section
+    const statsRow = document.querySelector('.stats-row');
+    if (statsRow) {
+        statsRow.classList.add('themed-background');
+    }
+
+    // Determine if the background is dark and adjust text accordingly
+    adjustTextForBackground(bgColor);
+}
+
+function applyDefaultTheme() {
+    const dashboardContainer = document.querySelector('.dashboard-container');
+    if (dashboardContainer) {
+        dashboardContainer.style.backgroundColor = '#ffffff';
+        dashboardContainer.style.backgroundImage = 'none';
+    }
+
+    // Remove theme classes
+    const themedElements = document.querySelectorAll('.themed-background');
+    themedElements.forEach(element => {
+        element.classList.remove('themed-background', 'dark-theme', 'light-theme');
+    });
+}
+
+function adjustTextForBackground(bgColor) {
+    const luminance = getColorLuminance(bgColor);
+    const isDark = luminance < 0.5;
+    
+    const dashboardContainer = document.querySelector('.dashboard-container');
+    if (dashboardContainer) {
+        if (isDark) {
+            dashboardContainer.classList.add('dark-theme');
+            dashboardContainer.classList.remove('light-theme');
+        } else {
+            dashboardContainer.classList.add('light-theme');
+            dashboardContainer.classList.remove('dark-theme');
+        }
+    }
+}
+
+function getColorLuminance(hexColor) {
+    // Convert hex to RGB
+    const hex = hexColor.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16) / 255;
+    const g = parseInt(hex.substr(2, 2), 16) / 255;
+    const b = parseInt(hex.substr(4, 2), 16) / 255;
+
+    // Calculate luminance
+    const a = [r, g, b].map(v => {
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    });
+
+    return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
+}
+
+// Update the dashboard view script
+document.addEventListener('DOMContentLoaded', function() {
+    // Apply dashboard background color only to container
+    if (typeof dashboardPhpConfig !== 'undefined' && dashboardPhpConfig.dashboardBgColor) {
+        applyDashboardBackground(dashboardPhpConfig.dashboardBgColor);
+    }
+
+    // Listen for dynamic color changes (if you have color picker functionality)
+    document.addEventListener('dashboardColorChange', function(event) {
+        applyDashboardBackground(event.detail.color);
+    });
+});
+
+// Export functions for use in other modules
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        applyDashboardBackground,
+        applyDefaultTheme,
+        adjustTextForBackground,
+        getColorLuminance
+    };
+}
+
 // Add CSS animations for notifications
 const style = document.createElement('style');
 style.textContent = `

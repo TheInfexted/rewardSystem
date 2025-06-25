@@ -43,7 +43,8 @@ class CustomerModel extends Model
         'password' => 'required|min_length[4]',
         'email' => 'permit_empty|valid_email|is_unique[customers.email,id,{id}]',
         'phone' => 'permit_empty|min_length[10]|max_length[20]',
-        'name' => 'permit_empty|max_length[100]'
+        'name' => 'permit_empty|max_length[100]',
+        'dashboard_bg_color' => 'permit_empty|regex_match[/^#[0-9A-Fa-f]{6}$/]'
     ];
 
     protected $validationMessages = [
@@ -64,6 +65,9 @@ class CustomerModel extends Model
         'phone' => [
             'min_length' => 'Phone number must be at least 10 digits',
             'max_length' => 'Phone number cannot exceed 20 digits'
+        ],
+        'dashboard_bg_color' => [
+            'regex_match' => 'Dashboard background color must be a valid hex color (e.g., #FFFFFF)'
         ]
     ];
 
@@ -72,8 +76,8 @@ class CustomerModel extends Model
 
     // Callbacks - FIXED: Only hash on insert, not update
     protected $allowCallbacks = true;
-    protected $beforeInsert = ['hashPassword'];
-    // REMOVED: protected $beforeUpdate = ['hashPassword']; // This was causing double hashing!
+    protected $beforeInsert = ['hashPassword', 'setDefaultTheme'];
+    protected $beforeUpdate = ['validateThemeColor'];
 
     /**
      * Hash password before insert ONLY
@@ -95,6 +99,234 @@ class CustomerModel extends Model
         }
         return $data;
     }
+
+    /**
+     * Set default dashboard theme on insert
+     */
+    protected function setDefaultTheme(array $data)
+    {
+        if (!isset($data['data']['dashboard_bg_color'])) {
+            $data['data']['dashboard_bg_color'] = '#ffffff';
+        }
+        return $data;
+    }
+
+    /**
+     * Validate theme color on update
+     */
+    protected function validateThemeColor(array $data)
+    {
+        if (isset($data['data']['dashboard_bg_color'])) {
+            $validColor = $this->validateDashboardColor($data['data']['dashboard_bg_color']);
+            if ($validColor === false) {
+                $data['data']['dashboard_bg_color'] = '#ffffff'; // fallback to default
+            } else {
+                $data['data']['dashboard_bg_color'] = $validColor;
+            }
+        }
+        return $data;
+    }
+
+    // ===========================================
+    // DASHBOARD THEME MANAGEMENT METHODS
+    // ===========================================
+
+    /**
+     * Get customer with dashboard theme data
+     * 
+     * @param int $customerId
+     * @return array|null
+     */
+    public function getCustomerWithTheme($customerId)
+    {
+        return $this->select([
+            'id',
+            'username', 
+            'name',
+            'email',
+            'points',
+            'spin_tokens',
+            'spin_count',
+            'dashboard_bg_color',
+            'profile_background_image',
+            'profile_background',
+            'last_login',
+            'created_at',
+            'updated_at'
+        ])->find($customerId);
+    }
+
+    /**
+     * Update dashboard background color
+     * 
+     * @param int $customerId
+     * @param string $bgColor
+     * @return bool
+     */
+    public function updateDashboardColor($customerId, $bgColor)
+    {
+        // Validate hex color format
+        $validColor = $this->validateDashboardColor($bgColor);
+        if ($validColor === false) {
+            return false;
+        }
+
+        try {
+            return $this->update($customerId, [
+                'dashboard_bg_color' => $validColor,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'Failed to update dashboard color: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Reset dashboard theme to default
+     * 
+     * @param int $customerId
+     * @return bool
+     */
+    public function resetDashboardTheme($customerId)
+    {
+        try {
+            return $this->update($customerId, [
+                'dashboard_bg_color' => '#ffffff',
+                'profile_background_image' => null,
+                'updated_at' => date('Y-m-d H:i:s')
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'Failed to reset dashboard theme: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Get customers with custom dashboard themes
+     * 
+     * @return array
+     */
+    public function getCustomersWithCustomThemes()
+    {
+        return $this->select([
+            'id',
+            'username',
+            'name',
+            'dashboard_bg_color',
+            'profile_background_image',
+            'updated_at'
+        ])
+        ->where('dashboard_bg_color !=', '#ffffff')
+        ->orWhere('profile_background_image IS NOT NULL')
+        ->orderBy('updated_at', 'DESC')
+        ->findAll();
+    }
+
+    /**
+     * Get dashboard theme statistics
+     * 
+     * @return array
+     */
+    public function getDashboardThemeStats()
+    {
+        $db = \Config\Database::connect();
+        
+        try {
+            // Count customers by background color
+            $colorStats = $db->query("
+                SELECT 
+                    dashboard_bg_color as color,
+                    COUNT(*) as count
+                FROM customers 
+                WHERE is_active = 1 
+                GROUP BY dashboard_bg_color 
+                ORDER BY count DESC
+            ")->getResultArray();
+
+            // Count customers with custom backgrounds
+            $customBgCount = $db->query("
+                SELECT COUNT(*) as count 
+                FROM customers 
+                WHERE is_active = 1 
+                AND profile_background_image IS NOT NULL
+            ")->getRow()->count;
+
+            // Total active customers
+            $totalActive = $this->where('is_active', 1)->countAllResults();
+
+            return [
+                'color_distribution' => $colorStats,
+                'custom_background_count' => $customBgCount,
+                'total_active_customers' => $totalActive,
+                'default_theme_count' => $totalActive - $customBgCount
+            ];
+        } catch (\Exception $e) {
+            log_message('error', 'Failed to get dashboard theme stats: ' . $e->getMessage());
+            return [
+                'color_distribution' => [],
+                'custom_background_count' => 0,
+                'total_active_customers' => 0,
+                'default_theme_count' => 0
+            ];
+        }
+    }
+
+    /**
+     * Validate and sanitize dashboard background color
+     * 
+     * @param string $color
+     * @return string|false
+     */
+    public function validateDashboardColor($color)
+    {
+        if (empty($color)) {
+            return '#ffffff'; // Default to white
+        }
+
+        // Remove any whitespace
+        $color = trim($color);
+        
+        // Add # if missing
+        if (!str_starts_with($color, '#')) {
+            $color = '#' . $color;
+        }
+        
+        // Convert to uppercase for consistency
+        $color = strtoupper($color);
+        
+        // Validate hex format
+        if (preg_match('/^#[0-9A-F]{6}$/', $color)) {
+            return $color;
+        }
+        
+        return false;
+    }
+
+    /**
+     * Get customer dashboard data for rendering
+     * 
+     * @param int $customerId
+     * @return array|null
+     */
+    public function getCustomerDashboardData($customerId)
+    {
+        $customer = $this->getCustomerWithTheme($customerId);
+        
+        if (!$customer) {
+            return null;
+        }
+
+        // Set default values if not set
+        $customer['dashboard_bg_color'] = $customer['dashboard_bg_color'] ?? '#ffffff';
+        $customer['profile_background_image'] = $customer['profile_background_image'] ?? null;
+        
+        return $customer;
+    }
+
+    // ===========================================
+    // EXISTING PASSWORD MANAGEMENT METHODS
+    // ===========================================
 
     /**
      * Update password without automatic hashing (for manual control)
@@ -282,7 +514,8 @@ class CustomerModel extends Model
                 'email' => null,
                 'phone' => $username,
                 'is_active' => 1,
-                'points' => 0
+                'points' => 0,
+                'dashboard_bg_color' => '#ffffff' // Default theme
             ];
             
             // Insert customer
