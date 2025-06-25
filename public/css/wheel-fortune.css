@@ -1,4 +1,185 @@
 /* Wheel Fortune CSS - Fixed Version for Mobile */
+/* Hide scrollbars but keep scroll functionality */
+html, body {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE/Edge */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.portrait-container::-webkit-scrollbar {
+    display: none !important;
+}
+
+.portrait-container {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+/* Fix wheel size to NOT overflow the frame */
+.wrap-fortuneWheel {
+    width: 100% !important;
+    max-width: 414px !important;
+    margin: 0 auto !important;
+    padding: 15px !important;
+    box-sizing: border-box !important;
+    background-size: contain !important;
+    overflow: hidden !important;
+}
+
+.innerWheel {
+    width: 100% !important;
+    max-width: 280px !important; /* Reduced from 300px */
+    margin: 0 auto !important;
+    padding: 15px !important; /* More padding to contain wheel */
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+/* CRITICAL: Reduce canvas size to fit within frame */
+#fortuneWheel {
+    width: 220px !important; /* Reduced from 280px */
+    height: 220px !important; /* Reduced from 280px */
+    max-width: 220px !important;
+    max-height: 220px !important;
+    display: block !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Text frame adjustment */
+.wrap-text-frame {
+    max-width: 280px !important;
+    margin: 0 auto 10px auto !important;
+    padding: 8px !important;
+    font-size: 0.7rem !important;
+    box-sizing: border-box !important;
+}
+
+/* Arrow pointer adjustment */
+.wrap-fortuneWheel .innerWheel::before {
+    width: 30px !important;
+    height: 30px !important;
+    margin: 0 auto -20px auto !important;
+}
+
+/* Button positioning */
+.btn-warning {
+    max-width: 150px !important;
+    margin: 15px auto !important;
+    display: block !important;
+}
+
+/* Mobile specific fixes */
+@media screen and (max-width: 480px) {
+    .wrap-fortuneWheel {
+        max-width: 350px !important;
+        padding: 10px !important;
+    }
+    
+    .innerWheel {
+        max-width: 260px !important;
+        padding: 10px !important;
+    }
+    
+    #fortuneWheel {
+        width: 200px !important;
+        height: 200px !important;
+        max-width: 200px !important;
+        max-height: 200px !important;
+    }
+    
+    .wrap-text-frame {
+        max-width: 260px !important;
+        margin: 0 auto 8px auto !important;
+        padding: 6px !important;
+        font-size: 0.6rem !important;
+    }
+    
+    .wrap-fortuneWheel .innerWheel::before {
+        width: 25px !important;
+        height: 25px !important;
+        margin: 0 auto -15px auto !important;
+    }
+}
+
+@media screen and (max-width: 375px) {
+    .wrap-fortuneWheel {
+        max-width: 300px !important;
+    }
+    
+    .innerWheel {
+        max-width: 240px !important;
+    }
+    
+    #fortuneWheel {
+        width: 180px !important;
+        height: 180px !important;
+        max-width: 180px !important;
+        max-height: 180px !important;
+    }
+    
+    .wrap-text-frame {
+        max-width: 240px !important;
+        font-size: 0.55rem !important;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .innerWheel {
+        max-width: 220px !important;
+    }
+    
+    #fortuneWheel {
+        width: 160px !important;
+        height: 160px !important;
+        max-width: 160px !important;
+        max-height: 160px !important;
+    }
+}
+
+/* Container constraints */
+.wheel-container {
+    max-width: 414px !important;
+    margin: 0 auto !important;
+    overflow-x: hidden !important;
+    padding: 5px !important;
+}
+
+.container-fluid {
+    max-width: 414px !important;
+    margin: 0 auto !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    overflow-x: hidden !important;
+}
+
+/* Force proper sizing */
+canvas {
+    object-fit: contain !important;
+}
+
+/* Remove any conflicting styles */
+figure {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Ensure main content is scrollable but hide scrollbar */
+main.wheel-container {
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+}
+
+main.wheel-container::-webkit-scrollbar {
+    display: none !important;
+}
 
 /* Main container - prevent overflow */
 .wheel-container {
