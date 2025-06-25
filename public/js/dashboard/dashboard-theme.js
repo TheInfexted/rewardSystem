@@ -1,5 +1,5 @@
-// Dashboard Theme Management System
-// File: public/js/dashboard/dashboard-theme.js
+// Fixed Dashboard Theme Management - Keep Check-in Theme When Image Uploaded
+// File: public/js/dashboard/dashboard-theme.js (REPLACE EXISTING FILE)
 
 document.addEventListener('DOMContentLoaded', function() {
     applyThemeToCheckinSection();
@@ -13,10 +13,23 @@ function applyThemeToCheckinSection() {
     
     // Get the current theme from the profile header classes
     const themeClass = Array.from(profileHeader.classList).find(cls => cls.endsWith('-bg'));
+    const theme = themeClass ? themeClass.replace('-bg', '') : 'default';
     
-    if (!themeClass) return;
+    // ALWAYS apply gradient theme to check-in section, regardless of background image
+    applyGradientTheme(checkinSection, theme);
     
-    const theme = themeClass.replace('-bg', '');
+    console.log(`Applied ${theme} gradient theme to check-in section`);
+}
+
+function applyGradientTheme(checkinSection, theme) {
+    // Remove any existing overlays from previous image applications
+    const existingOverlay = checkinSection.querySelector('.checkin-image-overlay');
+    if (existingOverlay) {
+        existingOverlay.remove();
+    }
+    
+    // Clear any background image that might have been applied
+    checkinSection.style.backgroundImage = 'none';
     
     // Define theme gradients
     const themeGradients = {
@@ -35,11 +48,13 @@ function applyThemeToCheckinSection() {
         'violet': 'linear-gradient(135deg, #8360c3 0%, #2ebf91 100%)'
     };
     
-    // Apply the gradient to the check-in section
+    // Apply the gradient theme to check-in section
     if (themeGradients[theme]) {
         checkinSection.style.background = themeGradients[theme];
+        checkinSection.style.backgroundSize = 'cover';
+        checkinSection.style.backgroundPosition = 'center';
         
-        // Also apply the theme class for CSS targeting
+        // Add theme class for CSS targeting
         checkinSection.classList.add(`theme-${theme}`);
         
         // Apply theme to parent section for CSS cascade
@@ -48,11 +63,18 @@ function applyThemeToCheckinSection() {
             parentCheckinSection.classList.add(`${theme}-bg`);
         }
         
-        console.log(`Applied ${theme} theme to check-in section`);
+        // Reset content positioning (remove any overlay effects)
+        const checkinContent = checkinSection.children;
+        for (let i = 0; i < checkinContent.length; i++) {
+            if (!checkinContent[i].classList.contains('checkin-image-overlay')) {
+                checkinContent[i].style.position = 'relative';
+                checkinContent[i].style.zIndex = '2';
+            }
+        }
     }
 }
 
-// Function to update theme dynamically (useful for future theme switching)
+// Function to update theme dynamically
 function updateTheme(newTheme) {
     const profileHeader = document.querySelector('.profile-header');
     const checkinSection = document.querySelector('.compact-checkin');
@@ -73,44 +95,34 @@ function updateTheme(newTheme) {
     const oldCheckinThemes = Array.from(checkinSection.classList).filter(cls => cls.startsWith('theme-'));
     oldCheckinThemes.forEach(cls => checkinSection.classList.remove(cls));
     
-    // Apply new theme classes
+    // Apply new theme classes to profile header
     profileHeader.classList.add(`${newTheme}-bg`);
-    if (parentCheckinSection) {
-        parentCheckinSection.classList.add(`${newTheme}-bg`);
-    }
-    checkinSection.classList.add(`theme-${newTheme}`);
     
-    // Apply the new gradient
-    const themeGradients = {
-        'default': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        'blue': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        'purple': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        'green': 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
-        'orange': 'linear-gradient(135deg, #ff9a56 0%, #ffad56 100%)',
-        'pink': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-        'dark': 'linear-gradient(135deg, #2c3e50 0%, #3498db 100%)',
-        'coral': 'linear-gradient(135deg, #ff7b7b 0%, #ff416c 100%)',
-        'emerald': 'linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%)',
-        'sapphire': 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-        'gold': 'linear-gradient(135deg, #f7931e 0%, #ffd200 100%)',
-        'crimson': 'linear-gradient(135deg, #eb3349 0%, #f45c43 100%)',
-        'violet': 'linear-gradient(135deg, #8360c3 0%, #2ebf91 100%)'
-    };
+    // Always apply gradient theme to check-in section (ignore any background images)
+    applyGradientTheme(checkinSection, newTheme);
     
-    if (themeGradients[newTheme]) {
-        checkinSection.style.background = themeGradients[newTheme];
-        
-        // Update data attribute on dashboard container
-        const dashboardContainer = document.querySelector('.dashboard-container');
-        if (dashboardContainer) {
-            dashboardContainer.setAttribute('data-theme', newTheme);
-        }
-        
-        // Update body data attribute
-        document.body.setAttribute('data-theme', newTheme);
-        
-        console.log(`Updated to ${newTheme} theme`);
+    // Update data attribute on dashboard container
+    const dashboardContainer = document.querySelector('.dashboard-container');
+    if (dashboardContainer) {
+        dashboardContainer.setAttribute('data-theme', newTheme);
     }
+    
+    // Update body data attribute
+    document.body.setAttribute('data-theme', newTheme);
+    
+    console.log(`Updated to ${newTheme} theme - Profile header: ${getProfileHeaderStyle()}, Check-in: gradient only`);
+}
+
+// Helper function to check profile header style
+function getProfileHeaderStyle() {
+    const profileHeader = document.querySelector('.profile-header');
+    if (!profileHeader) return 'unknown';
+    
+    const hasBackgroundImage = profileHeader.style.backgroundImage && 
+                              profileHeader.style.backgroundImage !== 'none' && 
+                              profileHeader.style.backgroundImage !== '';
+    
+    return hasBackgroundImage ? 'background image + overlay' : 'gradient theme';
 }
 
 // Function to sync theme changes from admin updates
@@ -169,6 +181,13 @@ function showThemeChangeNotification(newTheme) {
         border-radius: 8px;
         z-index: 9999;
         animation: slideInRight 0.3s ease;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
     `;
     
     document.body.appendChild(notification);
@@ -208,11 +227,6 @@ style.textContent = `
 @keyframes slideOutRight {
     from { transform: translateX(0); opacity: 1; }
     to { transform: translateX(100%); opacity: 0; }
-}
-
-.theme-change-notification {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
 }
 `;
 document.head.appendChild(style);
