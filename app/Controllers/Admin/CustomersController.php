@@ -16,27 +16,25 @@ class CustomersController extends BaseController
     
     public function index()
     {
-        $page = $this->request->getGet('page') ?? 1;
         $perPage = 20;
         $search = $this->request->getGet('search');
-        
-        $builder = $this->customerModel;
-        
+
+        $model = $this->customerModel;
+
         if ($search) {
-            $builder = $builder->groupStart()
+            $model = $model
                 ->like('username', $search)
                 ->orLike('name', $search)
-                ->orLike('email', $search)
-                ->groupEnd();
+                ->orLike('email', $search);
         }
-        
+
         $data = [
             'title' => 'Customer Management',
-            'customers' => $builder->paginate($perPage),
-            'pager' => $builder->pager,
+            'customers' => $model->paginate($perPage),
+            'pager' => $model->pager,
             'search' => $search
         ];
-        
+
         return view('admin/customers/index', $data);
     }
     

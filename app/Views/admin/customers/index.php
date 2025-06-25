@@ -141,7 +141,46 @@
                         </div>
                     <?php endif; ?>
                     
-                    <?= $pager->links() ?>
+                    <?php if ($pager && $pager->getPageCount() > 1): ?>
+                    <?php
+                    $currentPage = (int) ($pager->getCurrentPage() ?? 1);
+                    $totalPages = $pager->getPageCount();
+                    $startPage = max(1, $currentPage - 2);
+                    $endPage = min($totalPages, $currentPage + 2);
+
+                    $query = $_GET;
+                    ?>
+                    <nav class="mt-4">
+                        <ul class="pagination pagination-sm justify-content-center">
+                            <!-- Previous Page -->
+                            <li class="page-item <?= $currentPage === 1 ? 'disabled' : '' ?>">
+                                <?php $query['page'] = $currentPage - 1; ?>
+                                <a class="page-link bg-secondary border-secondary text-light" href="<?= $currentPage > 1 ? current_url() . '?' . http_build_query($query) : '#' ?>">
+                                    Previous
+                                </a>
+                            </li>
+
+                            <!-- Page Numbers -->
+                            <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
+                                <?php $query['page'] = $i; ?>
+                                <li class="page-item <?= $i === $currentPage ? 'active' : '' ?>">
+                                    <a class="page-link <?= $i === $currentPage ? 'bg-gold border-gold text-dark' : 'bg-secondary border-secondary text-light' ?>" 
+                                    href="<?= current_url() . '?' . http_build_query($query) ?>">
+                                        <?= $i ?>
+                                    </a>
+                                </li>
+                            <?php endfor; ?>
+
+                            <!-- Next Page -->
+                            <li class="page-item <?= $currentPage === $totalPages ? 'disabled' : '' ?>">
+                                <?php $query['page'] = $currentPage + 1; ?>
+                                <a class="page-link bg-secondary border-secondary text-light" href="<?= $currentPage < $totalPages ? current_url() . '?' . http_build_query($query) : '#' ?>">
+                                    Next
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                <?php endif; ?>
                 </div>
             </div>
         </div>
