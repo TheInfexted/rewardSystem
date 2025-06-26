@@ -7,7 +7,7 @@ return [
         'content_management' => 'Content Management',
         'landing_page' => 'Landing Page',
         'media_library' => 'Media Library',
-        'wheel_management' => 'Wheel Management',
+        'wheel_management' => 'Fortune Wheel',
         'wheel_items' => 'Wheel Items',
         'reward_system' => 'Reward System',
         'reward_ads' => 'Advertisement Manager',

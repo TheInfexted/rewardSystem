@@ -63,7 +63,7 @@
                     </ul>
                 </div>
 
-                <!-- Wheel Management Section -->
+                <!-- Fortune Wheel Section -->
                 <div class="nav-section">
                     <div class="nav-section-title"><?= t('Admin.nav.wheel_management') ?></div>
                     <ul class="nav flex-column">
@@ -79,6 +79,13 @@
                                href="<?= base_url('admin/bonus') ?>">
                                 <i class="bi bi-gift"></i>
                                 <?= t('Admin.nav.bonus_claims') ?>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?= strpos(uri_string(), 'admin/reports') !== false ? 'active' : '' ?>" 
+                               href="<?= base_url('admin/reports') ?>">
+                                <i class="bi bi-bar-chart"></i>
+                                <?= t('Admin.nav.spin_reports') ?>
                             </a>
                         </li>
                     </ul>
@@ -107,20 +114,6 @@
                             href="<?= base_url('admin/reward-system') ?>">
                                 <i class="bi bi-badge-ad"></i>
                                 <?= t('Admin.nav.reward_ads') ?>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Reports Section -->
-                <div class="nav-section">
-                    <div class="nav-section-title"><?= t('Admin.nav.reports_analytics') ?></div>
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link <?= strpos(uri_string(), 'admin/reports') !== false ? 'active' : '' ?>" 
-                               href="<?= base_url('admin/reports') ?>">
-                                <i class="bi bi-bar-chart"></i>
-                                <?= t('Admin.nav.spin_reports') ?>
                             </a>
                         </li>
                     </ul>
