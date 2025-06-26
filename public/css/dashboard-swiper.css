@@ -1,0 +1,698 @@
+/**
+ * Dashboard Advertisement Swiper Styles
+ * Modern, responsive design for mobile-first approach
+ */
+
+/* Main Swiper Container */
+.ads-swiper-container {
+    position: relative;
+    width: 100%;
+    background: #000;
+    overflow: hidden;
+    border-radius: 0;
+    margin: 0;
+    padding: 0;
+}
+
+/* Swiper Instance */
+.ads-swiper {
+    width: 100%;
+    height: auto;
+    min-height: 200px;
+    position: relative;
+}
+
+/* Swiper Wrapper */
+.ads-swiper .swiper-wrapper {
+    align-items: stretch;
+}
+
+/* Individual Slide */
+.ads-slide {
+    position: relative;
+    width: 100%;
+    height: auto;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: default;
+    user-select: none;
+}
+
+/* Clickable slides */
+.ads-slide[data-url] {
+    cursor: pointer;
+}
+
+.ads-slide[data-url]:hover {
+    transform: scale(1.01);
+    transition: transform 0.3s ease;
+}
+
+/* Media Elements */
+.ads-media {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+    object-fit: contain;
+    display: block;
+    background: #000;
+    border: none;
+    outline: none;
+}
+
+/* Video specific styles */
+.ads-slide video.ads-media {
+    max-height: 350px;
+}
+
+/* Image specific styles */
+.ads-slide img.ads-media {
+    max-height: 400px;
+}
+
+/* Media orientation classes */
+.ads-slide.horizontal-media .ads-media {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: cover;
+}
+
+.ads-slide.vertical-media .ads-media {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+}
+
+.ads-slide.square-media .ads-media {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+    object-fit: contain;
+}
+
+/* Click Indicator */
+.ads-click-indicator {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px;
+    border-radius: 50%;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    z-index: 10;
+}
+
+.ads-slide:hover .ads-click-indicator {
+    opacity: 1;
+    transform: scale(1.1);
+    background: rgba(102, 126, 234, 0.9);
+}
+
+/* Navigation Buttons */
+.ads-button-next,
+.ads-button-prev {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 20;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.ads-button-next:hover,
+.ads-button-prev:hover {
+    background: rgba(102, 126, 234, 0.8);
+    transform: translateY(-50%) scale(1.1);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.ads-button-next {
+    right: 15px;
+}
+
+.ads-button-prev {
+    left: 15px;
+}
+
+.ads-button-next::after,
+.ads-button-prev::after {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Hide navigation on very small screens */
+@media (max-width: 480px) {
+    .ads-button-next,
+    .ads-button-prev {
+        width: 36px;
+        height: 36px;
+        display: none; /* Hide on mobile, rely on touch */
+    }
+    
+    .ads-click-indicator {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+        top: 10px;
+        right: 10px;
+    }
+}
+
+/* Pagination */
+.ads-pagination {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 20;
+}
+
+.ads-pagination .swiper-pagination-bullet {
+    width: 12px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    color: transparent;
+    border: 2px solid transparent;
+}
+
+.ads-pagination .swiper-pagination-bullet-active {
+    background: #667eea;
+    transform: scale(1.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.ads-pagination .swiper-pagination-bullet:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: scale(1.1);
+}
+
+/* Dynamic pagination for many slides */
+.ads-pagination .swiper-pagination-bullet-active-main {
+    background: #667eea;
+    color: white;
+    font-weight: bold;
+}
+
+.ads-pagination .swiper-pagination-bullet-active-prev,
+.ads-pagination .swiper-pagination-bullet-active-next {
+    background: rgba(102, 126, 234, 0.6);
+}
+
+/* Scrollbar */
+.ads-scrollbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    z-index: 20;
+}
+
+.ads-scrollbar .swiper-scrollbar-drag {
+    background: #667eea;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.ads-scrollbar:hover .swiper-scrollbar-drag {
+    background: #764ba2;
+    height: 6px;
+    top: -1px;
+}
+
+/* Custom Controls */
+.ads-play-pause-btn {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 44px;
+    height: 44px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 20;
+    backdrop-filter: blur(10px);
+    font-size: 16px;
+}
+
+.ads-play-pause-btn:hover {
+    background: rgba(102, 126, 234, 0.8);
+    transform: scale(1.1);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Slide Counter */
+.ads-slide-counter {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 20;
+}
+
+/* Loading States */
+.swiper-lazy-preloader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 42px;
+    height: 42px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    animation: swiper-preloader-spin 1s linear infinite;
+    z-index: 15;
+}
+
+@keyframes swiper-preloader-spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Loading overlay for lazy content */
+.ads-slide.loading {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.ads-slide.loading::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 5;
+}
+
+/* Transition Effects */
+.ads-swiper .swiper-slide {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.ads-swiper .swiper-slide-active {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.ads-swiper .swiper-slide-prev,
+.ads-swiper .swiper-slide-next {
+    transform: scale(0.95);
+    opacity: 0.7;
+}
+
+/* Touch Feedback */
+.ads-slide:active {
+    transform: scale(0.98);
+}
+
+/* Accessibility */
+.ads-swiper:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+.ads-button-next:focus,
+.ads-button-prev:focus,
+.ads-play-pause-btn:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .ads-button-next,
+    .ads-button-prev,
+    .ads-play-pause-btn {
+        background: rgba(0, 0, 0, 0.8);
+        border-color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .ads-pagination .swiper-pagination-bullet {
+        background: rgba(255, 255, 255, 0.8);
+        border: 2px solid rgba(0, 0, 0, 0.5);
+    }
+    
+    .ads-click-indicator {
+        background: rgba(0, 0, 0, 0.9);
+        border: 2px solid rgba(255, 255, 255, 0.8);
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .ads-swiper {
+        --swiper-navigation-transition: none;
+        --swiper-pagination-transition: none;
+    }
+    
+    .ads-slide,
+    .ads-button-next,
+    .ads-button-prev,
+    .ads-play-pause-btn,
+    .ads-click-indicator {
+        transition: none;
+    }
+    
+    .swiper-lazy-preloader {
+        animation: none;
+    }
+}
+
+/* Error States */
+.ads-slide.error {
+    background: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    color: #6c757d;
+}
+
+.ads-slide.error::before {
+    content: '⚠️';
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.ads-slide.error::after {
+    content: 'Failed to load content';
+    font-size: 14px;
+}
+
+/* Empty State Styling */
+.no-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #6c757d;
+    background: #f8f9fa;
+    min-height: 200px;
+    text-align: center;
+}
+
+.no-content i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+    color: #dee2e6;
+}
+
+.no-content p {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Responsive Design */
+@media (max-width: 576px) {
+    .ads-swiper-container {
+        border-radius: 0;
+    }
+    
+    .ads-media {
+        max-height: 300px;
+    }
+    
+    .ads-slide.horizontal-media .ads-media {
+        max-height: 250px;
+    }
+    
+    .ads-slide.vertical-media .ads-media {
+        max-height: 400px;
+    }
+    
+    .ads-pagination {
+        bottom: 10px;
+    }
+    
+    .ads-pagination .swiper-pagination-bullet {
+        width: 10px;
+        height: 10px;
+    }
+    
+    .ads-slide-counter {
+        bottom: 10px;
+        right: 10px;
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+    
+    .ads-play-pause-btn {
+        width: 36px;
+        height: 36px;
+        top: 10px;
+        left: 10px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 375px) {
+    .ads-media {
+        max-height: 250px;
+    }
+    
+    .ads-slide.horizontal-media .ads-media {
+        max-height: 200px;
+    }
+    
+    .ads-slide.vertical-media .ads-media {
+        max-height: 350px;
+    }
+    
+    .ads-pagination .swiper-pagination-bullet {
+        width: 8px;
+        height: 8px;
+        gap: 6px;
+    }
+    
+    .no-content {
+        padding: 40px 15px;
+        min-height: 150px;
+    }
+    
+    .no-content i {
+        font-size: 2.5rem;
+    }
+    
+    .no-content p {
+        font-size: 0.9rem;
+    }
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+    .no-content {
+        background: #1a1a1a;
+        color: #a0a0a0;
+    }
+    
+    .no-content i {
+        color: #404040;
+    }
+    
+    .ads-slide.error {
+        background: #1a1a1a;
+        color: #a0a0a0;
+    }
+}
+
+/* Print styles (hide interactive elements) */
+@media print {
+    .ads-button-next,
+    .ads-button-prev,
+    .ads-pagination,
+    .ads-scrollbar,
+    .ads-play-pause-btn,
+    .ads-slide-counter,
+    .ads-click-indicator {
+        display: none !important;
+    }
+    
+    .ads-swiper-container {
+        overflow: visible;
+    }
+    
+    .ads-slide {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
+
+/* Integration with existing dashboard styles */
+.dashboard-container .content-section .ads-swiper-container {
+    margin: 0;
+    border-radius: 0;
+}
+
+/* Ensure proper stacking context */
+.ads-swiper-container {
+    isolation: isolate;
+}
+
+/* Performance optimizations */
+.ads-slide {
+    contain: layout style paint;
+}
+
+.ads-media {
+    will-change: transform;
+}
+
+/* Smooth scrolling for pagination */
+.ads-pagination .swiper-pagination-bullet {
+    scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for swiper container */
+.ads-swiper-container::-webkit-scrollbar {
+    display: none;
+}
+
+.ads-swiper-container {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Fix for iOS safe areas */
+@supports (padding: max(0px)) {
+    .ads-button-next {
+        right: max(15px, env(safe-area-inset-right));
+    }
+    
+    .ads-button-prev {
+        left: max(15px, env(safe-area-inset-left));
+    }
+    
+    .ads-play-pause-btn {
+        left: max(15px, env(safe-area-inset-left));
+    }
+    
+    .ads-slide-counter {
+        right: max(15px, env(safe-area-inset-right));
+    }
+    
+    .ads-click-indicator {
+        right: max(15px, env(safe-area-inset-right));
+    }
+}
+
+/* Ensure videos don't overflow */
+.ads-slide video {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Fix for aspect ratio on different devices */
+@media (orientation: landscape) and (max-height: 500px) {
+    .ads-media {
+        max-height: 80vh;
+    }
+    
+    .ads-slide.vertical-media .ads-media {
+        max-height: 90vh;
+    }
+}
+
+/* Hover effects for desktop */
+@media (hover: hover) and (pointer: fine) {
+    .ads-slide[data-url]:hover {
+        transform: scale(1.02);
+    }
+    
+    .ads-slide[data-url]:hover .ads-media {
+        filter: brightness(1.1);
+    }
+}
+
+/* Focus management for keyboard navigation */
+.ads-swiper[tabindex="0"]:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Loading animation for the entire swiper */
+.ads-swiper-container.loading {
+    position: relative;
+}
+
+.ads-swiper-container.loading::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ads-swiper-container.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    animation: swiper-preloader-spin 1s linear infinite;
+    z-index: 31;
+}

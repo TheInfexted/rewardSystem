@@ -5,10 +5,12 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
-
+<!-- Swiper CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<!-- Custom Dashboard CSS -->
 <link rel="stylesheet" href="<?= base_url('css/customer-dashboard.css') ?>?v=<?= time() ?>">
 <link rel="stylesheet" href="<?= base_url('css/dashboard-theme.css') ?>?v=<?= time() ?>">
-
+<link rel="stylesheet" href="<?= base_url('css/dashboard-swiper.css') ?>?v=<?= time() ?>">
 <div class="dashboard-container">
     <!-- User Profile Header -->
     <div class="profile-header <?= $profile_background ?>-bg" 
@@ -146,33 +148,65 @@
         </div>
     </div>
     
-    <!-- Content Section -->
+    <!-- Content Section with Swiper -->
     <div class="content-section">
-        <h5 class="section-title ms-4" >
+        <h5 class="section-title ms-4">
             <i class="bi bi-cash-stack text-primary me-2"></i>
             Sponsors
         </h5>
-        <div id="mediaContainer"> 
+        
+        <!-- Swiper Container -->
+        <div class="ads-swiper-container">
             <?php if (!empty($ads)): ?>
-                <div class="media-stack">
-                    <?php foreach ($ads as $ad): ?>
-                        <?php 
-                        $mediaUrl = $ad['media_file'] 
-                            ? base_url('uploads/reward_ads/' . $ad['media_file'])
-                            : $ad['media_url'];
-                        ?>
-                        <div class="media-item-stacked <?= $ad['ad_type'] === 'video' ? 'video-container' : '' ?>" 
-                            data-id="<?= $ad['id'] ?>"
-                            <?= $ad['click_url'] ? 'data-url="' . $ad['click_url'] . '"' : '' ?>>
-                            <?php if ($ad['ad_type'] === 'video'): ?>
-                                <video class="media-content-stacked" autoplay muted loop playsinline>
-                                    <source src="<?= $mediaUrl ?>" type="video/mp4">
-                                </video>
-                            <?php else: ?>
-                                <img class="media-content-stacked" src="<?= $mediaUrl ?>" alt="Content">
-                            <?php endif; ?>
-                        </div>
-                    <?php endforeach; ?>
+                <div class="swiper ads-swiper">
+                    <div class="swiper-wrapper">
+                        <?php foreach ($ads as $index => $ad): ?>
+                            <?php 
+                            $mediaUrl = $ad['media_file'] 
+                                ? base_url('uploads/reward_ads/' . $ad['media_file'])
+                                : $ad['media_url'];
+                            ?>
+                            <div class="swiper-slide ads-slide" 
+                                 data-id="<?= $ad['id'] ?>"
+                                 <?= $ad['click_url'] ? 'data-url="' . esc($ad['click_url']) . '"' : '' ?>>
+                                
+                                <?php if ($ad['ad_type'] === 'video'): ?>
+                                    <video class="ads-media" 
+                                           autoplay muted loop playsinline
+                                           <?= $index > 2 ? 'data-src="' . $mediaUrl . '"' : 'src="' . $mediaUrl . '"' ?>>
+                                        <?php if ($index <= 2): ?>
+                                            <source src="<?= $mediaUrl ?>" type="video/mp4">
+                                        <?php endif; ?>
+                                    </video>
+                                <?php else: ?>
+                                    <img class="ads-media <?= $index > 2 ? 'swiper-lazy' : '' ?>" 
+                                         <?= $index > 2 ? 'data-src="' . $mediaUrl . '"' : 'src="' . $mediaUrl . '"' ?>
+                                         alt="Advertisement">
+                                    <?php if ($index > 2): ?>
+                                        <div class="swiper-lazy-preloader"></div>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                                
+                                <!-- Click indicator -->
+                                <?php if ($ad['click_url']): ?>
+                                    <div class="ads-click-indicator">
+                                        <i class="bi bi-cursor-fill"></i>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    
+                    <!-- Navigation 
+                    <div class="swiper-button-next ads-button-next"></div>
+                    <div class="swiper-button-prev ads-button-prev"></div>
+                    
+                     Pagination 
+                    <div class="swiper-pagination ads-pagination"></div>
+                    !-->
+                    <!-- Scrollbar -->
+                    <div class="swiper-scrollbar ads-scrollbar"></div>
+
                 </div>
             <?php else: ?>
                 <!-- Empty State -->
@@ -315,6 +349,9 @@
 <!-- Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 <!-- Dashboard JavaScript Modules - Load in correct order -->
 <script src="<?= base_url('js/dashboard/dashboard-config.js') ?>" onerror="console.log('dashboard-config.js not found')"></script>
 <script src="<?= base_url('js/dashboard/dashboard-utils.js') ?>" onerror="console.log('dashboard-utils.js not found')"></script>
@@ -322,11 +359,12 @@
 <script src="<?= base_url('js/dashboard/fortune-wheel.js') ?>" onerror="console.log('fortune-wheel.js not found')"></script>
 <script src="<?= base_url('js/dashboard/dashboard-init.js') ?>" onerror="console.log('dashboard-init.js not found')"></script>
 <script src="<?= base_url('js/dashboard/dashboard-copy.js') ?>?v=<?= time() ?>" onerror="console.log('dashboard-copy.js not found')"></script>
+<script src="<?= base_url('js/dashboard/dashboard-swiper.js') ?>?v=<?= time() ?>" onerror="console.log('dashboard-swiper.js not found')"></script>
 
 <!-- Dashboard Configuration from PHP -->
 <script>
 // Debug: Check if we're on the right page
-console.log('Loading customer dashboard');
+console.log('Loading customer dashboard with Swiper');
 
 // Pass PHP data to JavaScript
 const dashboardPhpConfig = {
