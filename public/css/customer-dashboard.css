@@ -1119,8 +1119,8 @@ body.modal-open {
     }
     
     .profile-header {
-        height: 160px; /* Further reduced for small screens */
-        padding: 15px; /* Reduced padding */
+        height: auto; 
+        padding: 15px;
     }
 
     .username-with-settings {

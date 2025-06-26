@@ -28,8 +28,8 @@
         </div>
         
         <div class="profile-header-content">
-            <div class="user-info">
-                <div class="user-header-row">
+            <div class="user-info m-0">
+                <div class="user-header-row m-0">
                     <div class="user-details">
                         <div class="username-with-settings">
                             <h4 class="username copyable-username" 
@@ -315,10 +315,12 @@
 <!-- Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Only load essential dashboard modules -->
+<!-- Dashboard JavaScript Modules - Load in correct order -->
 <script src="<?= base_url('js/dashboard/dashboard-config.js') ?>" onerror="console.log('dashboard-config.js not found')"></script>
 <script src="<?= base_url('js/dashboard/dashboard-utils.js') ?>" onerror="console.log('dashboard-utils.js not found')"></script>
 <script src="<?= base_url('js/dashboard/dashboard-core.js') ?>" onerror="console.log('dashboard-core.js not found')"></script>
+<script src="<?= base_url('js/dashboard/fortune-wheel.js') ?>" onerror="console.log('fortune-wheel.js not found')"></script>
+<script src="<?= base_url('js/dashboard/dashboard-init.js') ?>" onerror="console.log('dashboard-init.js not found')"></script>
 <script src="<?= base_url('js/dashboard/dashboard-copy.js') ?>?v=<?= time() ?>" onerror="console.log('dashboard-copy.js not found')"></script>
 
 <!-- Dashboard Configuration from PHP -->
@@ -428,6 +430,273 @@ function getColorLuminance(hexColor) {
 
 // Store the selected wallet type
 let selectedWalletType = '';
+
+// Copy username function
+function copyUsername() {
+    const username = dashboardPhpConfig.username;
+    navigator.clipboard.writeText(username).then(function() {
+        // Show copy toast
+        const copyToast = document.getElementById('copyToast');
+        if (copyToast) {
+            copyToast.style.display = 'block';
+            copyToast.classList.add('show');
+            
+            // Hide after 2 seconds
+            setTimeout(() => {
+                copyToast.classList.remove('show');
+                setTimeout(() => {
+                    copyToast.style.display = 'none';
+                }, 300);
+            }, 2000);
+        }
+    }).catch(function(err) {
+        console.error('Could not copy text: ', err);
+    });
+}
+
+// Open settings modal (for the gear button)
+function openSettingsModal() {
+    const settingsModal = new bootstrap.Modal(document.getElementById('settingsModal'), {
+        backdrop: true,
+        keyboard: true,
+        focus: true
+    });
+    settingsModal.show();
+}
+
+// Change password function
+function changePassword() {
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    // Clear previous errors
+    document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+    document.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-invalid'));
+    
+    // Basic validation
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        alert('Please fill in all fields');
+        return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+        document.getElementById('confirmPasswordError').textContent = 'Passwords do not match';
+        document.getElementById('confirmPassword').classList.add('is-invalid');
+        return;
+    }
+    
+    if (newPassword.length < 6) {
+        document.getElementById('newPasswordError').textContent = 'Password must be at least 6 characters';
+        document.getElementById('newPassword').classList.add('is-invalid');
+        return;
+    }
+    
+    const changePasswordBtn = document.getElementById('changePasswordBtn');
+    const originalText = changePasswordBtn.innerHTML;
+    changePasswordBtn.innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i>Updating...';
+    changePasswordBtn.disabled = true;
+    
+    // Send AJAX request
+    fetch(dashboardPhpConfig.baseUrl + 'customer/changePassword', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': dashboardPhpConfig.csrfToken
+        },
+        body: JSON.stringify({
+            current_password: currentPassword,
+            new_password: newPassword,
+            confirm_password: confirmPassword
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Clear form
+            document.getElementById('passwordChangeForm').reset();
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('settingsModal'));
+            if (modal) {
+                modal.hide();
+            }
+            
+            // Show success message
+            alert('Password updated successfully!');
+        } else {
+            // Show error
+            if (data.field) {
+                document.getElementById(data.field + 'Error').textContent = data.message;
+                document.getElementById(data.field).classList.add('is-invalid');
+            } else {
+                alert('Error: ' + data.message);
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    })
+    .finally(() => {
+        changePasswordBtn.innerHTML = originalText;
+        changePasswordBtn.disabled = false;
+    });
+}
+
+// Perform checkin function
+function performCheckin() {
+    const checkinBtn = document.querySelector('.btn-checkin');
+    const originalText = checkinBtn.innerHTML;
+    
+    checkinBtn.innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i>Processing...';
+    checkinBtn.disabled = true;
+    
+    fetch(dashboardPhpConfig.baseUrl + 'customer/checkin', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': dashboardPhpConfig.csrfToken
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Reload page to show updated check-in status
+            window.location.reload();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Check-in failed. Please try again.');
+    })
+    .finally(() => {
+        checkinBtn.innerHTML = originalText;
+        checkinBtn.disabled = false;
+    });
+}
+
+// Open wheel modal function - Updated to work with your fortune wheel system
+function openWheelModal() {
+    console.log('Opening wheel modal...');
+    
+    // Check if we have fortune wheel scripts available
+    if (typeof FortuneWheel === 'undefined') {
+        console.error('FortuneWheel class not available');
+        // Fallback: try to initialize if we have the scripts
+        if (typeof fortuneWheelInstance === 'undefined') {
+            alert('Wheel system is loading. Please try again in a moment.');
+            return;
+        }
+    }
+    
+    // Use existing fortune wheel instance if available
+    if (typeof fortuneWheelInstance !== 'undefined' && fortuneWheelInstance) {
+        console.log('Using existing fortune wheel instance');
+        fortuneWheelInstance.openModal();
+    } else {
+        // Create new instance if needed
+        console.log('Creating new fortune wheel instance');
+        try {
+            if (typeof FortuneWheel !== 'undefined') {
+                window.fortuneWheelInstance = new FortuneWheel();
+                fortuneWheelInstance.openModal();
+            } else {
+                // Load the required scripts and then open modal
+                loadWheelScriptsAndOpen();
+            }
+        } catch (error) {
+            console.error('Error creating fortune wheel:', error);
+            alert('Unable to load fortune wheel. Please refresh the page and try again.');
+        }
+    }
+}
+
+// Helper function to load wheel scripts if they're not available
+function loadWheelScriptsAndOpen() {
+    console.log('Loading wheel scripts...');
+    
+    // Show loading message
+    const loadingModal = `
+        <div class="modal fade" id="wheelLoadingModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content bg-dark text-light">
+                    <div class="modal-body text-center p-4">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <h5>Loading Fortune Wheel...</h5>
+                        <p>Please wait while we prepare your wheel.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add loading modal to page
+    document.body.insertAdjacentHTML('beforeend', loadingModal);
+    const loadingModalEl = new bootstrap.Modal(document.getElementById('wheelLoadingModal'));
+    loadingModalEl.show();
+    
+    // Try to load the fortune wheel scripts
+    const baseUrl = dashboardPhpConfig.baseUrl;
+    const scripts = [
+        `${baseUrl}js/TweenMax.min.js`,
+        `${baseUrl}js/Winwheel.min.js`,
+        `${baseUrl}js/dashboard/fortune-wheel.js`
+    ];
+    
+    let loadedCount = 0;
+    
+    scripts.forEach((src, index) => {
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = () => {
+            loadedCount++;
+            console.log(`Loaded ${src}`);
+            
+            if (loadedCount === scripts.length) {
+                // All scripts loaded
+                setTimeout(() => {
+                    loadingModalEl.hide();
+                    
+                    // Remove loading modal from DOM
+                    setTimeout(() => {
+                        const loadingModalEl = document.getElementById('wheelLoadingModal');
+                        if (loadingModalEl) {
+                            loadingModalEl.remove();
+                        }
+                    }, 300);
+                    
+                    // Now create and open the wheel
+                    try {
+                        if (typeof FortuneWheel !== 'undefined') {
+                            window.fortuneWheelInstance = new FortuneWheel();
+                            fortuneWheelInstance.openModal();
+                        } else {
+                            alert('Fortune wheel failed to load. Please refresh the page.');
+                        }
+                    } catch (error) {
+                        console.error('Error after loading scripts:', error);
+                        alert('Error initializing fortune wheel. Please try again.');
+                    }
+                }, 500);
+            }
+        };
+        
+        script.onerror = () => {
+            console.error(`Failed to load ${src}`);
+            loadingModalEl.hide();
+            alert('Failed to load fortune wheel. Please check your connection and try again.');
+        };
+        
+        document.head.appendChild(script);
+    });
+}
 
 // Open wallet selection modal (triggered by + button)
 function openWalletModal() {

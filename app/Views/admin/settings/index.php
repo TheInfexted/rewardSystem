@@ -177,8 +177,8 @@
                                    placeholder="9:00 AM - 6:00 PM (GMT+8)">
                             <small class="text-muted">Operating hours for customer service</small>
                         </div>
-
-                        <div class="mb-3">
+                        
+                        <!--div class="mb-3">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" name="customer_service_enabled" 
                                        id="customerServiceEnabled" value="1" 
@@ -188,7 +188,7 @@
                                 </label>
                             </div>
                             <small class="text-muted">When disabled, customers won't see contact options</small>
-                        </div>
+                        </div!-->
                         
                         <button type="submit" class="btn btn-gold" id="updateCustomerServiceBtn">
                             <i class="bi bi-save"></i> Update Customer Service Settings
