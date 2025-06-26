@@ -344,4 +344,98 @@ class RewardController extends BaseController
         
         echo '<pre>' . print_r($data, true) . '</pre>';
     }
+
+    /**
+     * External claim page for client domain
+     */
+    public function claimPage()
+    {
+        $rewardData = null;
+        $error = null;
+        $success_message = null;
+        
+        // Handle POST data from fortune wheel redirect
+        if ($this->request->getMethod() === 'POST' && $this->request->getPost('api_token')) {
+            $apiToken = $this->request->getPost('api_token');
+            $apiUrl = $this->request->getPost('api_url');
+            $prizeName = $this->request->getPost('prize_name');
+            $prizeType = $this->request->getPost('prize_type');
+            $prizeValue = $this->request->getPost('prize_value');
+            $source = $this->request->getPost('source');
+            
+            // Fetch detailed reward data from API
+            if ($apiToken && $apiUrl) {
+                try {
+                    $client = \Config\Services::curlrequest();
+                    $response = $client->post($apiUrl, [
+                        'form_params' => [
+                            'api_token' => $apiToken
+                        ],
+                        'timeout' => 10
+                    ]);
+                    
+                    $apiData = json_decode($response->getBody(), true);
+                    if ($apiData && $apiData['success']) {
+                        $rewardData = $apiData['data'];
+                    } else {
+                        $error = $apiData['message'] ?? 'Failed to fetch reward data';
+                    }
+                } catch (\Exception $e) {
+                    $error = 'Unable to connect to reward API: ' . $e->getMessage();
+                }
+            }
+        }
+        
+        // Handle claim form submission
+        if ($this->request->getMethod() === 'POST' && $this->request->getPost('claim_reward')) {
+            $userName = $this->request->getPost('user_name');
+            $phone = $this->request->getPost('phone');
+            $email = $this->request->getPost('email');
+            $prizeName = $this->request->getPost('prize_name');
+            $prizeValue = $this->request->getPost('prize_value');
+            $sessionId = $this->request->getPost('session_id');
+            
+            // Validate input
+            if (empty($userName) || empty($phone)) {
+                $error = 'Please fill in all required fields.';
+            } else {
+                try {
+                    // Save claim to database
+                    $claimData = [
+                        'session_id' => $sessionId,
+                        'user_ip' => $this->request->getIPAddress(),
+                        'user_name' => $userName,
+                        'phone_number' => $phone,
+                        'email' => $email ?: null,
+                        'bonus_type' => $prizeName,
+                        'bonus_amount' => floatval($prizeValue),
+                        'user_agent' => $this->request->getUserAgent()->getAgentString(),
+                        'status' => 'pending'
+                    ];
+                    
+                    $claimId = $this->bonusClaimModel->insert($claimData);
+                    
+                    if ($claimId) {
+                        $success_message = "Thank you! Your claim has been submitted. We'll contact you soon. Claim ID: #" . $claimId;
+                    } else {
+                        $error = 'Failed to submit claim. Please try again.';
+                    }
+                } catch (\Exception $e) {
+                    log_message('error', 'Claim submission error: ' . $e->getMessage());
+                    $error = 'Failed to submit claim. Please try again.';
+                }
+            }
+        }
+        
+        $data = [
+            'title' => 'Claim Your Reward',
+            'rewardData' => $rewardData,
+            'error' => $error,
+            'success_message' => $success_message,
+            'whatsapp_number' => $this->adminSettingsModel->getSetting('reward_whatsapp_number', '601159599022'),
+            'telegram_username' => $this->adminSettingsModel->getSetting('reward_telegram_username', 'harryford19')
+        ];
+        
+        return view('public/claim_reward', $data);
+    }
 }

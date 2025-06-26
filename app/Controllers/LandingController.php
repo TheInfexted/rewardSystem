@@ -554,26 +554,14 @@ class LandingController extends BaseController
     public function storeWinner()
     {
         if ($this->request->isAJAX()) {
-            $session = session();
-            
-            // Get winner data from POST
-            $winnerDataJson = $this->request->getPost('winner_data');
-            
-            if (empty($winnerDataJson)) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'No winner data provided.'
-                ]);
-            }
-            
             try {
-                // Decode winner data
-                $winnerData = json_decode($winnerDataJson, true);
+                $session = session();
+                $winnerData = json_decode($this->request->getPost('winner_data'), true);
                 
                 if (!$winnerData) {
                     return $this->response->setJSON([
                         'success' => false,
-                        'message' => 'Invalid winner data format.'
+                        'message' => 'Invalid winner data.'
                     ]);
                 }
                 
@@ -585,21 +573,49 @@ class LandingController extends BaseController
                     ]);
                 }
                 
-                // Store winner data in session for reward system access
-                $session->set('winner_data', [
+                // Store winner data in session
+                $sessionData = [
                     'name' => htmlspecialchars($winnerData['name']),
                     'prize' => $winnerData['prize'] ?? 0.00,
                     'type' => htmlspecialchars($winnerData['type']),
                     'timestamp' => time(),
-                    'session_id' => $session->get('session_id') ?? session_id()
-                ]);
+                    'session_id' => $session->get('session_id') ?? session_id(),
+                    'user_ip' => $this->getUserIp()
+                ];
                 
-                log_message('info', 'Winner data stored in session: ' . $winnerData['name'] . ' for session ' . session_id());
+                $session->set('winner_data', $sessionData);
                 
-                return $this->response->setJSON([
-                    'success' => true,
-                    'message' => 'Winner data stored successfully.'
-                ]);
+                // Get redirect URL from bonus settings
+                $redirectUrl = $this->adminSettingsModel->getSetting('bonus_redirect_url', '/reward');
+                
+                // If it's a bonus type and we have a custom redirect URL
+                if (($winnerData['type'] === 'product' || strpos($winnerData['name'], 'BONUS') !== false) 
+                    && !empty($redirectUrl) && $redirectUrl !== '/reward') {
+                    
+                    // Generate API token for secure data transfer
+                    $apiToken = bin2hex(random_bytes(32));
+                    $session->set('api_token', $apiToken);
+                    
+                    log_message('info', 'Winner data stored for external redirect: ' . $winnerData['name']);
+                    
+                    return $this->response->setJSON([
+                        'success' => true,
+                        'message' => 'Winner data stored successfully.',
+                        'redirect_type' => 'external',
+                        'redirect_url' => $redirectUrl,
+                        'api_token' => $apiToken
+                    ]);
+                } else {
+                    // Regular internal redirect to reward page
+                    log_message('info', 'Winner data stored for internal redirect: ' . $winnerData['name']);
+                    
+                    return $this->response->setJSON([
+                        'success' => true,
+                        'message' => 'Winner data stored successfully.',
+                        'redirect_type' => 'internal',
+                        'redirect_url' => base_url('reward')
+                    ]);
+                }
                 
             } catch (\Exception $e) {
                 log_message('error', 'Error storing winner data: ' . $e->getMessage());
@@ -611,5 +627,79 @@ class LandingController extends BaseController
         }
         
         return redirect()->to('/');
+    }
+
+    /**
+     * API endpoint to get winner data for external domains
+     */
+    public function getWinnerData()
+    {
+        // Allow CORS for external domains
+        $this->setCorsHeaders();
+        
+        if ($this->request->getMethod() === 'OPTIONS') {
+            return $this->response->setStatusCode(200);
+        }
+        
+        $session = session();
+        $apiToken = $this->request->getPost('api_token') ?? $this->request->getGet('token');
+        $sessionToken = $session->get('api_token');
+        
+        // Validate API token
+        if (empty($apiToken) || empty($sessionToken) || $apiToken !== $sessionToken) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Invalid or expired token.'
+            ], 401);
+        }
+        
+        $winnerData = $session->get('winner_data');
+        
+        if (!$winnerData) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'No winner data found.'
+            ], 404);
+        }
+        
+        // Check if data is not too old (valid for 10 minutes)
+        if ((time() - $winnerData['timestamp']) > 600) {
+            $session->remove(['winner_data', 'api_token']);
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Winner data has expired.'
+            ], 410);
+        }
+        
+        // Return winner data
+        $responseData = [
+            'success' => true,
+            'data' => [
+                'prize_name' => $winnerData['name'],
+                'prize_value' => $winnerData['prize'],
+                'prize_type' => $winnerData['type'],
+                'won_at' => date('Y-m-d H:i:s', $winnerData['timestamp']),
+                'session_id' => $winnerData['session_id'],
+                'user_ip' => $winnerData['user_ip']
+            ]
+        ];
+        
+        log_message('info', 'Winner data retrieved via API for session: ' . $winnerData['session_id']);
+        
+        // Clear the data after successful retrieval (one-time use)
+        $session->remove(['winner_data', 'api_token']);
+        
+        return $this->response->setJSON($responseData);
+    }
+
+    /**
+     * Set CORS headers for external API access
+     */
+    private function setCorsHeaders()
+    {
+        $this->response->setHeader('Access-Control-Allow-Origin', '*');
+        $this->response->setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+        $this->response->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+        $this->response->setHeader('Access-Control-Allow-Credentials', 'true');
     }
 }

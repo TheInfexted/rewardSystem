@@ -1030,7 +1030,7 @@
             const collectButton = document.querySelector('#winModal .btn');
             
             // Update modal for bonus win
-            winTitle.textContent = '🎉 CONGRATULATIONS! 🎉';
+            winTitle.innerHTML = '🎉 CONGRATULATIONS! 🎉';
             modalPrize.textContent = `You Won: ${winner.name}${winner.prize > 0 ? ' - ¥' + parseFloat(winner.prize).toLocaleString() : ''}`;
             collectButton.textContent = 'Claim Reward';
             collectButton.className = 'btn btn-success btn-sm';
@@ -1041,19 +1041,100 @@
             modalContent.style.background = 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)';
             modalContent.style.border = '3px solid #ffd700';
             
-            // Set up redirect functionality
+            // Manual redirect functionality 
             collectButton.onclick = function() {
-                window.location.href = '<?= base_url('reward') ?>';
+                handlePrizeRedirect(winner);
             };
             
             // Show modal
             const winModal = new bootstrap.Modal(document.getElementById('winModal'));
             winModal.show();
-            
-            // Auto-redirect after 5 seconds
-            setTimeout(() => {
+        }
+
+        // Handle prize redirect with external API support
+        async function handlePrizeRedirect(winner) {
+            try {
+                // Store winner data and get redirect info
+                const formData = new FormData();
+                formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+                formData.append('winner_data', JSON.stringify({
+                    name: winner.name,
+                    prize: winner.prize || 0,
+                    type: winner.type || 'product'
+                }));
+                
+                const response = await fetch('<?= base_url('store-winner') ?>', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.redirect_type === 'external') {
+                        // External redirect with API data
+                        redirectToExternalSite(data.redirect_url, data.api_token, winner);
+                    } else {
+                        // Internal redirect to reward page
+                        window.location.href = data.redirect_url;
+                    }
+                } else {
+                    console.error('Failed to store winner data:', data.message);
+                    // Fallback to internal redirect
+                    window.location.href = '<?= base_url('reward') ?>';
+                }
+            } catch (error) {
+                console.error('Error handling redirect:', error);
+                // Fallback to internal redirect
                 window.location.href = '<?= base_url('reward') ?>';
-            }, 5000);
+            }
+        }
+
+        // Redirect to external site with POST data
+        function redirectToExternalSite(redirectUrl, apiToken, winner) {
+            console.log('Redirecting to external site:', redirectUrl);
+            
+            // Create a form to POST data to external URL
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = redirectUrl;
+            form.target = '_blank'; 
+            form.style.display = 'none';
+            
+            // Add form fields
+            const fields = {
+                'api_token': apiToken,
+                'api_url': '<?= base_url('api/winner-data') ?>',
+                'prize_name': winner.name,
+                'prize_type': winner.type || 'product',
+                'prize_value': winner.prize || 0,
+                'source': 'fortune_wheel'
+            };
+            
+            Object.keys(fields).forEach(key => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = fields[key];
+                form.appendChild(input);
+            });
+            
+            document.body.appendChild(form);
+            
+            // Submit form and clean up
+            form.submit();
+            document.body.removeChild(form);
+            
+            // Close the modal after opening external link
+            setTimeout(() => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('winModal'));
+                if (modal) {
+                    modal.hide();
+                }
+            }, 1000);
         }
 
         // Show regular win modal

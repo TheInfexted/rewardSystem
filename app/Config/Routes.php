@@ -14,14 +14,16 @@ $routes->post('spin', 'LandingController::spin');
 $routes->post('claim-bonus', 'LandingController::claimBonus');
 $routes->post('store-winner', 'LandingController::storeWinner'); 
 $routes->get('spin-status', 'LandingController::getSpinStatus');
+$routes->get('claim-reward', 'RewardController::claimPage');
+$routes->post('claim-reward', 'RewardController::claimPage');
 
 // API Routes
 $routes->get('api/wheel-data', 'CustomerController::getWheelData');
 $routes->get('api/recent-wins', 'LandingController::getRecentWins');
 $routes->get('api/user-stats', 'LandingController::getUserStats');
 $routes->post('api/reset-spins', 'LandingController::resetSpins');
-// NEW: Optional ad tracking for Swiper (if you want basic analytics later)
 $routes->post('api/track-ad', 'CustomerController::trackAd');
+$routes->match(['get', 'post', 'options'], 'api/winner-data', 'LandingController::getWinnerData');
 
 //Reward System routes
 $routes->group('reward', function($routes) {
@@ -164,7 +166,6 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
         $routes->post('password', 'Admin\SettingsController::updatePassword');
         $routes->post('general', 'Admin\SettingsController::updateGeneral');
         $routes->post('customer-service', 'Admin\SettingsController::updateCustomerService');
-        // NEW: Swiper configuration settings
         $routes->post('swiper', 'Admin\SettingsController::updateSwiperSettings');
     });
     
