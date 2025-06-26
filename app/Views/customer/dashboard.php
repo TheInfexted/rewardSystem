@@ -148,6 +148,10 @@
     
     <!-- Content Section -->
     <div class="content-section">
+        <h5 class="section-title ms-4" >
+            <i class="bi bi-cash-stack text-primary me-2"></i>
+            Sponsors
+        </h5>
         <div id="mediaContainer"> 
             <?php if (!empty($ads)): ?>
                 <div class="media-stack">

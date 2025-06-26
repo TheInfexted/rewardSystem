@@ -889,7 +889,7 @@ body.modal-open {
 /* Content Section */
 .content-section {
     margin: 0; 
-    background: #f8f9fa;
+    background: inherit;
     padding: 0; 
     margin-bottom: 0; 
 }
