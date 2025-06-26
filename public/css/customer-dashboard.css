@@ -1272,6 +1272,23 @@ body.modal-open {
         width: 35px;
         height: 35px;
     }
+
+    .copy-toast {
+        max-width: 280px;
+        padding: 10px 16px;
+        font-size: 13px;
+        top: 15px;
+    }
+    
+    .copyable-username {
+        gap: 6px;
+        padding: 3px 6px;
+        margin: -3px -6px;
+    }
+    
+    .copy-icon {
+        font-size: 0.8rem;
+    }
 }
 
 /* Fix for modal positioning */
@@ -1361,7 +1378,7 @@ button[onclick] {
 /* Final responsive adjustments */
 @media (max-width: 320px) {
     .profile-header {
-        height: 140px; /* Even smaller for very small screens */
+        height: auto;
         padding: 15px 10px;
     }
     
@@ -1407,6 +1424,16 @@ button[onclick] {
     
     .stat-label {
         font-size: 0.7rem;
+    }
+
+    .copy-toast {
+        max-width: 90%;
+        left: 5%;
+        transform: translateX(0) translateY(-100px);
+    }
+    
+    .copy-toast.show {
+        transform: translateX(0) translateY(0);
     }
 }
 
@@ -1587,38 +1614,6 @@ body, html {
 
 .copyable-username:hover::before {
     opacity: 1;
-}
-
-/* Mobile Responsiveness */
-@media (max-width: 480px) {
-    .copy-toast {
-        max-width: 280px;
-        padding: 10px 16px;
-        font-size: 13px;
-        top: 15px;
-    }
-    
-    .copyable-username {
-        gap: 6px;
-        padding: 3px 6px;
-        margin: -3px -6px;
-    }
-    
-    .copy-icon {
-        font-size: 0.8rem;
-    }
-}
-
-@media (max-width: 320px) {
-    .copy-toast {
-        max-width: 90%;
-        left: 5%;
-        transform: translateX(0) translateY(-100px);
-    }
-    
-    .copy-toast.show {
-        transform: translateX(0) translateY(0);
-    }
 }
 
 /* Dark Mode Support */
