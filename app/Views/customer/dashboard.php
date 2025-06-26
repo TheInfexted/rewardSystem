@@ -315,19 +315,17 @@
 <!-- Bootstrap Bundle with Popper -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Dashboard JavaScript Modules -->
-<script src="<?= base_url('js/dashboard/dashboard-config.js') ?>"></script>
-<script src="<?= base_url('js/dashboard/dashboard-utils.js') ?>"></script>
-<script src="<?= base_url('js/dashboard/dashboard-core.js') ?>"></script>
-<script src="<?= base_url('js/dashboard/fortune-wheel.js') ?>"></script>
-<script src="<?= base_url('js/dashboard/dashboard-init.js') ?>"></script>
-<script src="<?= base_url('js/dashboard/dashboard-ads.js') ?>"></script>
-<script src="<?= base_url('js/dashboard/dashboard-password.js') ?>"></script>
-<script src="<?= base_url('js/dashboard/dashboard-theme.js') ?>?v=<?= time() ?>"></script>
-<script src="<?= base_url('js/dashboard/dashboard-copy.js') ?>?v=<?= time() ?>"></script>
+<!-- Only load essential dashboard modules -->
+<script src="<?= base_url('js/dashboard/dashboard-config.js') ?>" onerror="console.log('dashboard-config.js not found')"></script>
+<script src="<?= base_url('js/dashboard/dashboard-utils.js') ?>" onerror="console.log('dashboard-utils.js not found')"></script>
+<script src="<?= base_url('js/dashboard/dashboard-core.js') ?>" onerror="console.log('dashboard-core.js not found')"></script>
+<script src="<?= base_url('js/dashboard/dashboard-copy.js') ?>?v=<?= time() ?>" onerror="console.log('dashboard-copy.js not found')"></script>
 
 <!-- Dashboard Configuration from PHP -->
 <script>
+// Debug: Check if we're on the right page
+console.log('Loading customer dashboard');
+
 // Pass PHP data to JavaScript
 const dashboardPhpConfig = {
     csrfToken: '<?= csrf_hash() ?>',
@@ -339,8 +337,9 @@ const dashboardPhpConfig = {
     todayCheckin: <?= $today_checkin ? 'true' : 'false' ?>,
     dashboardBgColor: '<?= $dashboard_bg_color ?? '#ffffff' ?>',
     profileBackground: '<?= $profile_background ?? 'default' ?>', 
-    whatsappNumber: '601159599022',  
-    telegramUsername: 'harryford19',
+    // Dynamic customer service settings from admin_settings
+    whatsappNumber: '<?= esc($whatsapp_number ?? '601159599022') ?>',  
+    telegramUsername: '<?= esc($telegram_username ?? 'harryford19') ?>',
     spinTokens: <?= $spin_tokens ?? 0 ?>,
     <?php if (isset($weekly_progress) && is_array($weekly_progress)): ?>
     weeklyProgress: <?= json_encode($weekly_progress) ?>,
@@ -355,8 +354,18 @@ const dashboardPhpConfig = {
     ads: <?= json_encode($ads ?? []) ?>,
 };
 
+console.log('Dashboard config loaded:', dashboardPhpConfig);
+
 // Apply dashboard background color and theme
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize dashboard theme
+    initializeDashboardTheme();
+    
+    // Initialize wallet functionality
+    initializeWalletModals();
+});
+
+function initializeDashboardTheme() {
     if (dashboardPhpConfig.dashboardBgColor && dashboardPhpConfig.dashboardBgColor !== '#ffffff') {
         // Apply background only to dashboard container, not body
         const dashboardContainer = document.querySelector('.dashboard-container');
@@ -387,7 +396,21 @@ document.addEventListener('DOMContentLoaded', function() {
             statsRow.classList.add('themed-section');
         }
     }
-});
+}
+
+function initializeWalletModals() {
+    // Ensure modals are properly initialized
+    const walletModal = document.getElementById('walletModal');
+    const platformModal = document.getElementById('platformModal');
+    
+    if (walletModal) {
+        console.log('Wallet modal found and ready');
+    }
+    
+    if (platformModal) {
+        console.log('Platform modal found and ready');
+    }
+}
 
 // Helper function to calculate color luminance
 function getColorLuminance(hexColor) {
@@ -402,9 +425,7 @@ function getColorLuminance(hexColor) {
     
     return a[0] * 0.2126 + a[1] * 0.7152 + a[2] * 0.0722;
 }
-</script>
 
-<script>
 // Store the selected wallet type
 let selectedWalletType = '';
 
@@ -450,14 +471,14 @@ function selectWallet(walletType) {
     }, 300); // Small delay for smooth transition
 }
 
-// Contact customer service
+// Contact customer service with dynamic settings
 function contactCustomerService(platform) {
     // Prepare the message based on wallet type
     const walletName = selectedWalletType === 'spin' ? 'Spin Wallet' : 'User Wallet';
     const message = `Hi, I want to deposit into my ${walletName}.\nMy User ID is: ${dashboardPhpConfig.username}`;
     const encodedMessage = encodeURIComponent(message);
     
-    // Get contact details from config 
+    // Get contact details from dynamic config (loaded from admin_settings)
     const whatsappNumber = dashboardPhpConfig.whatsappNumber;
     const telegramUsername = dashboardPhpConfig.telegramUsername;
     

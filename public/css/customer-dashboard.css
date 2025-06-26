@@ -145,7 +145,7 @@ body {
 }
 
 .user-info {
-    margin-bottom: 15px; 
+    margin-bottom: 0px; 
     text-align: left;
 }
 
@@ -154,7 +154,7 @@ body {
     justify-content: space-between;
     align-items: flex-start;
     width: 100%;
-    margin-bottom: 8px;
+    margin-bottom: 0px;
 }
 
 .user-details {

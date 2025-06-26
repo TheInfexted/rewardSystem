@@ -194,3 +194,45 @@ ERROR - 2025-06-26 14:55:48 --> Customer dashboard error: Undefined variable $sp
 ERROR - 2025-06-26 14:57:56 --> Customer dashboard error: Undefined variable $spinTokens
 ERROR - 2025-06-26 14:59:53 --> Customer dashboard error: Undefined variable $spinTokens
 ERROR - 2025-06-26 15:00:08 --> Customer dashboard error: Undefined variable $spinTokens
+CRITICAL - 2025-06-26 16:40:28 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "layouts/admin_layout.php"
+[Method: GET, Route: admin/settings]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(212): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('layouts/admin_layout.php')
+ 2 SYSTEMPATH\View\View.php(240): CodeIgniter\View\View->render('layouts/admin_layout', [], true)
+ 3 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/settings/index', [], true)
+ 4 APPPATH\Controllers\Admin\SettingsController.php(59): view('admin/settings/index', [...])
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\SettingsController->index()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\SettingsController))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-06-26 16:41:18 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "layouts/main.php"
+[Method: GET, Route: admin/settings]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(212): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('layouts/main.php')
+ 2 SYSTEMPATH\View\View.php(240): CodeIgniter\View\View->render('layouts/main', [], true)
+ 3 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('admin/settings/index', [], true)
+ 4 APPPATH\Controllers\Admin\SettingsController.php(59): view('admin/settings/index', [...])
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Admin\SettingsController->index()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\SettingsController))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-06-26 16:47:33 --> Customer dashboard error: Undefined property: App\Controllers\CustomerController::$adminSettingsModel
+ERROR - 2025-06-26 16:47:35 --> Customer dashboard error: Undefined property: App\Controllers\CustomerController::$adminSettingsModel
+ERROR - 2025-06-26 16:47:52 --> Customer dashboard error: Undefined property: App\Controllers\CustomerController::$adminSettingsModel
+ERROR - 2025-06-26 16:50:12 --> Customer dashboard error: Undefined property: App\Controllers\CustomerController::$adminSettingsModel
+ERROR - 2025-06-26 16:50:29 --> Customer dashboard error: Undefined property: App\Controllers\CustomerController::$adminSettingsModel
+ERROR - 2025-06-26 16:51:45 --> Customer dashboard error: Undefined property: App\Controllers\CustomerController::$adminSettingsModel
+ERROR - 2025-06-26 16:54:12 --> Customer dashboard error: Undefined array key "streak"
+ERROR - 2025-06-26 16:54:12 --> Stack trace: #0 C:\xampp\htdocs\rewardSystem\app\Controllers\CustomerController.php(96): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array...', 'C:\\xampp\\htdocs...', 96)
+#1 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\CustomerController->dashboard()
+#2 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\CustomerController))
+#3 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#4 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#5 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#6 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#7 {main}
+ERROR - 2025-06-26 16:56:08 --> CustomerCheckinModel does not exist

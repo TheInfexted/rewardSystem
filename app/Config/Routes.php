@@ -154,6 +154,7 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
         $routes->post('profile', 'Admin\SettingsController::updateProfile');
         $routes->post('password', 'Admin\SettingsController::updatePassword');
         $routes->post('general', 'Admin\SettingsController::updateGeneral');
+        $routes->post('customer-service', 'Admin\SettingsController::updateCustomerService');
     });
     
     // Language management

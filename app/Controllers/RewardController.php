@@ -265,7 +265,7 @@ class RewardController extends BaseController
                 // Clear winner data from session after successful claim
                 $session->remove('winner_data');
 
-                // Get platform settings
+                // Get platform settings dynamically from admin settings
                 $whatsappNumber = $this->adminSettingsModel->getSetting('reward_whatsapp_number', '601159599022');
                 $telegramUsername = $this->adminSettingsModel->getSetting('reward_telegram_username', 'harryford19');
 

@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\CustomerModel;
 use App\Models\SpinHistoryModel;
 use App\Models\BonusClaimModel;
+use App\Models\AdminSettingsModel;
 
 class CustomerController extends BaseController
 {
@@ -13,6 +14,7 @@ class CustomerController extends BaseController
     protected $spinHistoryModel;
     protected $bonusClaimModel;
     protected $rewardSystemAdModel;
+    protected $adminSettingsModel;
 
     public function __construct()
     {
@@ -20,6 +22,7 @@ class CustomerController extends BaseController
         $this->spinHistoryModel = new SpinHistoryModel();
         $this->bonusClaimModel = new BonusClaimModel();
         $this->rewardSystemAdModel = new \App\Models\RewardSystemAdModel();
+        $this->adminSettingsModel = new AdminSettingsModel();
     }
 
     /**
@@ -54,10 +57,16 @@ class CustomerController extends BaseController
             // Get monthly checkins count
             $monthlyCheckins = $this->getMonthlyCheckinsCount($customerId);
 
-            // Get platform settings for customer service
-            $adminSettingsModel = new \App\Models\AdminSettingsModel();
-            $whatsappNumber = $adminSettingsModel->getSetting('reward_whatsapp_number', '60102763672');
-            $telegramUsername = $adminSettingsModel->getSetting('reward_telegram_username', 'brendxn1127');
+            // Get platform settings for customer service - Updated to use the class property
+            try {
+                $whatsappNumber = $this->adminSettingsModel->getSetting('reward_whatsapp_number', '60102763672');
+                $telegramUsername = $this->adminSettingsModel->getSetting('reward_telegram_username', 'brendxn1127');
+            } catch (\Exception $e) {
+                log_message('error', 'Error getting admin settings: ' . $e->getMessage());
+                // Fallback to defaults if admin settings fail
+                $whatsappNumber = '60102763672';
+                $telegramUsername = 'brendxn1127';
+            }
             
             $data = [
                 'title' => 'Customer Dashboard',
@@ -85,99 +94,6 @@ class CustomerController extends BaseController
         } catch (\Exception $e) {
             log_message('error', 'Customer dashboard error: ' . $e->getMessage());
             return redirect()->to('/reward')->with('error', 'Unable to load dashboard');
-        }
-    }
-
-    /**
-     * Get customer information for copy functionality
-     * Returns username and other copyable data
-     */
-    public function getCopyableInfo()
-    {
-        if (!$this->request->isAJAX()) {
-            return $this->response->setStatusCode(403)->setJSON(['error' => 'Invalid request']);
-        }
-        
-        $customerId = session()->get('customer_id');
-        if (!$customerId) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Please log in to continue'
-            ]);
-        }
-        
-        try {
-            $customer = $this->customerModel->find($customerId);
-            if (!$customer) {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Customer not found'
-                ]);
-            }
-            
-            return $this->response->setJSON([
-                'success' => true,
-                'data' => [
-                    'username' => $customer['username'],
-                    'customer_id' => $customer['id'],
-                    'email' => $customer['email'] ?? null,
-                    'phone' => $customer['phone'] ?? null,
-                    'points' => $customer['points'] ?? 0,
-                    'spin_tokens' => $customer['spin_tokens'] ?? 0
-                ]
-            ]);
-            
-        } catch (\Exception $e) {
-            log_message('error', 'Get copyable info error: ' . $e->getMessage());
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Unable to retrieve information'
-            ]);
-        }
-    }
-
-    /**
-     * Log copy action for analytics/security
-     */
-    public function logCopyAction()
-    {
-        if (!$this->request->isAJAX()) {
-            return $this->response->setStatusCode(403)->setJSON(['error' => 'Invalid request']);
-        }
-        
-        $customerId = session()->get('customer_id');
-        if (!$customerId) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Unauthorized'
-            ]);
-        }
-        
-        $copyType = $this->request->getPost('copy_type'); // 'username', 'customer_id', etc.
-        $userAgent = $this->request->getUserAgent();
-        $ipAddress = $this->request->getIPAddress();
-        
-        try {
-            // Log the copy action (you can create a dedicated table for this)
-            log_message('info', sprintf(
-                'Copy Action - Customer ID: %d, Type: %s, IP: %s, User Agent: %s',
-                $customerId,
-                $copyType ?? 'unknown',
-                $ipAddress,
-                $userAgent
-            ));
-            
-            return $this->response->setJSON([
-                'success' => true,
-                'message' => 'Action logged'
-            ]);
-            
-        } catch (\Exception $e) {
-            log_message('error', 'Log copy action error: ' . $e->getMessage());
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Logging failed'
-            ]);
         }
     }
 
