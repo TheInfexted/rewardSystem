@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="<?= base_url('css/customer-dashboard.css') ?>?v=<?= time() ?>">
 <link rel="stylesheet" href="<?= base_url('css/dashboard-theme.css') ?>?v=<?= time() ?>">
 <link rel="stylesheet" href="<?= base_url('css/dashboard-swiper.css') ?>?v=<?= time() ?>">
+
 <div class="dashboard-container">
     <!-- User Profile Header -->
     <div class="profile-header <?= $profile_background ?>-bg" 
@@ -197,16 +198,8 @@
                         <?php endforeach; ?>
                     </div>
                     
-                    <!-- Navigation 
-                    <div class="swiper-button-next ads-button-next"></div>
-                    <div class="swiper-button-prev ads-button-prev"></div>
-                    
-                     Pagination 
-                    <div class="swiper-pagination ads-pagination"></div>
-                    !-->
                     <!-- Scrollbar -->
                     <div class="swiper-scrollbar ads-scrollbar"></div>
-
                 </div>
             <?php else: ?>
                 <!-- Empty State -->
@@ -396,15 +389,23 @@ const dashboardPhpConfig = {
 
 console.log('Dashboard config loaded:', dashboardPhpConfig);
 
-// Apply dashboard background color and theme
+// FIXED: Apply dashboard background color and theme
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize dashboard theme
+    console.log('Dashboard DOM loaded, initializing theme...');
+    
+    // Initialize dashboard theme first
     initializeDashboardTheme();
     
     // Initialize wallet functionality
     initializeWalletModals();
+    
+    // IMPORTANT: Apply check-in theme after a small delay to ensure all elements are rendered
+    setTimeout(() => {
+        applyCheckinThemeFromProfile();
+    }, 100);
 });
 
+// UPDATED: Initialize dashboard theme with check-in theme application
 function initializeDashboardTheme() {
     if (dashboardPhpConfig.dashboardBgColor && dashboardPhpConfig.dashboardBgColor !== '#ffffff') {
         // Apply background only to dashboard container, not body
@@ -435,6 +436,79 @@ function initializeDashboardTheme() {
         if (statsRow) {
             statsRow.classList.add('themed-section');
         }
+    }
+}
+
+// NEW: Apply check-in theme based on profile background
+function applyCheckinThemeFromProfile() {
+    const profileHeader = document.querySelector('.profile-header');
+    const checkinSection = document.querySelector('.compact-checkin');
+    
+    if (!profileHeader || !checkinSection) {
+        console.log('Profile header or checkin section not found');
+        return;
+    }
+    
+    // Get the current theme from the profile header classes
+    const themeClass = Array.from(profileHeader.classList).find(cls => cls.endsWith('-bg'));
+    const theme = themeClass ? themeClass.replace('-bg', '') : 'default';
+    
+    console.log('Detected profile theme:', theme);
+    
+    // Apply the appropriate gradient to the check-in section
+    applyCheckinGradient(checkinSection, theme);
+}
+
+// NEW: Apply gradient theme to check-in section
+function applyCheckinGradient(checkinSection, theme) {
+    // Define theme gradients matching the profile header
+    const themeGradients = {
+        'default': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'blue': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'purple': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'ocean': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        'galaxy': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        
+        'green': 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+        'forest': 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+        'emerald': 'linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%)',
+        
+        'orange': 'linear-gradient(135deg, #ff9a56 0%, #ffad56 100%)',
+        'sunset': 'linear-gradient(135deg, #ff9a56 0%, #ffad56 100%)',
+        'gold': 'linear-gradient(135deg, #f7931e 0%, #ffd200 100%)',
+        
+        'pink': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        'rose': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        'coral': 'linear-gradient(135deg, #ff7b7b 0%, #ff416c 100%)',
+        
+        'dark': 'linear-gradient(135deg, #2c3e50 0%, #3498db 100%)',
+        'midnight': 'linear-gradient(135deg, #2c3e50 0%, #3498db 100%)',
+        
+        'sapphire': 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        'crimson': 'linear-gradient(135deg, #eb3349 0%, #f45c43 100%)',
+        'violet': 'linear-gradient(135deg, #8360c3 0%, #2ebf91 100%)'
+    };
+    
+    // Clear any existing background image
+    checkinSection.style.backgroundImage = 'none';
+    
+    // Apply the gradient theme
+    if (themeGradients[theme]) {
+        checkinSection.style.background = themeGradients[theme];
+        checkinSection.style.backgroundSize = 'cover';
+        checkinSection.style.backgroundPosition = 'center';
+        
+        // Add theme class for CSS targeting
+        checkinSection.classList.remove(...Array.from(checkinSection.classList).filter(cls => cls.startsWith('theme-')));
+        checkinSection.classList.add(`theme-${theme}`);
+        
+        console.log(`Applied ${theme} gradient theme to check-in section`);
+    } else {
+        // Fallback to default gradient
+        checkinSection.style.background = themeGradients['default'];
+        checkinSection.classList.add('theme-default');
+        
+        console.log(`Applied default gradient theme to check-in section (${theme} not found)`);
     }
 }
 

@@ -165,7 +165,6 @@ class DashboardSwiper {
                 
                 slideChange: () => {
                     this.handleVideoPlayback();
-                    this.trackSlideView();
                 },
                 
                 slideChangeTransitionEnd: () => {
@@ -308,9 +307,6 @@ class DashboardSwiper {
                     const adId = slide.dataset.id;
                     console.log(`Ad ${adId} clicked`);
                     
-                    // Track click
-                    this.trackAdClick(adId);
-                    
                     // Open URL
                     window.open(url, '_blank');
                 });
@@ -324,7 +320,7 @@ class DashboardSwiper {
     addCustomControls() {
         // Add play/pause button for autoplay
         const swiperContainer = document.querySelector('.ads-swiper-container');
-        /*if (swiperContainer && this.ads.length > 1) {
+        if (swiperContainer && this.ads.length > 1) {
             const playPauseBtn = document.createElement('button');
             playPauseBtn.className = 'ads-play-pause-btn';
             playPauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
@@ -343,7 +339,7 @@ class DashboardSwiper {
             });
             
             swiperContainer.appendChild(playPauseBtn);
-        }*/
+        }
 
         // Add slide counter
         if (this.ads.length > 1) {
@@ -409,53 +405,6 @@ class DashboardSwiper {
             // Optionally remove src to free memory
             // video.removeAttribute('src');
         });
-    }
-
-    /**
-     * Track slide view
-     */
-    trackSlideView() {
-        if (!this.swiperInstance) return;
-        
-        const activeSlide = this.swiperInstance.slides[this.swiperInstance.activeIndex];
-        if (activeSlide) {
-            const adId = activeSlide.dataset.id;
-            console.log(`Ad ${adId} viewed`);
-            
-            // Send tracking data if needed
-            this.sendTrackingData('view', adId);
-        }
-    }
-
-    /**
-     * Track ad click
-     */
-    trackAdClick(adId) {
-        console.log(`Tracking click for ad ${adId}`);
-        this.sendTrackingData('click', adId);
-    }
-
-    /**
-     * Send tracking data to server
-     */
-    sendTrackingData(event, adId) {
-        // Implement your tracking logic here
-        if (typeof dashboardPhpConfig !== 'undefined') {
-            fetch(`${dashboardPhpConfig.baseUrl}api/track-ad`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': dashboardPhpConfig.csrfToken
-                },
-                body: JSON.stringify({
-                    event: event,
-                    ad_id: adId,
-                    timestamp: Date.now()
-                })
-            }).catch(error => {
-                console.log('Tracking failed:', error);
-            });
-        }
     }
 
     /**
