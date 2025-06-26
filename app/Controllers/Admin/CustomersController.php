@@ -28,6 +28,8 @@ class CustomersController extends BaseController
                 ->orLike('email', $search);
         }
 
+        $model = $model->orderBy('created_at', 'DESC');
+
         $data = [
             'title' => 'Customer Management',
             'customers' => $model->paginate($perPage),

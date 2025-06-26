@@ -465,7 +465,7 @@
 
 .form-label {
     font-weight: 600;
-    color: #333;
+    color: white;
     margin-bottom: 0.5rem;
 }
 
