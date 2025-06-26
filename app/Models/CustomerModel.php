@@ -16,6 +16,7 @@ class CustomerModel extends Model
         'username', 
         'password', 
         'email', 
+        'phone',
         'name', 
         'profile_background',
         'profile_background_image',

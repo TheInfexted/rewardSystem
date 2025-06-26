@@ -191,13 +191,6 @@
                                     <i class="fas fa-history me-1"></i> Activity History
                                 </button>
                                 
-                                <button class="btn btn-outline-primary btn-sm" 
-                                        onclick="generateReport(<?= $customer['id'] ?>)"
-                                        data-bs-toggle="tooltip" 
-                                        title="Generate comprehensive activity report">
-                                    <i class="fas fa-chart-bar me-1"></i> Generate Report
-                                </button>
-                                
                                 <div class="btn-group" role="group">
                                     <button class="btn btn-outline-light btn-sm" 
                                             onclick="exportCustomerData(<?= $customer['id'] ?>)"
@@ -213,8 +206,6 @@
                                     <ul class="dropdown-menu dropdown-menu-dark">
                                         <li><a class="dropdown-item" href="#" onclick="exportCustomerData(<?= $customer['id'] ?>)">
                                             <i class="fas fa-file-csv me-2"></i>Export as CSV</a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="generateReport(<?= $customer['id'] ?>)">
-                                            <i class="fas fa-file-pdf me-2"></i>Export as PDF</a></li>
                                         <li><a class="dropdown-item" href="#" onclick="copyCustomerInfo(<?= $customer['id'] ?>)">
                                             <i class="fas fa-clipboard me-2"></i>Copy to Clipboard</a></li>
                                     </ul>

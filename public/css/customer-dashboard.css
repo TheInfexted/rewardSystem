@@ -559,7 +559,7 @@ body.modal-open {
 /* COMPACT Weekly Check-in Section */
 .checkin-section {
     padding: 20px;
-    background: inherit; /* Inherit from dashboard container */
+    background: inherit;
     position: relative;
 }
 
@@ -589,8 +589,8 @@ body.modal-open {
     font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 15px;
-    color: rgba(51, 51, 51, 0.9); /* Slightly transparent for better visibility */
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8); /* White text shadow for readability */
+    color: rgba(51, 51, 51, 0.9); 
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8); 
 }
 
 /* New Compact Check-in Layout */
@@ -702,11 +702,11 @@ body.modal-open {
 
 /* Weekly Calendar */
 .weekly-calendar {
-    background: rgba(248, 249, 250, 0.7); /* Semi-transparent background */
+    background: rgba(248, 249, 250, 0.7); 
     border-radius: 15px;
     padding: 20px;
     margin-top: 15px;
-    backdrop-filter: blur(10px); /* Add blur effect for modern look */
+    backdrop-filter: blur(10px); 
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -726,7 +726,7 @@ body.modal-open {
     text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
 }
 
-/* Inline Weekly Calendar - More Compact */
+/* Inline Weekly Calendar */
 .week-days-inline {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -778,7 +778,7 @@ body.modal-open {
 }
 
 .day-item-compact .day-name {
-    font-size: 0.6rem; /* Smaller text */
+    font-size: 0.6rem; 
     font-weight: 600;
     text-transform: uppercase;
     margin-bottom: 2px;
@@ -786,14 +786,14 @@ body.modal-open {
 }
 
 .day-item-compact .day-number {
-    font-size: 0.9rem; /* Smaller text */
+    font-size: 0.9rem; 
     font-weight: bold;
     margin: 3px 0;
     color: white;
 }
 
 .day-item-compact .day-points {
-    font-size: 0.6rem; /* Smaller text */
+    font-size: 0.6rem; 
     margin-top: auto;
 }
 
@@ -852,30 +852,30 @@ body.modal-open {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 15px;
-    margin-bottom: 15px; /* Reduced from 20px */
+    margin-bottom: 15px;
     padding: 0 20px;
 }
 
 .stat-card {
     text-align: center;
-    padding: 20px 15px; /* Increased top/bottom padding */
-    background: white; /* Changed from #f8f9fa to white */
-    border-radius: 15px; /* Increased border radius */
+    padding: 20px 15px; 
+    background: #f8f9fa; 
+    border-radius: 15px; 
     border: 1px solid #e9ecef;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Added subtle shadow */
-    transition: transform 0.2s ease; /* Added hover effect */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
+    transition: transform 0.2s ease; 
 }
 
 .stat-card:hover {
-    transform: translateY(-2px); /* Subtle hover lift */
+    transform: translateY(-2px); 
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .stat-number {
-    font-size: 1.8rem; /* Increased from 1.4rem */
+    font-size: 1.8rem; 
     font-weight: bold;
     color: #667eea;
-    margin-bottom: 8px; /* Increased spacing */
+    margin-bottom: 8px; 
     line-height: 1;
 }
 

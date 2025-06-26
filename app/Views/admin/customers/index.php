@@ -1,6 +1,7 @@
 <?= $this->extend('admin/layouts/main') ?>
 
 <?= $this->section('content') ?>
+<meta name="csrf_token" content="<?= csrf_hash() ?>">
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -477,17 +478,27 @@
 let currentCustomerId = null;
 let currentCustomerUsername = null;
 
-// Quick password management functions
+// Password management functions
 function openPasswordModal(customerId, username) {
     currentCustomerId = customerId;
     currentCustomerUsername = username;
     
     // Update modal content
-    document.getElementById('quickPasswordCustomerName').textContent = username;
+    const customerNameEl = document.getElementById('quickPasswordCustomerName');
+    if (customerNameEl) {
+        customerNameEl.textContent = username;
+    }
     
     // Reset form visibility
-    document.getElementById('customPasswordForm').style.display = 'none';
-    document.getElementById('quickPasswordForm').reset();
+    const customForm = document.getElementById('customPasswordForm');
+    if (customForm) {
+        customForm.style.display = 'none';
+    }
+    
+    const passwordForm = document.getElementById('quickPasswordForm');
+    if (passwordForm) {
+        passwordForm.reset();
+    }
     
     // Show modal
     const modal = new bootstrap.Modal(document.getElementById('quickPasswordModal'));
@@ -495,32 +506,48 @@ function openPasswordModal(customerId, username) {
 }
 
 function openCustomPasswordForm() {
-    document.getElementById('customPasswordForm').style.display = 'block';
-    document.getElementById('quick_new_password').focus();
+    const customForm = document.getElementById('customPasswordForm');
+    if (customForm) {
+        customForm.style.display = 'block';
+        const passwordField = document.getElementById('quick_new_password');
+        if (passwordField) {
+            passwordField.focus();
+        }
+    }
 }
 
 function cancelCustomPasswordForm() {
-    document.getElementById('customPasswordForm').style.display = 'none';
-    document.getElementById('quickPasswordForm').reset();
+    const customForm = document.getElementById('customPasswordForm');
+    if (customForm) {
+        customForm.style.display = 'none';
+    }
+    
+    const passwordForm = document.getElementById('quickPasswordForm');
+    if (passwordForm) {
+        passwordForm.reset();
+    }
 }
 
 function toggleQuickPasswordVisibility(fieldId) {
     const field = document.getElementById(fieldId);
     const icon = document.getElementById(fieldId + '_icon');
     
-    if (field.type === 'password') {
-        field.type = 'text';
-        icon.className = 'fas fa-eye-slash';
-    } else {
-        field.type = 'password';
-        icon.className = 'fas fa-eye';
+    if (field && icon) {
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.className = 'fas fa-eye-slash';
+        } else {
+            field.type = 'password';
+            icon.className = 'fas fa-eye';
+        }
     }
 }
 
+// Submit custom password change
 function submitQuickPasswordChange() {
-    const newPassword = document.getElementById('quick_new_password').value;
-    const confirmPassword = document.getElementById('quick_confirm_password').value;
-    const reason = document.getElementById('quick_reason').value;
+    const newPassword = document.getElementById('quick_new_password')?.value;
+    const confirmPassword = document.getElementById('quick_confirm_password')?.value;
+    const reason = document.getElementById('quick_reason')?.value || 'Quick password change from customer list';
     
     // Validation
     if (!newPassword || newPassword.length < 4) {
@@ -533,97 +560,224 @@ function submitQuickPasswordChange() {
         return;
     }
     
-    // Send change password request
+    if (!currentCustomerId) {
+        showToast('Customer ID not found', 'error');
+        return;
+    }
+    
+    // Show loading on the submit button
+    const submitBtn = event.target;
+    const originalHtml = submitBtn.innerHTML;
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
+    
+    // Get CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf_token"]')?.getAttribute('content') || '';
+    
+    // Prepare form data
+    const formData = new FormData();
+    formData.append('new_password', newPassword);
+    formData.append('confirm_password', confirmPassword);
+    formData.append('reason', reason);
+    if (csrfToken) {
+        formData.append('csrf_token', csrfToken);
+    }
+    
+    // Send request
     fetch(`<?= base_url('admin/customers/changePassword/') ?>${currentCustomerId}`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
             'X-Requested-With': 'XMLHttpRequest'
         },
-        body: new URLSearchParams({
-            new_password: newPassword,
-            confirm_password: confirmPassword,
-            reason: reason
-        })
+        body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
-        if (data.success) {
+        submitBtn.classList.remove('loading');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalHtml;
+        
+        if (data.success === true) {
             // Hide current modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('quickPasswordModal'));
-            modal.hide();
+            const currentModal = bootstrap.Modal.getInstance(document.getElementById('quickPasswordModal'));
+            if (currentModal) {
+                currentModal.hide();
+            }
             
             // Show success result
-            showQuickPasswordResult(data.message);
+            showPasswordResult(data.message || 'Password changed successfully!');
+            
         } else {
-            showToast('Error: ' + data.message, 'error');
+            showToast('Error: ' + (data.message || 'Unknown error occurred'), 'error');
         }
     })
     .catch(error => {
         console.error('Password change error:', error);
-        showToast('An error occurred while changing the password.', 'error');
+        
+        submitBtn.classList.remove('loading');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalHtml;
+        
+        showToast('An error occurred while changing the password: ' + error.message, 'error');
     });
 }
 
+// Generate random password
 function quickGeneratePassword() {
-    // Send generate password request
+    if (!currentCustomerId) {
+        showToast('Customer ID not found', 'error');
+        return;
+    }
+    
+    // Show loading on the generate button
+    const generateBtn = event.target;
+    const originalHtml = generateBtn.innerHTML;
+    generateBtn.classList.add('loading');
+    generateBtn.disabled = true;
+    
+    // Get CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf_token"]')?.getAttribute('content') || '';
+    
+    // Prepare form data
+    const formData = new FormData();
+    formData.append('reason', 'Quick password generation from customer list');
+    if (csrfToken) {
+        formData.append('csrf_token', csrfToken);
+    }
+    
+    // Send request
     fetch(`<?= base_url('admin/customers/generatePassword/') ?>${currentCustomerId}`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
             'X-Requested-With': 'XMLHttpRequest'
         },
-        body: new URLSearchParams({
-            reason: 'Quick password generation from customer list'
-        })
+        body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
-        if (data.success) {
+        generateBtn.classList.remove('loading');
+        generateBtn.disabled = false;
+        generateBtn.innerHTML = originalHtml;
+        
+        if (data.success === true) {
             // Hide current modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('quickPasswordModal'));
-            modal.hide();
+            const currentModal = bootstrap.Modal.getInstance(document.getElementById('quickPasswordModal'));
+            if (currentModal) {
+                currentModal.hide();
+            }
             
             // Show success result with generated password
-            showQuickPasswordResult(data.message, data.new_password);
+            showPasswordResult(
+                data.message || 'Password generated successfully!',
+                data.new_password
+            );
+            
         } else {
-            showToast('Error: ' + data.message, 'error');
+            showToast('Error: ' + (data.message || 'Unknown error occurred'), 'error');
         }
     })
     .catch(error => {
         console.error('Password generation error:', error);
-        showToast('An error occurred while generating the password.', 'error');
+        
+        generateBtn.classList.remove('loading');
+        generateBtn.disabled = false;
+        generateBtn.innerHTML = originalHtml;
+        
+        showToast('An error occurred while generating the password: ' + error.message, 'error');
     });
 }
 
-function showQuickPasswordResult(message, generatedPassword = null) {
-    const modal = new bootstrap.Modal(document.getElementById('quickPasswordResultModal'));
-    const messageElement = document.getElementById('quickPasswordResultMessage');
-    const generatedPasswordDisplay = document.getElementById('quickGeneratedPasswordDisplay');
-    const generatedPasswordField = document.getElementById('quickGeneratedPasswordField');
+// Show password result
+function showPasswordResult(message, newPassword = null) {
+    console.log('showPasswordResult called with:', { message, newPassword });
     
-    messageElement.textContent = message;
+    // Update the existing result modal
+    const resultMessage = document.getElementById('quickPasswordResultMessage');
+    const passwordDisplay = document.getElementById('quickGeneratedPasswordDisplay');
+    const passwordField = document.getElementById('quickGeneratedPasswordField');
     
-    if (generatedPassword) {
-        generatedPasswordField.value = generatedPassword;
-        generatedPasswordDisplay.style.display = 'block';
-    } else {
-        generatedPasswordDisplay.style.display = 'none';
+    if (resultMessage) {
+        resultMessage.textContent = message;
     }
     
-    modal.show();
+    if (newPassword && passwordDisplay && passwordField) {
+        passwordField.value = newPassword;
+        passwordDisplay.style.display = 'block';
+    } else if (passwordDisplay) {
+        passwordDisplay.style.display = 'none';
+    }
+    
+    // Show the result modal
+    const resultModal = new bootstrap.Modal(document.getElementById('quickPasswordResultModal'));
+    resultModal.show();
 }
 
+// Copy to clipboard functionality
+function copyToClipboard(fieldId) {
+    const field = document.getElementById(fieldId);
+    if (!field) {
+        showToast('Copy field not found', 'error');
+        return;
+    }
+    
+    try {
+        field.select();
+        field.setSelectionRange(0, 99999);
+        
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(field.value).then(() => {
+                showToast('Password copied to clipboard!', 'success');
+            }).catch(() => {
+                // Fallback to execCommand
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showToast('Password copied to clipboard!', 'success');
+                } else {
+                    showToast('Failed to copy password', 'error');
+                }
+            });
+        } else {
+            // Fallback to execCommand
+            const successful = document.execCommand('copy');
+            if (successful) {
+                showToast('Password copied to clipboard!', 'success');
+            } else {
+                showToast('Failed to copy password', 'error');
+            }
+        }
+    } catch (err) {
+        console.error('Copy failed:', err);
+        showToast('Failed to copy password', 'error');
+    }
+}
+
+// Customer deletion functions
 function deleteCustomer(customerId, username) {
     currentCustomerId = customerId;
     currentCustomerUsername = username;
     
     // Update modal content
-    document.getElementById('deleteCustomerName').textContent = username;
-    document.getElementById('confirmUsernameTarget').textContent = username;
-    document.getElementById('confirmUsername').value = '';
-    document.getElementById('confirmDeleteBtn').disabled = true;
-    document.getElementById('confirmUsernameError').style.display = 'none';
+    const customerNameEl = document.getElementById('deleteCustomerName');
+    const confirmTargetEl = document.getElementById('confirmUsernameTarget');
+    const confirmInputEl = document.getElementById('confirmUsername');
+    const confirmBtnEl = document.getElementById('confirmDeleteBtn');
+    const errorEl = document.getElementById('confirmUsernameError');
+    
+    if (customerNameEl) customerNameEl.textContent = username;
+    if (confirmTargetEl) confirmTargetEl.textContent = username;
+    if (confirmInputEl) confirmInputEl.value = '';
+    if (confirmBtnEl) confirmBtnEl.disabled = true;
+    if (errorEl) errorEl.style.display = 'none';
     
     // Show modal
     const modal = new bootstrap.Modal(document.getElementById('deleteCustomerModal'));
@@ -631,91 +785,111 @@ function deleteCustomer(customerId, username) {
 }
 
 // Real-time validation of username input
-document.getElementById('confirmUsername').addEventListener('input', function() {
-    const enteredUsername = this.value.trim();
-    const confirmBtn = document.getElementById('confirmDeleteBtn');
-    const errorDiv = document.getElementById('confirmUsernameError');
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmInput = document.getElementById('confirmUsername');
+    if (confirmInput) {
+        confirmInput.addEventListener('input', function() {
+            const enteredUsername = this.value.trim();
+            const confirmBtn = document.getElementById('confirmDeleteBtn');
+            const errorDiv = document.getElementById('confirmUsernameError');
+            
+            if (enteredUsername === currentCustomerUsername) {
+                if (confirmBtn) confirmBtn.disabled = false;
+                if (errorDiv) errorDiv.style.display = 'none';
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            } else {
+                if (confirmBtn) confirmBtn.disabled = true;
+                if (enteredUsername.length > 0) {
+                    if (errorDiv) errorDiv.style.display = 'block';
+                    this.classList.add('is-invalid');
+                    this.classList.remove('is-valid');
+                } else {
+                    if (errorDiv) errorDiv.style.display = 'none';
+                    this.classList.remove('is-invalid', 'is-valid');
+                }
+            }
+        });
+    }
     
-    if (enteredUsername === currentCustomerUsername) {
-        confirmBtn.disabled = false;
-        errorDiv.style.display = 'none';
-        this.classList.remove('is-invalid');
-        this.classList.add('is-valid');
-    } else {
-        confirmBtn.disabled = true;
-        if (enteredUsername.length > 0) {
-            errorDiv.style.display = 'block';
-            this.classList.add('is-invalid');
-            this.classList.remove('is-valid');
-        } else {
-            errorDiv.style.display = 'none';
-            this.classList.remove('is-invalid', 'is-valid');
-        }
+    // Handle actual deletion
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', function() {
+            const deleteBtn = this;
+            const originalHtml = deleteBtn.innerHTML;
+            
+            // Show loading state
+            deleteBtn.classList.add('loading');
+            deleteBtn.disabled = true;
+            
+            // Get CSRF token
+            const csrfToken = document.querySelector('meta[name="csrf_token"]')?.getAttribute('content') || '';
+            
+            // Prepare form data
+            const formData = new FormData();
+            if (csrfToken) {
+                formData.append('csrf_token', csrfToken);
+            }
+            
+            // Send delete request
+            fetch(`<?= base_url('admin/customers/delete/') ?>${currentCustomerId}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                deleteBtn.classList.remove('loading');
+                deleteBtn.innerHTML = originalHtml;
+                
+                // Hide modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteCustomerModal'));
+                if (modal) modal.hide();
+                
+                if (data.success) {
+                    // Show success message
+                    showToast('✅ ' + data.message, 'success');
+                    
+                    // Remove the row from table with animation
+                    const customerRow = document.querySelector(`button[onclick*="${currentCustomerId}"]`)?.closest('tr');
+                    if (customerRow) {
+                        customerRow.style.transition = 'opacity 0.3s ease';
+                        customerRow.style.opacity = '0';
+                        setTimeout(() => {
+                            customerRow.remove();
+                            
+                            // Show empty state if no customers left
+                            const tbody = document.querySelector('tbody');
+                            if (tbody && tbody.children.length === 0) {
+                                location.reload();
+                            }
+                        }, 300);
+                    }
+                    
+                } else {
+                    showToast('❌ Error: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                deleteBtn.classList.remove('loading');
+                deleteBtn.disabled = false;
+                deleteBtn.innerHTML = originalHtml;
+                
+                // Hide modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('deleteCustomerModal'));
+                if (modal) modal.hide();
+                
+                console.error('Delete error:', error);
+                showToast('❌ An error occurred while deleting the customer. Please try again.', 'error');
+            });
+        });
     }
 });
 
-// Handle actual deletion
-document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-    const deleteBtn = this;
-    const originalHtml = deleteBtn.innerHTML;
-    
-    // Show loading state
-    deleteBtn.classList.add('loading');
-    deleteBtn.disabled = true;
-    
-    // Send delete request
-    fetch(`<?= base_url('admin/customers/delete/') ?>${currentCustomerId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        deleteBtn.classList.remove('loading');
-        deleteBtn.innerHTML = originalHtml;
-        
-        // Hide modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('deleteCustomerModal'));
-        modal.hide();
-        
-        if (data.success) {
-            // Show success message
-            showToast('✅ ' + data.message, 'success');
-            
-            // Remove the row from table with animation
-            const customerRow = document.querySelector(`button[onclick*="${currentCustomerId}"]`).closest('tr');
-            customerRow.style.transition = 'opacity 0.3s ease';
-            customerRow.style.opacity = '0';
-            setTimeout(() => {
-                customerRow.remove();
-                
-                // Show empty state if no customers left
-                const tbody = document.querySelector('tbody');
-                if (tbody.children.length === 0) {
-                    location.reload();
-                }
-            }, 300);
-            
-        } else {
-            showToast('❌ Error: ' + data.message, 'error');
-        }
-    })
-    .catch(error => {
-        deleteBtn.classList.remove('loading');
-        deleteBtn.disabled = false;
-        deleteBtn.innerHTML = originalHtml;
-        
-        // Hide modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('deleteCustomerModal'));
-        modal.hide();
-        
-        console.error('Delete error:', error);
-        showToast('❌ An error occurred while deleting the customer. Please try again.', 'error');
-    });
-});
-
+// Toggle customer status
 function toggleCustomerStatus(customerId, currentStatus) {
     const action = currentStatus ? 'deactivate' : 'activate';
     const statusText = currentStatus ? 'deactivated' : 'activated';
@@ -732,17 +906,28 @@ function toggleCustomerStatus(customerId, currentStatus) {
     
     // Find the status button and show loading state
     const statusBtn = event.target.closest('button');
+    if (!statusBtn) return;
+    
     const originalHtml = statusBtn.innerHTML;
     statusBtn.classList.add('loading');
     statusBtn.disabled = true;
+    
+    // Get CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf_token"]')?.getAttribute('content') || '';
+    
+    // Prepare form data
+    const formData = new FormData();
+    if (csrfToken) {
+        formData.append('csrf_token', csrfToken);
+    }
     
     // Send status update request
     fetch(`<?= base_url('admin/customers/deactivate/') ?>${customerId}`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'X-Requested-With': 'XMLHttpRequest'
-        }
+        },
+        body: formData
     })
     .then(response => response.json())
     .then(data => {
@@ -757,8 +942,8 @@ function toggleCustomerStatus(customerId, currentStatus) {
             statusBtn.innerHTML = `<i class="fas fa-${newStatus ? 'user-slash' : 'user-check'}"></i>`;
             
             // Update status badge in the table
-            const statusCell = statusBtn.closest('tr').querySelector('td:nth-last-child(2)');
-            const badge = statusCell.querySelector('.badge');
+            const statusCell = statusBtn.closest('tr')?.querySelector('td:nth-last-child(2)');
+            const badge = statusCell?.querySelector('.badge');
             if (badge) {
                 badge.className = `badge badge-${newStatus ? 'success' : 'danger'}`;
                 badge.textContent = newStatus ? 'Active' : 'Inactive';
@@ -785,22 +970,17 @@ function toggleCustomerStatus(customerId, currentStatus) {
     });
 }
 
-function copyToClipboard(fieldId) {
-    const field = document.getElementById(fieldId);
-    field.select();
-    field.setSelectionRange(0, 99999);
-    
-    try {
-        document.execCommand('copy');
-        showToast('Password copied to clipboard!', 'success');
-    } catch (err) {
-        showToast('Failed to copy password', 'error');
-    }
-}
-
+// Toast notification function
 function showToast(message, type) {
+    // Remove existing toast
+    const existingToast = document.getElementById('mainToast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
     // Create toast element
     const toast = document.createElement('div');
+    toast.id = 'mainToast';
     toast.className = `alert alert-${type === 'error' ? 'danger' : 'success'} alert-dismissible fade show position-fixed`;
     toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
     toast.innerHTML = `

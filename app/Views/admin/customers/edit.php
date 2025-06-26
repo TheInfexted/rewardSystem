@@ -1,6 +1,8 @@
 <?= $this->extend('admin/layouts/main') ?>
 
 <?= $this->section('content') ?>
+<meta name="csrf_token" content="<?= csrf_hash() ?>">
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-8">
@@ -329,56 +331,8 @@
     </div>
 </div>
 
-<!-- Password Result Modal -->
-<div class="modal fade" id="passwordResultModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title">
-                    <i class="fas fa-check-circle"></i>
-                    Password Updated Successfully
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle"></i>
-                    Password has been successfully updated for customer: <strong><?= esc($customer['username']) ?></strong>
-                </div>
-                
-                <div id="generatedPasswordDisplay" style="display: none;">
-                    <div class="mb-3">
-                        <label class="form-label"><strong>Generated Password:</strong></label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="generatedPasswordField" readonly>
-                            <button type="button" class="btn btn-outline-secondary" onclick="copyToClipboard('generatedPasswordField')">
-                                <i class="fas fa-copy"></i> Copy
-                            </button>
-                        </div>
-                        <small class="form-text text-danger">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Please save this password securely. It cannot be retrieved again.
-                        </small>
-                    </div>
-                </div>
-                
-                <div class="alert alert-info">
-                    <i class="fas fa-shield-alt"></i>
-                    <strong>Security Note:</strong> The password has been securely hashed in the database. 
-                    This is the last time it will be displayed in plain text.
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-bs-dismiss="modal">
-                    <i class="fas fa-check"></i> Understood
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
+<!-- CSS Styles -->
 <style>
-/* Live Preview Styles */
 .preview-section h6 {
     color: #333;
     font-weight: 600;
@@ -462,7 +416,6 @@
     background: <?= $customer['dashboard_bg_color'] ?>;
 }
 
-/* Password Management Styles */
 .password-strength-indicator {
     margin-top: 10px;
 }
@@ -483,7 +436,6 @@
     background-color: #28a745;
 }
 
-/* Background themes for preview */
 .default-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
 .blue-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
 .purple-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
@@ -492,7 +444,6 @@
 .pink-bg { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important; }
 .dark-bg { background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%) !important; }
 
-/* Form enhancements */
 .form-control-color {
     width: 60px;
     padding: 0.375rem 0.5rem;
@@ -518,7 +469,6 @@
     margin-bottom: 0.5rem;
 }
 
-/* Loading states for buttons */
 .btn.loading {
     position: relative;
     color: transparent !important;
@@ -544,12 +494,6 @@
     100% { transform: rotate(360deg); }
 }
 
-.copied-feedback {
-    color: #28a745;
-    font-size: 0.875rem;
-    margin-top: 5px;
-}
-
 .password-security-box {
     background: #e9f5ff;
     border: 1px solid #b8daff;
@@ -561,8 +505,14 @@
     display: flex;
     align-items: center;
 }
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
 </style>
 
+<!-- JavaScript -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const profileSelect = document.getElementById('profile_background');
@@ -578,50 +528,52 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Update profile background preview
     function updateProfilePreview() {
-        const selectedTheme = profileSelect.value;
-        profilePreview.className = 'profile-header-preview ' + selectedTheme + '-bg';
-        
-        // Show/hide overlay based on whether there's a custom image
-        const hasCustomImage = <?= !empty($customer['profile_background_image']) ? 'true' : 'false' ?>;
-        if (hasCustomImage && !removeImageCheck.checked) {
-            profileOverlay.style.display = 'block';
-        } else {
-            profileOverlay.style.display = 'none';
+        if (profileSelect && profilePreview) {
+            const selectedTheme = profileSelect.value;
+            profilePreview.className = 'profile-header-preview ' + selectedTheme + '-bg';
+            
+            const hasCustomImage = <?= !empty($customer['profile_background_image']) ? 'true' : 'false' ?>;
+            if (hasCustomImage && removeImageCheck && !removeImageCheck.checked) {
+                if (profileOverlay) profileOverlay.style.display = 'block';
+            } else {
+                if (profileOverlay) profileOverlay.style.display = 'none';
+            }
         }
     }
     
     // Update dashboard color preview
     function updateDashboardPreview() {
-        const color = colorInput.value;
-        colorText.value = color;
-        dashboardPreview.style.backgroundColor = color;
-        colorSwatch.style.backgroundColor = color;
-        colorValue.textContent = color;
+        if (colorInput && dashboardPreview && colorSwatch && colorValue) {
+            const color = colorInput.value;
+            if (colorText) colorText.value = color;
+            dashboardPreview.style.backgroundColor = color;
+            colorSwatch.style.backgroundColor = color;
+            colorValue.textContent = color;
+        }
     }
     
     // Update color input from text
     function updateColorInput() {
-        const color = colorText.value;
-        if (/^#[0-9A-F]{6}$/i.test(color)) {
-            colorInput.value = color;
-            updateDashboardPreview();
+        if (colorText && colorInput) {
+            const color = colorText.value;
+            if (/^#[0-9A-F]{6}$/i.test(color)) {
+                colorInput.value = color;
+                updateDashboardPreview();
+            }
         }
     }
     
     // Event listeners
-    profileSelect.addEventListener('change', updateProfilePreview);
-    colorInput.addEventListener('input', updateDashboardPreview);
-    colorText.addEventListener('input', updateColorInput);
-    
-    if (removeImageCheck) {
-        removeImageCheck.addEventListener('change', updateProfilePreview);
-    }
+    if (profileSelect) profileSelect.addEventListener('change', updateProfilePreview);
+    if (colorInput) colorInput.addEventListener('input', updateDashboardPreview);
+    if (colorText) colorText.addEventListener('input', updateColorInput);
+    if (removeImageCheck) removeImageCheck.addEventListener('change', updateProfilePreview);
     
     // Handle image upload preview
     if (imageInput) {
         imageInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
-            if (file) {
+            if (file && profilePreview && profileOverlay) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     profilePreview.style.backgroundImage = `url(${e.target.result})`;
@@ -644,6 +596,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (newPasswordInput) {
         newPasswordInput.addEventListener('input', checkPasswordStrength);
+    }
+    if (confirmPasswordInput) {
         confirmPasswordInput.addEventListener('input', checkPasswordMatch);
     }
 });
@@ -653,9 +607,13 @@ function openChangePasswordModal() {
     const modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
     
     // Reset form
-    document.getElementById('changePasswordForm').reset();
-    document.getElementById('passwordStrengthBar').style.width = '0%';
-    document.getElementById('passwordStrengthText').textContent = '';
+    const form = document.getElementById('changePasswordForm');
+    if (form) form.reset();
+    
+    const strengthBar = document.getElementById('passwordStrengthBar');
+    const strengthText = document.getElementById('passwordStrengthText');
+    if (strengthBar) strengthBar.style.width = '0%';
+    if (strengthText) strengthText.textContent = '';
     
     modal.show();
 }
@@ -664,7 +622,8 @@ function generateNewPassword() {
     const modal = new bootstrap.Modal(document.getElementById('generatePasswordModal'));
     
     // Reset reason field
-    document.getElementById('generation_reason').value = '';
+    const reasonField = document.getElementById('generation_reason');
+    if (reasonField) reasonField.value = '';
     
     modal.show();
 }
@@ -673,12 +632,14 @@ function togglePasswordVisibility(fieldId) {
     const field = document.getElementById(fieldId);
     const icon = document.getElementById(fieldId + '_icon');
     
-    if (field.type === 'password') {
-        field.type = 'text';
-        icon.className = 'fas fa-eye-slash';
-    } else {
-        field.type = 'password';
-        icon.className = 'fas fa-eye';
+    if (field && icon) {
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.className = 'fas fa-eye-slash';
+        } else {
+            field.type = 'password';
+            icon.className = 'fas fa-eye';
+        }
     }
 }
 
@@ -686,6 +647,8 @@ function checkPasswordStrength() {
     const password = document.getElementById('new_password').value;
     const strengthBar = document.getElementById('passwordStrengthBar');
     const strengthText = document.getElementById('passwordStrengthText');
+    
+    if (!strengthBar || !strengthText) return;
     
     let strength = 0;
     let feedback = '';
@@ -716,170 +679,363 @@ function checkPasswordMatch() {
     const confirmPassword = document.getElementById('confirm_password').value;
     const confirmField = document.getElementById('confirm_password');
     
-    if (confirmPassword && password !== confirmPassword) {
+    if (confirmField && confirmPassword && password !== confirmPassword) {
         confirmField.classList.add('is-invalid');
-    } else {
+    } else if (confirmField) {
         confirmField.classList.remove('is-invalid');
     }
 }
 
-// Handle password change
-document.getElementById('confirmChangePasswordBtn').addEventListener('click', function() {
-    const form = document.getElementById('changePasswordForm');
-    const newPassword = document.getElementById('new_password').value;
-    const confirmPassword = document.getElementById('confirm_password').value;
-    const reason = document.getElementById('password_reason').value;
-    
-    // Validation
-    if (!newPassword || newPassword.length < 4) {
-        showToast('Password must be at least 4 characters long', 'error');
-        return;
-    }
-    
-    if (newPassword !== confirmPassword) {
-        showToast('Password confirmation does not match', 'error');
-        return;
-    }
-    
-    const changeBtn = this;
-    const originalHtml = changeBtn.innerHTML;
-    changeBtn.classList.add('loading');
-    changeBtn.disabled = true;
-    
-    // Send change password request
-    fetch(`<?= base_url('admin/customers/changePassword/' . $customer['id']) ?>`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: new URLSearchParams({
-            new_password: newPassword,
-            confirm_password: confirmPassword,
-            reason: reason
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        changeBtn.classList.remove('loading');
-        changeBtn.disabled = false;
-        changeBtn.innerHTML = originalHtml;
-        
-        if (data.success) {
-            // Hide change password modal
-            const changeModal = bootstrap.Modal.getInstance(document.getElementById('changePasswordModal'));
-            changeModal.hide();
+// Password change handler
+document.addEventListener('DOMContentLoaded', function() {
+    const changeBtn = document.getElementById('confirmChangePasswordBtn');
+    if (changeBtn) {
+        changeBtn.addEventListener('click', function() {
+            const newPassword = document.getElementById('new_password')?.value;
+            const confirmPassword = document.getElementById('confirm_password')?.value;
+            const reason = document.getElementById('password_reason')?.value || '';
             
-            // Show success modal
-            showPasswordResult(data.message);
-        } else {
-            showToast('Error: ' + data.message, 'error');
-        }
-    })
-    .catch(error => {
-        changeBtn.classList.remove('loading');
-        changeBtn.disabled = false;
-        changeBtn.innerHTML = originalHtml;
-        
-        console.error('Password change error:', error);
-        showToast('An error occurred while changing the password.', 'error');
-    });
+            console.log('Password change initiated');
+            
+            // Validation
+            if (!newPassword || newPassword.length < 4) {
+                showToast('Password must be at least 4 characters long', 'error');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showToast('Password confirmation does not match', 'error');
+                return;
+            }
+            
+            const originalHtml = this.innerHTML;
+            this.classList.add('loading');
+            this.disabled = true;
+            
+            // Get CSRF token
+            const csrfToken = document.querySelector('meta[name="csrf_token"]')?.getAttribute('content') || '';
+            
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('new_password', newPassword);
+            formData.append('confirm_password', confirmPassword);
+            formData.append('reason', reason);
+            if (csrfToken) {
+                formData.append('csrf_token', csrfToken);
+            }
+            
+            // Send request
+            fetch(`<?= base_url('admin/customers/changePassword/' . $customer['id']) ?>`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                this.classList.remove('loading');
+                this.disabled = false;
+                this.innerHTML = originalHtml;
+                
+                if (data.success === true) {
+                    // Hide change password modal
+                    const changeModalElement = document.getElementById('changePasswordModal');
+                    if (changeModalElement) {
+                        const changeModal = bootstrap.Modal.getInstance(changeModalElement) || 
+                                          new bootstrap.Modal(changeModalElement);
+                        changeModal.hide();
+                    }
+                    
+                    // Show success result
+                    showPasswordResult(data.message || 'Password changed successfully!');
+                    
+                    // Reset form
+                    const form = document.getElementById('changePasswordForm');
+                    if (form) form.reset();
+                    
+                } else {
+                    showToast('Error: ' + (data.message || 'Unknown error occurred'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Password change error:', error);
+                
+                this.classList.remove('loading');
+                this.disabled = false;
+                this.innerHTML = originalHtml;
+                
+                showToast('An error occurred while changing the password: ' + error.message, 'error');
+            });
+        });
+    }
+    
+    // Password generation handler
+    const generateBtn = document.getElementById('confirmGeneratePasswordBtn');
+    if (generateBtn) {
+        generateBtn.addEventListener('click', function() {
+            const reason = document.getElementById('generation_reason')?.value || '';
+            
+            console.log('Password generation initiated');
+            
+            const originalHtml = this.innerHTML;
+            this.classList.add('loading');
+            this.disabled = true;
+            
+            // Get CSRF token
+            const csrfToken = document.querySelector('meta[name="csrf_token"]')?.getAttribute('content') || '';
+            
+            // Prepare form data
+            const formData = new FormData();
+            formData.append('reason', reason);
+            if (csrfToken) {
+                formData.append('csrf_token', csrfToken);
+            }
+            
+            // Send request
+            fetch(`<?= base_url('admin/customers/generatePassword/' . $customer['id']) ?>`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                this.classList.remove('loading');
+                this.disabled = false;
+                this.innerHTML = originalHtml;
+                
+                if (data.success === true) {
+                    // Hide generate password modal
+                    const generateModalElement = document.getElementById('generatePasswordModal');
+                    if (generateModalElement) {
+                        const generateModal = bootstrap.Modal.getInstance(generateModalElement) || 
+                                            new bootstrap.Modal(generateModalElement);
+                        generateModal.hide();
+                    }
+                    
+                    // Show success result with generated password
+                    showPasswordResult(
+                        data.message || 'Password generated successfully!',
+                        data.new_password
+                    );
+                    
+                    // Reset form
+                    const reasonField = document.getElementById('generation_reason');
+                    if (reasonField) reasonField.value = '';
+                    
+                } else {
+                    showToast('Error: ' + (data.message || 'Unknown error occurred'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Password generation error:', error);
+                
+                this.classList.remove('loading');
+                this.disabled = false;
+                this.innerHTML = originalHtml;
+                
+                showToast('An error occurred while generating the password: ' + error.message, 'error');
+            });
+        });
+    }
 });
 
-// Handle password generation
-document.getElementById('confirmGeneratePasswordBtn').addEventListener('click', function() {
-    const reason = document.getElementById('generation_reason').value;
-    
-    const generateBtn = this;
-    const originalHtml = generateBtn.innerHTML;
-    generateBtn.classList.add('loading');
-    generateBtn.disabled = true;
-    
-    // Send generate password request
-    fetch(`<?= base_url('admin/customers/generatePassword/' . $customer['id']) ?>`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: new URLSearchParams({
-            reason: reason
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        generateBtn.classList.remove('loading');
-        generateBtn.disabled = false;
-        generateBtn.innerHTML = originalHtml;
-        
-        if (data.success) {
-            // Hide generate password modal
-            const generateModal = bootstrap.Modal.getInstance(document.getElementById('generatePasswordModal'));
-            generateModal.hide();
-            
-            // Show success modal with generated password
-            showPasswordResult(data.message, data.new_password);
-        } else {
-            showToast('Error: ' + data.message, 'error');
-        }
-    })
-    .catch(error => {
-        generateBtn.classList.remove('loading');
-        generateBtn.disabled = false;
-        generateBtn.innerHTML = originalHtml;
-        
-        console.error('Password generation error:', error);
-        showToast('An error occurred while generating the password.', 'error');
-    });
-});
-
-function showPasswordResult(message, generatedPassword = null) {
-    const modal = new bootstrap.Modal(document.getElementById('passwordResultModal'));
-    const generatedPasswordDisplay = document.getElementById('generatedPasswordDisplay');
-    const generatedPasswordField = document.getElementById('generatedPasswordField');
-    
-    if (generatedPassword) {
-        generatedPasswordField.value = generatedPassword;
-        generatedPasswordDisplay.style.display = 'block';
-    } else {
-        generatedPasswordDisplay.style.display = 'none';
-    }
-    
-    modal.show();
-}
-
-function copyToClipboard(fieldId) {
-    const field = document.getElementById(fieldId);
-    field.select();
-    field.setSelectionRange(0, 99999);
+// Enhanced showPasswordResult function
+function showPasswordResult(message, newPassword = null) {
+    console.log('showPasswordResult called with:', { message, newPassword });
     
     try {
-        document.execCommand('copy');
-        showToast('Password copied to clipboard!', 'success');
-    } catch (err) {
-        showToast('Failed to copy password', 'error');
+        // Create and show result modal
+        const resultModalHtml = `
+            <div class="modal fade" id="dynamicPasswordResultModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title">
+                                <i class="fas fa-check-circle"></i>
+                                Password Updated Successfully
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle"></i>
+                                ${message}
+                            </div>
+                            
+                            ${newPassword ? `
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Generated Password:</strong></label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="dynamicGeneratedPasswordField" value="${newPassword}" readonly>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="copyGeneratedPassword()">
+                                        <i class="fas fa-copy"></i> Copy
+                                    </button>
+                                </div>
+                                <small class="form-text text-danger">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Please save this password securely. It cannot be retrieved again.
+                                </small>
+                            </div>
+                            ` : ''}
+                            
+                            <div class="alert alert-info">
+                                <i class="fas fa-shield-alt"></i>
+                                <strong>Security Note:</strong> The password has been securely hashed in the database.
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+                                <i class="fas fa-check"></i> Understood
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Remove any existing result modal
+        const existingModal = document.getElementById('dynamicPasswordResultModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        
+        // Add the new modal to the page
+        document.body.insertAdjacentHTML('beforeend', resultModalHtml);
+        
+        // Show the modal
+        const resultModal = new bootstrap.Modal(document.getElementById('dynamicPasswordResultModal'));
+        resultModal.show();
+        
+        // Clean up when modal is hidden
+        document.getElementById('dynamicPasswordResultModal').addEventListener('hidden.bs.modal', function() {
+            this.remove();
+        });
+        
+    } catch (error) {
+        console.error('Error in showPasswordResult:', error);
+        // Fallback to simple alert
+        if (newPassword) {
+            alert(`${message}\n\nGenerated Password: ${newPassword}\n\nPlease save this password securely!`);
+        } else {
+            alert(message);
+        }
     }
 }
 
+// Function to copy generated password
+function copyGeneratedPassword() {
+    const passwordField = document.getElementById('dynamicGeneratedPasswordField');
+    if (passwordField) {
+        copyToClipboard(passwordField.value);
+    }
+}
+
+// Enhanced copy to clipboard function
+function copyToClipboard(text) {
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Password copied to clipboard!', 'success');
+            }).catch(err => {
+                console.error('Clipboard write failed:', err);
+                fallbackCopyToClipboard(text);
+            });
+        } else {
+            fallbackCopyToClipboard(text);
+        }
+    } catch (error) {
+        console.error('Copy to clipboard error:', error);
+        fallbackCopyToClipboard(text);
+    }
+}
+
+// Fallback copy method
+function fallbackCopyToClipboard(text) {
+    try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        
+        textArea.focus();
+        textArea.select();
+        
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        if (successful) {
+            showToast('Password copied to clipboard!', 'success');
+        } else {
+            prompt('Copy this password manually:', text);
+        }
+    } catch (error) {
+        console.error('Fallback copy failed:', error);
+        prompt('Copy this password manually:', text);
+    }
+}
+
+// Enhanced toast function
 function showToast(message, type) {
+    // Remove existing toast
+    const existingToast = document.getElementById('dynamicToast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
     // Create toast element
     const toast = document.createElement('div');
-    toast.className = `alert alert-${type === 'error' ? 'danger' : 'success'} alert-dismissible fade show position-fixed`;
-    toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+    toast.id = 'dynamicToast';
+    toast.className = `alert alert-${type === 'error' ? 'danger' : type === 'success' ? 'success' : 'info'} position-fixed`;
+    toast.style.cssText = `
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        max-width: 500px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideInRight 0.3s ease-out;
+    `;
+    
+    const iconClass = type === 'error' ? 'fas fa-exclamation-triangle' : 
+                     type === 'success' ? 'fas fa-check-circle' : 'fas fa-info-circle';
+    
     toast.innerHTML = `
-        <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i>
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="d-flex align-items-center">
+            <i class="${iconClass} me-2"></i>
+            <div class="flex-grow-1">${message}</div>
+            <button type="button" class="btn-close ms-2" onclick="this.parentElement.parentElement.remove()"></button>
+        </div>
     `;
     
     document.body.appendChild(toast);
     
-    // Auto-remove after 4 seconds
+    // Auto remove after 5 seconds
     setTimeout(() => {
         if (toast.parentNode) {
-            toast.remove();
+            toast.style.animation = 'slideInRight 0.3s ease-out reverse';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 300);
         }
-    }, 4000);
+    }, 5000);
 }
 </script>
+
 <?= $this->endSection() ?>
