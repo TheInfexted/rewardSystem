@@ -6,20 +6,24 @@ use App\Controllers\BaseController;
 use App\Models\LandingPageModel;
 use App\Models\WheelItemsModel;
 use App\Models\LandingPageMusicModel;
+use App\Models\AdminSettingsModel;
+use \App\Models\WheelSoundModel;
 
 
 class LandingPageController extends BaseController
 {
     protected $landingPageModel;
     protected $wheelSoundModel;
+    protected $adminSettingsModel;
 
     public function __construct()
     {
-        
+        helper(['form', 'url']);
         $this->landingPageModel = new LandingPageModel();
         $this->wheelItemsModel = new WheelItemsModel();
-        $this->landingPageMusicModel = new \App\Models\LandingPageMusicModel();
-        $this->wheelSoundModel = new \App\Models\WheelSoundModel();
+        $this->landingPageMusicModel = new LandingPageMusicModel();
+        $this->wheelSoundModel = new WheelSoundModel();
+        $this->adminSettingsModel = new AdminSettingsModel();
         
         // Ensure upload directory exists
         $uploadPath = FCPATH . 'uploads/landing/';
@@ -44,12 +48,24 @@ class LandingPageController extends BaseController
      */
     public function index()
     {
-        $data = [
-            'title' => 'Landing Page Builder',
-            'landing_data' => $this->landingPageModel->getActiveData()
-        ];
+        try {
+            // Get landing page data
+            $landingData = $this->landingPageModel->getActiveData();
+            
+            // Get bonus settings for the modal
+            $bonusSettings = $this->adminSettingsModel->getBonusSettings();
 
-        return view('admin/landing_page/builder', $data);
+            $data = [
+                'title' => 'Landing Page Builder',
+                'landing_data' => $landingData,
+                'bonus_settings' => $bonusSettings
+            ];
+
+            return view('admin/landing_page/builder', $data);
+        } catch (\Exception $e) {
+            log_message('error', 'Landing page builder error: ' . $e->getMessage());
+            return redirect()->to('admin/dashboard')->with('error', 'Failed to load landing page builder.');
+        }
     }
 
     /**

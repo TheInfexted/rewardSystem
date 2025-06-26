@@ -10,9 +10,6 @@
                class="btn btn-gold">
                 <i class="bi bi-download"></i> Export CSV
             </a>
-            <button type="button" class="btn btn-gold" data-bs-toggle="modal" data-bs-target="#settingsModal">
-                <i class="bi bi-gear"></i> Settings
-            </button>
         </div>
     </div>
 
@@ -278,50 +275,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Settings Modal -->
-<div class="modal fade" id="settingsModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content bg-dark border-gold">
-            <div class="modal-header border-gold">
-                <h5 class="modal-title text-gold">Bonus Settings</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <form action="<?= base_url('admin/bonus/settings') ?>" method="POST">
-                <?= csrf_field() ?>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label text-gold">Redirect URL</label>
-                        <input type="url" name="bonus_redirect_url" class="form-control bg-dark text-light border-gold"
-                               value="<?= $bonusSettings['bonus_redirect_url'] ?? '' ?>" 
-                               placeholder="https://example.com/redirect">
-                        <small class="text-muted">URL to redirect users after claiming bonus</small>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="bonus_claim_enabled" 
-                                   <?= ($bonusSettings['bonus_claim_enabled'] ?? '1') === '1' ? 'checked' : '' ?>>
-                            <label class="form-check-label text-light">
-                                Enable bonus claiming
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label text-gold">Terms Text</label>
-                        <textarea name="bonus_terms_text" class="form-control bg-dark text-light border-gold" rows="3"
-                                  placeholder="Terms and conditions text..."><?= $bonusSettings['bonus_terms_text'] ?? '' ?></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer border-gold">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-gold">Save Settings</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>

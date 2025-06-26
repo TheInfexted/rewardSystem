@@ -119,6 +119,7 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
     // Bonus management routes
     $routes->group('bonus', function($routes) {
         $routes->get('/', 'Admin\BonusController::index');
+        $routes->get('get-settings', 'Admin\BonusController::getSettings');
         $routes->post('settings', 'Admin\BonusController::updateSettings');
         $routes->post('update-settings', 'Admin\BonusController::updateSettings'); 
         $routes->post('status/(:num)', 'Admin\BonusController::updateStatus/$1');

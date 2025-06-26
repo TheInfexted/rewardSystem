@@ -301,29 +301,34 @@ class BonusController extends BaseController
      */
     public function updateSettings()
     {
-        if ($this->request->getMethod() === 'POST') {
-            $settings = [
-                'bonus_redirect_url' => $this->request->getPost('bonus_redirect_url'),
-                'bonus_claim_enabled' => $this->request->getPost('bonus_claim_enabled') ? '1' : '0',
-                'bonus_terms_text' => $this->request->getPost('bonus_terms_text')
-            ];
+        $isAjax = $this->request->isAJAX();
+        $settings = [
+            'bonus_redirect_url' => $this->request->getPost('bonus_redirect_url'),
+            'bonus_claim_enabled' => $this->request->getPost('bonus_claim_enabled') ? '1' : '0',
+            'bonus_terms_text' => $this->request->getPost('bonus_terms_text')
+        ];
 
-            if (!empty($settings['bonus_redirect_url']) && !filter_var($settings['bonus_redirect_url'], FILTER_VALIDATE_URL)) {
-                return redirect()->back()->with('error', 'Please enter a valid redirect URL.');
+        if (!empty($settings['bonus_redirect_url']) && !filter_var($settings['bonus_redirect_url'], FILTER_VALIDATE_URL)) {
+            if ($isAjax) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Invalid URL']);
             }
-
-            try {
-                if (class_exists('App\Models\AdminSettingsModel')) {
-                    $this->adminSettingsModel->updateSettings($settings);
-                }
-                return redirect()->back()->with('success', 'Settings updated successfully!');
-            } catch (\Exception $e) {
-                log_message('error', 'Failed to update bonus settings: ' . $e->getMessage());
-                return redirect()->back()->with('error', 'Failed to update settings. Please try again.');
-            }
+            return redirect()->back()->with('error', 'Please enter a valid redirect URL.');
         }
 
-        return redirect()->to('admin/bonus');
+        try {
+            $this->adminSettingsModel->updateSettings($settings);
+
+            if ($isAjax) {
+                return $this->response->setJSON(['success' => true, 'message' => 'Settings updated!']);
+            }
+            return redirect()->back()->with('success', 'Settings updated!');
+        } catch (\Exception $e) {
+            log_message('error', 'Bonus settings error: ' . $e->getMessage());
+            if ($isAjax) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Save failed.']);
+            }
+            return redirect()->back()->with('error', 'Failed to update settings.');
+        }
     }
 
     /**
@@ -404,6 +409,34 @@ class BonusController extends BaseController
         }
 
         return redirect()->to('admin/bonus');
+    }
+
+    /**
+     * Get bonus settings (for AJAX modal)
+     */
+    public function getSettings()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON([
+                'success' => false,
+                'message' => 'Invalid request'
+            ]);
+        }
+
+        try {
+            $settings = $this->adminSettingsModel->getBonusSettings();
+
+            return $this->response->setJSON([
+                'success' => true,
+                'settings' => $settings
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'Failed to load bonus settings: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to load bonus settings'
+            ]);
+        }
     }
 
     /**

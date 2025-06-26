@@ -128,3 +128,56 @@ in APPPATH\Controllers\Admin\CustomersController.php on line 261.
  5 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
  6 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
  7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-06-26 14:06:52 --> Bonus index error: Call to undefined method App\Models\BonusClaimModel::getFilteredClaims
+ERROR - 2025-06-26 14:06:55 --> Bonus index error: Call to undefined method App\Models\BonusClaimModel::getFilteredClaims
+ERROR - 2025-06-26 14:11:36 --> Bonus index error: Undefined variable $stats
+ERROR - 2025-06-26 14:15:15 --> Bonus index error: Undefined variable $stats
+ERROR - 2025-06-26 14:22:28 --> Bonus index error: View themes, no current section.
+ERROR - 2025-06-26 14:24:21 --> Bonus index error: View themes, no current section.
+ERROR - 2025-06-26 14:26:33 --> Failed to view claim: Invalid file: "admin/bonus/view.php"
+ERROR - 2025-06-26 14:28:05 --> Bonus index error: Undefined variable $stats
+ERROR - 2025-06-26 14:38:12 --> mysqli_sql_exception: Cannot add or update a child row: a foreign key constraint fails (`rewardsystem`.`customer_profile_changes`, CONSTRAINT `fk_profile_changes_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE) in C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('\r\n             ...', 0)
+#1 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('\r\n             ...')
+#2 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('\r\n             ...')
+#3 C:\xampp\htdocs\rewardSystem\app\Controllers\Admin\CustomersController.php(1435): CodeIgniter\Database\BaseConnection->query('\r\n             ...', Array)
+#4 C:\xampp\htdocs\rewardSystem\app\Controllers\Admin\CustomersController.php(1027): App\Controllers\Admin\CustomersController->logSettingsChange('1', 'checkin_setting...', '{"default_check...')
+#5 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\Admin\CustomersController->updateCheckinSettings()
+#6 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\CustomersController))
+#7 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+ERROR - 2025-06-26 14:38:12 --> Failed to log settings change: Cannot add or update a child row: a foreign key constraint fails (`rewardsystem`.`customer_profile_changes`, CONSTRAINT `fk_profile_changes_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE)
+ERROR - 2025-06-26 14:38:36 --> mysqli_sql_exception: Cannot add or update a child row: a foreign key constraint fails (`rewardsystem`.`customer_profile_changes`, CONSTRAINT `fk_profile_changes_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE) in C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('\r\n             ...', 0)
+#1 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('\r\n             ...')
+#2 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('\r\n             ...')
+#3 C:\xampp\htdocs\rewardSystem\app\Controllers\Admin\CustomersController.php(1435): CodeIgniter\Database\BaseConnection->query('\r\n             ...', Array)
+#4 C:\xampp\htdocs\rewardSystem\app\Controllers\Admin\CustomersController.php(1027): App\Controllers\Admin\CustomersController->logSettingsChange('1', 'checkin_setting...', '{"default_check...')
+#5 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\Admin\CustomersController->updateCheckinSettings()
+#6 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\CustomersController))
+#7 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+ERROR - 2025-06-26 14:38:36 --> Failed to log settings change: Cannot add or update a child row: a foreign key constraint fails (`rewardsystem`.`customer_profile_changes`, CONSTRAINT `fk_profile_changes_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE)
+ERROR - 2025-06-26 14:38:40 --> mysqli_sql_exception: Cannot add or update a child row: a foreign key constraint fails (`rewardsystem`.`customer_profile_changes`, CONSTRAINT `fk_profile_changes_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE) in C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('\r\n             ...', 0)
+#1 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('\r\n             ...')
+#2 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('\r\n             ...')
+#3 C:\xampp\htdocs\rewardSystem\app\Controllers\Admin\CustomersController.php(1435): CodeIgniter\Database\BaseConnection->query('\r\n             ...', Array)
+#4 C:\xampp\htdocs\rewardSystem\app\Controllers\Admin\CustomersController.php(1027): App\Controllers\Admin\CustomersController->logSettingsChange('1', 'checkin_setting...', '{"default_check...')
+#5 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\Admin\CustomersController->updateCheckinSettings()
+#6 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\CustomersController))
+#7 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+ERROR - 2025-06-26 14:38:40 --> Failed to log settings change: Cannot add or update a child row: a foreign key constraint fails (`rewardsystem`.`customer_profile_changes`, CONSTRAINT `fk_profile_changes_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE)

@@ -12,9 +12,11 @@
             <button type="button" class="btn btn-warning" onclick="cleanupImages()">
                 <i class="bi bi-trash"></i> <?= t('Admin.landing.cleanup') ?>
             </button>
+            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#bonusSettingsModal">
+                <i class="bi bi-gear"></i> Bonus Settings
+            </button>
         </div>
     </div>
-
 
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay" style="display: none;">
@@ -544,7 +546,153 @@
     </form>
 </div>
 
+<!-- Bonus Settings Modal -->
+<div class="modal fade" id="bonusSettingsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark border-gold">
+            <div class="modal-header border-gold">
+                <h5 class="modal-title text-gold"><?= t('Admin.bonus.modal.title') ?></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="bonusSettingsForm" action="<?= base_url('admin/bonus/settings') ?>" method="POST">
+                <?= csrf_field() ?>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label text-gold"><?= t('Admin.bonus.modal.redirect_url') ?></label>
+                        <input type="url" name="bonus_redirect_url" id="bonus_redirect_url" 
+                               class="form-control bg-dark text-light border-gold"
+                               placeholder="<?= t('Admin.bonus.modal.redirect_placeholder') ?>">
+                        <small class="text-muted"><?= t('Admin.bonus.modal.redirect_help') ?></small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="bonus_claim_enabled" id="bonus_claim_enabled">
+                            <label class="form-check-label text-light" for="bonus_claim_enabled">
+                                <?= t('Admin.bonus.modal.enable_claims') ?>
+                            </label>
+                        </div>
+                        <small class="text-muted"><?= t('Admin.bonus.modal.enable_help') ?></small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label text-gold"><?= t('Admin.bonus.modal.terms') ?></label>
+                        <textarea name="bonus_terms_text" id="bonus_terms_text" 
+                                  class="form-control bg-dark text-light border-gold" rows="3"
+                                  placeholder="<?= t('Admin.bonus.modal.terms_placeholder') ?>"></textarea>
+                        <small class="text-muted"><?= t('Admin.bonus.modal.terms_help') ?></small>
+                    </div>
+                </div>
+                <div class="modal-footer border-gold">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <?= t('Admin.bonus.modal.cancel') ?>
+                    </button>
+                    <button type="submit" class="btn btn-gold">
+                        <?= t('Admin.bonus.modal.save') ?>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load bonus settings when modal opens
+        document.getElementById('bonusSettingsModal').addEventListener('show.bs.modal', function() {
+            loadBonusSettings();
+        });
+
+        // Handle bonus settings form submission
+        document.getElementById('bonusSettingsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveBonusSettings();
+        });
+    });
+
+    // Load bonus settings via AJAX
+    function loadBonusSettings() {
+        fetch('<?= base_url('admin/bonus/get-settings') ?>', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                document.getElementById('bonus_redirect_url').value = data.settings.bonus_redirect_url || '';
+                document.getElementById('bonus_claim_enabled').checked = data.settings.bonus_claim_enabled === '1';
+                document.getElementById('bonus_terms_text').value = data.settings.bonus_terms_text || '';
+            } else {
+                showAlert('error', data.message || 'Failed to load settings.');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading settings:', error);
+            showAlert('error', 'Error loading settings.');
+        });
+    }
+
+    // Save bonus settings via AJAX
+    function saveBonusSettings() {
+        const form = document.getElementById('bonusSettingsForm');
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Server responded with ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                showAlert('success', data.message || 'Settings updated successfully!');
+                bootstrap.Modal.getInstance(document.getElementById('bonusSettingsModal')).hide();
+            } else {
+                showAlert('error', data.message || 'Failed to update settings');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('error', 'Network error or invalid response.');
+        });
+    }
+
+    // Alert function
+    function showAlert(type, message) {
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+        const alertHTML = `
+            <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        // Insert alert at the top of the container
+        const container = document.querySelector('.container-fluid');
+        container.insertAdjacentHTML('afterbegin', alertHTML);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            const alert = container.querySelector('.alert');
+            if (alert) {
+                alert.remove();
+            }
+        }, 5000);
+    }
     // Translations for JavaScript
     const translations = {
         saving: '<?= t('Admin.common.saving', [], 'Saving...') ?>',
@@ -1032,40 +1180,96 @@
 .border-secondary {
     border-color: #6c757d !important;
 }
+
 .img-thumbnail {
     background-color: var(--secondary-black);
     border: 1px solid #6c757d;
     max-height: 150px;
 }
+
 .text-info ul {
     font-size: 0.85rem;
 }
+
 .image-upload-area {
     border: 2px dashed #6c757d;
     border-radius: 0.375rem;
     padding: 1rem;
     background-color: rgba(108, 117, 125, 0.1);
 }
+
 .current-image-card {
     background-color: rgba(255, 215, 0, 0.05);
     padding: 1rem;
     border-radius: 0.375rem;
     border: 1px solid rgba(255, 215, 0, 0.2);
 }
+
 .loading-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.8);
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     z-index: 9999;
 }
+
 .loading-content {
     text-align: center;
+}
+
+.preview-image {
+    max-width: 200px;
+    max-height: 150px;
+}
+
+.image-upload-container {
+    border: 2px dashed #6c757d;
+    border-radius: 8px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.current-image-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+}
+
+.image-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.image-filename {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.border-gold {
+    border-color: #ffd700 !important;
+}
+
+.text-gold {
+    color: #ffd700 !important;
+}
+
+.btn-gold {
+    background-color: #ffd700;
+    border-color: #ffd700;
+    color: #000;
+}
+
+.btn-gold:hover {
+    background-color: #ffed4e;
+    border-color: #ffed4e;
+    color: #000;
 }
 </style>
 <?= $this->endSection() ?>
