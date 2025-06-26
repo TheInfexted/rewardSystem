@@ -41,6 +41,9 @@
                 </div>
                 <div class="card-body">
                     <form id="checkinSettingsForm">
+                        
+                        <input type="hidden" name="customer_id" value="<?= $customer['id'] ?>">
+
                         <div class="mb-3">
                             <label class="form-label text-light">Daily Check-in Points</label>
                             <input type="number" class="form-control" name="default_checkin_points" 

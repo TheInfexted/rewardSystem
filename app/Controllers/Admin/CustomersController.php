@@ -965,13 +965,31 @@ class CustomersController extends BaseController
         $data = [
             'title' => 'Check-in Settings - ' . $customer['username'],
             'customer' => $customer,
-            'checkin_settings' => $this->getCheckinSettings(),
+            'checkin_settings' => $this->getCheckinSettings($customerId),
             'customer_checkin_history' => $this->getCustomerCheckinHistory($customerId),
             'weekly_progress' => $this->getWeeklyProgress($customerId),
             'checkin_statistics' => $this->getCheckinStatistics($customerId)
         ];
         
         return view('admin/customers/checkin_settings', $data);
+    }
+
+    /**
+     * ADD: Log customer-specific settings changes
+     */
+    private function logCustomerSpecificSettingsChange($customerId, $adminId, $action, $details)
+    {
+        $db = \Config\Database::connect();
+        
+        try {
+            $db->query("
+                INSERT INTO customer_profile_changes 
+                (customer_id, admin_id, field_changed, old_value, new_value, change_reason, created_at) 
+                VALUES (?, ?, ?, '', ?, 'Customer-specific settings updated by admin', NOW())
+            ", [$customerId, $adminId, $action, $details]);
+        } catch (\Exception $e) {
+            log_message('error', 'Failed to log customer-specific settings change: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -985,8 +1003,19 @@ class CustomersController extends BaseController
         
         $settingsData = $this->request->getPost();
         
+        // Get customer ID from the request
+        $customerId = $this->request->getPost('customer_id');
+        
+        if (!$customerId) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Customer ID is required'
+            ]);
+        }
+        
         // Validation rules for check-in settings
         $validationRules = [
+            'customer_id' => 'required|integer',
             'default_checkin_points' => 'required|integer|greater_than[0]|less_than[1000]',
             'weekly_bonus_multiplier' => 'required|decimal|greater_than[0]|less_than[10]',
             'max_streak_days' => 'required|integer|greater_than[0]|less_than[365]',
@@ -1004,35 +1033,84 @@ class CustomersController extends BaseController
         try {
             $db = \Config\Database::connect();
             
-            // Update multiple settings at once
-            $settings = [
+            // Verify customer exists
+            $customer = $this->customerModel->find($customerId);
+            if (!$customer) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Customer not found'
+                ]);
+            }
+            
+            // Prepare customer-specific settings
+            $customerSettings = [
+                'customer_id' => $customerId,
                 'default_checkin_points' => $settingsData['default_checkin_points'],
                 'weekly_bonus_multiplier' => $settingsData['weekly_bonus_multiplier'],
                 'max_streak_days' => $settingsData['max_streak_days'],
-                'weekend_bonus_points' => $settingsData['weekend_bonus_points']
+                'weekend_bonus_points' => $settingsData['weekend_bonus_points'],
+                'consecutive_bonus_points' => 5, // Default value, can be made configurable
+                'updated_at' => date('Y-m-d H:i:s')
             ];
             
-            foreach ($settings as $key => $value) {
-                $db->query("
-                    INSERT INTO admin_settings (setting_key, setting_value, setting_description, created_at) 
-                    VALUES (?, ?, ?, NOW()) 
-                    ON DUPLICATE KEY UPDATE 
-                    setting_value = VALUES(setting_value), 
-                    updated_at = NOW()
-                ", [$key, $value, "Check-in setting: {$key}"]);
+            // Insert or update customer-specific settings
+            $existingSettings = $db->query("
+                SELECT id FROM customer_checkin_settings WHERE customer_id = ?
+            ", [$customerId])->getRow();
+            
+            if ($existingSettings) {
+                // Update existing settings
+                $result = $db->query("
+                    UPDATE customer_checkin_settings 
+                    SET default_checkin_points = ?,
+                        weekly_bonus_multiplier = ?,
+                        max_streak_days = ?,
+                        weekend_bonus_points = ?,
+                        consecutive_bonus_points = ?,
+                        updated_at = NOW()
+                    WHERE customer_id = ?
+                ", [
+                    $customerSettings['default_checkin_points'],
+                    $customerSettings['weekly_bonus_multiplier'],
+                    $customerSettings['max_streak_days'],
+                    $customerSettings['weekend_bonus_points'],
+                    $customerSettings['consecutive_bonus_points'],
+                    $customerId
+                ]);
+            } else {
+                // Insert new settings
+                $result = $db->query("
+                    INSERT INTO customer_checkin_settings 
+                    (customer_id, default_checkin_points, weekly_bonus_multiplier, max_streak_days, weekend_bonus_points, consecutive_bonus_points, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
+                ", [
+                    $customerId,
+                    $customerSettings['default_checkin_points'],
+                    $customerSettings['weekly_bonus_multiplier'],
+                    $customerSettings['max_streak_days'],
+                    $customerSettings['weekend_bonus_points'],
+                    $customerSettings['consecutive_bonus_points']
+                ]);
             }
             
-            // Log the changes
-            $adminId = session()->get('user_id');
-            $this->logSettingsChange($adminId, 'checkin_settings_updated', json_encode($settings));
-            
-            return $this->response->setJSON([
-                'success' => true,
-                'message' => 'Check-in settings updated successfully'
-            ]);
+            if ($result) {
+                // Log the changes for this specific customer
+                $adminId = session()->get('user_id');
+                $this->logCustomerSpecificSettingsChange($customerId, $adminId, 'checkin_settings_updated', json_encode($customerSettings));
+                
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Check-in settings updated successfully for customer: ' . $customer['username']
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Failed to update customer settings'
+                ]);
+            }
             
         } catch (\Exception $e) {
-            log_message('error', 'Check-in settings update error: ' . $e->getMessage());
+            log_message('error', 'Customer-specific check-in settings update error: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Failed to update settings: ' . $e->getMessage()
@@ -1221,10 +1299,30 @@ class CustomersController extends BaseController
     /**
      * Get check-in settings from database
      */
-    private function getCheckinSettings()
+    private function getCheckinSettings($customerId = null)
     {
         $db = \Config\Database::connect();
         
+        // If customer ID provided, try to get customer-specific settings
+        if ($customerId) {
+            $customerSettings = $db->query("
+                SELECT * FROM customer_checkin_settings 
+                WHERE customer_id = ?
+            ", [$customerId])->getRowArray();
+            
+            if ($customerSettings) {
+                // Return customer-specific settings
+                return [
+                    'default_checkin_points' => $customerSettings['default_checkin_points'],
+                    'weekly_bonus_multiplier' => $customerSettings['weekly_bonus_multiplier'],
+                    'max_streak_days' => $customerSettings['max_streak_days'],
+                    'weekend_bonus_points' => $customerSettings['weekend_bonus_points'],
+                    'consecutive_bonus_points' => $customerSettings['consecutive_bonus_points'] ?? 5
+                ];
+            }
+        }
+        
+        // Fallback to global admin settings
         $query = $db->query("
             SELECT setting_key, setting_value 
             FROM admin_settings 
@@ -1246,7 +1344,8 @@ class CustomersController extends BaseController
             'default_checkin_points' => 10,
             'weekly_bonus_multiplier' => 1.5,
             'max_streak_days' => 7,
-            'weekend_bonus_points' => 5
+            'weekend_bonus_points' => 5,
+            'consecutive_bonus_points' => 5
         ];
         
         return array_merge($defaults, $settings);

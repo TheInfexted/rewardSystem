@@ -25,44 +25,50 @@ class CustomerController extends BaseController
         $this->adminSettingsModel = new AdminSettingsModel();
     }
 
-    /**
-     * Customer Dashboard
-     */
     public function dashboard()
     {
-        $session = session();
-        $customerId = $session->get('customer_id');
-        $customerLoggedIn = $session->get('customer_logged_in');
-        
-        // Debug logging
-        log_message('info', 'Customer Dashboard Access - Customer ID: ' . $customerId . ', Logged In: ' . ($customerLoggedIn ? 'Yes' : 'No'));
-        
-        if (!$customerId || !$customerLoggedIn) {
-            return redirect()->to('/reward')->with('error', 'Please login first');
+        $customerId = session()->get('customer_id');
+        if (!$customerId) {
+            return redirect()->to('/reward')->with('error', 'Please log in to access dashboard');
         }
-        
+
         try {
             $customer = $this->customerModel->find($customerId);
             if (!$customer) {
-                $session->remove(['customer_id', 'customer_logged_in', 'customer_data']);
-                return redirect()->to('/reward')->with('error', 'Invalid session');
+                return redirect()->to('/reward')->with('error', 'Customer not found');
             }
-            
-            // Get current week check-in data
+
+            // Get week data with dynamic calculations
             $weekData = $this->getCurrentWeekCheckins($customerId);
+            
+            // Get monthly checkins
+            $monthlyCheckins = $this->getMonthlyCheckins($customerId);
             
             // Get recent activities
             $recentActivities = $this->getRecentActivities($customerId);
             
-            // Get monthly checkins count
-            $monthlyCheckins = $this->getMonthlyCheckinsCount($customerId);
-
-            // Get platform settings for customer service - Updated to use the class property
+            // Get admin contact settings
             try {
-                $whatsappNumber = $this->adminSettingsModel->getSetting('reward_whatsapp_number', '60102763672');
-                $telegramUsername = $this->adminSettingsModel->getSetting('reward_telegram_username', 'brendxn1127');
+                $db = \Config\Database::connect();
+                $contactSettings = $db->query("
+                    SELECT setting_key, setting_value 
+                    FROM admin_settings 
+                    WHERE setting_key IN ('whatsapp_number', 'telegram_username')
+                ")->getResultArray();
+                
+                $whatsappNumber = '60102763672'; // Default
+                $telegramUsername = 'brendxn1127'; // Default
+                
+                foreach ($contactSettings as $setting) {
+                    if ($setting['setting_key'] === 'whatsapp_number') {
+                        $whatsappNumber = $setting['setting_value'];
+                    } elseif ($setting['setting_key'] === 'telegram_username') {
+                        $telegramUsername = $setting['setting_value'];
+                    }
+                }
+                
             } catch (\Exception $e) {
-                log_message('error', 'Error getting admin settings: ' . $e->getMessage());
+                log_message('error', 'Failed to get contact settings: ' . $e->getMessage());
                 // Fallback to defaults if admin settings fail
                 $whatsappNumber = '60102763672';
                 $telegramUsername = 'brendxn1127';
@@ -563,15 +569,15 @@ class CustomerController extends BaseController
             // Calculate day of week (1=Monday, 7=Sunday)
             $dayOfWeek = date('N');
             
-            // Progressive reward system for the week
-            $rewardPoints = $this->calculateWeeklyReward($weekCheckins + 1, $dayOfWeek);
+            // Progressive reward system using customer-specific settings
+            $rewardPoints = $this->calculateCheckinReward($weekCheckins + 1, $dayOfWeek, $customerId);
             
             // Insert check-in record
             $inserted = $builder->insert([
                 'customer_id' => $customerId,
                 'checkin_date' => $today,
                 'reward_points' => $rewardPoints,
-                'streak_day' => $weekCheckins + 1, // This is now "week progress"
+                'streak_day' => $weekCheckins + 1,
                 'created_at' => date('Y-m-d H:i:s')
             ]);
             
@@ -589,7 +595,7 @@ class CustomerController extends BaseController
                 } else {
                     log_message('error', 'Failed to add points after check-in');
                     return $this->response->setJSON([
-                        'success' => true, // Still show success since check-in was recorded
+                        'success' => true,
                         'message' => 'Check-in recorded but failed to add points',
                         'points' => $rewardPoints,
                         'day' => $weekCheckins + 1
@@ -609,6 +615,58 @@ class CustomerController extends BaseController
                 'message' => 'Check-in failed. Please try again.'
             ]);
         }
+    }
+
+    private function getCheckinSettings($customerId = null)
+    {
+        $db = \Config\Database::connect();
+        
+        // If customer ID provided, try to get customer-specific settings
+        if ($customerId) {
+            $customerSettings = $db->query("
+                SELECT * FROM customer_checkin_settings 
+                WHERE customer_id = ?
+            ", [$customerId])->getRowArray();
+            
+            if ($customerSettings) {
+                // Return customer-specific settings
+                return [
+                    'default_checkin_points' => $customerSettings['default_checkin_points'],
+                    'weekly_bonus_multiplier' => $customerSettings['weekly_bonus_multiplier'],
+                    'max_streak_days' => $customerSettings['max_streak_days'],
+                    'weekend_bonus_points' => $customerSettings['weekend_bonus_points'],
+                    'consecutive_bonus_points' => $customerSettings['consecutive_bonus_points'] ?? 5
+                ];
+            }
+        }
+        
+        // Fallback to global admin settings
+        $query = $db->query("
+            SELECT setting_key, setting_value 
+            FROM admin_settings 
+            WHERE setting_key IN (
+                'default_checkin_points', 
+                'weekly_bonus_multiplier', 
+                'max_streak_days', 
+                'weekend_bonus_points'
+            )
+        ");
+        
+        $settings = [];
+        foreach ($query->getResultArray() as $row) {
+            $settings[$row['setting_key']] = $row['setting_value'];
+        }
+        
+        // Set defaults if not found
+        $defaults = [
+            'default_checkin_points' => 10,
+            'weekly_bonus_multiplier' => 1.5,
+            'max_streak_days' => 7,
+            'weekend_bonus_points' => 5,
+            'consecutive_bonus_points' => 5
+        ];
+        
+        return array_merge($defaults, $settings);
     }
 
     /**
@@ -827,30 +885,62 @@ class CustomerController extends BaseController
                 }
             }
             
+            // Create a map of checked-in dates for quick lookup
+            $checkinMap = [];
+            foreach ($weekCheckins as $checkin) {
+                $checkinMap[$checkin['checkin_date']] = $checkin;
+            }
+            
+            // Find the first check-in date this week to determine streak start
+            $firstCheckinDate = !empty($weekCheckins) ? $weekCheckins[0]['checkin_date'] : null;
+            $currentStreak = count($weekCheckins);
+            
             // Create weekly progress array (1=Monday to 7=Sunday)
             $weeklyProgress = [];
             for ($i = 1; $i <= 7; $i++) {
                 $date = date('Y-m-d', strtotime($weekDates['week_start'] . ' +' . ($i-1) . ' days'));
-                $weeklyProgress[$i] = [
+                $dayOfWeek = date('N', strtotime($date)); // 1=Monday, 7=Sunday
+                
+                $dayData = [
                     'day' => date('j', strtotime($date)),
                     'date' => $date,
                     'day_name' => date('l', strtotime($date)),
                     'day_short' => date('D', strtotime($date)),
-                    'checked_in' => false,
+                    'checked_in' => isset($checkinMap[$date]),
                     'is_today' => $date === $today,
                     'is_future' => $date > $today,
-                    'points' => $this->calculateWeeklyReward($i, $i),
-                    'actual_points' => 0
+                    'points' => 0,
+                    'actual_points' => 0,
+                    'status' => 'pending'
                 ];
-            }
-            
-            // Mark checked-in days
-            foreach ($weekCheckins as $checkin) {
-                $dayOfWeek = date('N', strtotime($checkin['checkin_date'])); // 1=Monday, 7=Sunday
-                if (isset($weeklyProgress[$dayOfWeek])) {
-                    $weeklyProgress[$dayOfWeek]['checked_in'] = true;
-                    $weeklyProgress[$dayOfWeek]['actual_points'] = $checkin['reward_points'];
+                
+                if (isset($checkinMap[$date])) {
+                    // Customer checked in on this day - show actual points
+                    $dayData['actual_points'] = $checkinMap[$date]['reward_points'];
+                    $dayData['points'] = $checkinMap[$date]['reward_points'];
+                    $dayData['status'] = 'completed';
+                    $dayData['streak_day'] = $checkinMap[$date]['streak_day'];
+                    
+                } elseif ($date > $today) {
+                    // Future day - calculate predicted points based on current streak
+                    $daysFromToday = (strtotime($date) - strtotime($today)) / (24 * 60 * 60);
+                    $predictedStreakDay = $currentStreak + $daysFromToday;
+                    $dayData['points'] = $this->calculateCheckinReward($predictedStreakDay, $dayOfWeek, $customerId);
+                    $dayData['status'] = 'future';
+                    
+                } elseif ($date === $today && !$todayCheckin) {
+                    // Today, but not checked in yet - show potential points
+                    $potentialStreakDay = $currentStreak + 1;
+                    $dayData['points'] = $this->calculateCheckinReward($potentialStreakDay, $dayOfWeek, $customerId);
+                    $dayData['status'] = 'available';
+                    
+                } else {
+                    // Past day, not checked in - missed day
+                    $dayData['points'] = 0;
+                    $dayData['status'] = 'missed';
                 }
+                
+                $weeklyProgress[$i] = $dayData;
             }
             
             return [
@@ -859,7 +949,9 @@ class CustomerController extends BaseController
                 'checkin_count' => count($weekCheckins),
                 'weekly_progress' => $weeklyProgress,
                 'week_start' => $weekDates['week_start'],
-                'week_end' => $weekDates['week_end']
+                'week_end' => $weekDates['week_end'],
+                'current_streak' => $currentStreak,
+                'first_checkin_date' => $firstCheckinDate
             ];
             
         } catch (\Exception $e) {
@@ -870,7 +962,9 @@ class CustomerController extends BaseController
                 'checkin_count' => 0,
                 'weekly_progress' => [],
                 'week_start' => date('Y-m-d'),
-                'week_end' => date('Y-m-d')
+                'week_end' => date('Y-m-d'),
+                'current_streak' => 0,
+                'first_checkin_date' => null
             ];
         }
     }
@@ -901,18 +995,35 @@ class CustomerController extends BaseController
     /**
      * Calculate weekly reward points
      */
-    private function calculateWeeklyReward($dayNumber, $dayOfWeek)
+    private function calculateCheckinReward($dayNumber, $dayOfWeek, $customerId = null)
     {
-        // Base points per day
-        $basePoints = 10;
-        
-        // Bonus for consecutive days
-        $consecutiveBonus = ($dayNumber - 1) * 5;
-        
-        // Weekend bonus
-        $weekendBonus = ($dayOfWeek == 6 || $dayOfWeek == 7) ? 10 : 0;
-        
-        return $basePoints + $consecutiveBonus + $weekendBonus;
+        try {
+            // Get customer-specific settings if customer ID provided
+            $settings = $this->getCheckinSettings($customerId);
+            
+            // Base points from customer-specific or global settings
+            $basePoints = (int) $settings['default_checkin_points'];
+            
+            // Consecutive bonus - now configurable per customer
+            $consecutiveBonusPerDay = (int) ($settings['consecutive_bonus_points'] ?? 5);
+            $consecutiveBonus = ($dayNumber - 1) * $consecutiveBonusPerDay;
+            
+            // Weekend bonus from customer-specific or global settings
+            $weekendBonus = ($dayOfWeek == 6 || $dayOfWeek == 7) ? 
+                (int) $settings['weekend_bonus_points'] : 0;
+            
+            // Weekly completion bonus
+            $weeklyMultiplier = ($dayNumber >= 7) ? (float) $settings['weekly_bonus_multiplier'] : 1;
+            
+            $totalPoints = ($basePoints + $consecutiveBonus + $weekendBonus) * $weeklyMultiplier;
+            
+            return (int) round($totalPoints);
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Calculate checkin reward error: ' . $e->getMessage());
+            // Fallback to hardcoded values if settings fail
+            return 10 + (($dayNumber - 1) * 5) + (($dayOfWeek == 6 || $dayOfWeek == 7) ? 10 : 0);
+        }
     }
 
     /**
@@ -929,7 +1040,7 @@ class CustomerController extends BaseController
     }
 
     /**
-     * Get recent activities for customer (formatted for original dashboard)
+     * Get recent activities for customer
      */
     private function getRecentActivities($customerId)
     {
@@ -991,48 +1102,31 @@ class CustomerController extends BaseController
     /**
      * Convert timestamp to time ago format
      */
-    private function timeAgo($timestamp)
+    private function timeAgo($datetime)
     {
-        try {
-            $time = strtotime($timestamp);
-            $diff = time() - $time;
-            
-            if ($diff < 60) {
-                return 'Just now';
-            } elseif ($diff < 3600) {
-                $mins = floor($diff / 60);
-                return $mins . ' minute' . ($mins > 1 ? 's' : '') . ' ago';
-            } elseif ($diff < 86400) {
-                $hours = floor($diff / 3600);
-                return $hours . ' hour' . ($hours > 1 ? 's' : '') . ' ago';
-            } elseif ($diff < 604800) {
-                $days = floor($diff / 86400);
-                return $days . ' day' . ($days > 1 ? 's' : '') . ' ago';
-            } else {
-                return date('M j, Y', $time);
-            }
-        } catch (\Exception $e) {
-            return 'Unknown';
-        }
+        $time = time() - strtotime($datetime);
+        
+        if ($time < 60) return 'just now';
+        if ($time < 3600) return floor($time/60) . ' mins ago';
+        if ($time < 86400) return floor($time/3600) . ' hours ago';
+        if ($time < 2592000) return floor($time/86400) . ' days ago';
+        if ($time < 31536000) return floor($time/2592000) . ' months ago';
+        
+        return floor($time/31536000) . ' years ago';
     }
 
     /**
      * Get monthly checkins count
      */
-    private function getMonthlyCheckinsCount($customerId)
+    private function getMonthlyCheckins($customerId)
     {
         try {
             $db = \Config\Database::connect();
-            $currentMonth = date('Y-m');
-            
-            $count = $db->table('customer_checkins')
-                       ->where('customer_id', $customerId)
-                       ->where('checkin_date >=', $currentMonth . '-01')
-                       ->where('checkin_date <=', $currentMonth . '-31')
-                       ->countAllResults();
-            
-            return $count;
-            
+            return $db->table('customer_checkins')
+                     ->where('customer_id', $customerId)
+                     ->where('MONTH(checkin_date)', date('n'))
+                     ->where('YEAR(checkin_date)', date('Y'))
+                     ->countAllResults();
         } catch (\Exception $e) {
             log_message('error', 'Get monthly checkins error: ' . $e->getMessage());
             return 0;

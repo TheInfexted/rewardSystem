@@ -236,3 +236,82 @@ ERROR - 2025-06-26 16:54:12 --> Stack trace: #0 C:\xampp\htdocs\rewardSystem\app
 #6 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
 #7 {main}
 ERROR - 2025-06-26 16:56:08 --> CustomerCheckinModel does not exist
+ERROR - 2025-06-26 21:20:17 --> mysqli_sql_exception: Unknown column 'ip_address' in 'field list' in C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `cu...', 0)
+#1 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `cu...')
+#2 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `cu...')
+#3 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `cu...', Array, false)
+#4 C:\xampp\htdocs\rewardSystem\app\Models\CustomerModel.php(470): CodeIgniter\Database\BaseBuilder->insert(Array)
+#5 C:\xampp\htdocs\rewardSystem\app\Models\CustomerModel.php(393): App\Models\CustomerModel->logPasswordChange(1, 1, 'Password change...')
+#6 C:\xampp\htdocs\rewardSystem\app\Controllers\Admin\CustomersController.php(359): App\Models\CustomerModel->changePassword(1, '11272003', 1, 'Password change...')
+#7 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\Admin\CustomersController->changePassword('1')
+#8 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\CustomersController))
+#9 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#10 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#11 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#12 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#13 {main}
+ERROR - 2025-06-26 21:20:17 --> Failed to log password change: Unknown column 'ip_address' in 'field list'
+ERROR - 2025-06-26 21:40:40 --> mysqli_sql_exception: Cannot add or update a child row: a foreign key constraint fails (`rewardsystem`.`customer_profile_changes`, CONSTRAINT `fk_profile_changes_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE) in C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('\r\n             ...', 0)
+#1 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('\r\n             ...')
+#2 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('\r\n             ...')
+#3 C:\xampp\htdocs\rewardSystem\app\Controllers\Admin\CustomersController.php(1435): CodeIgniter\Database\BaseConnection->query('\r\n             ...', Array)
+#4 C:\xampp\htdocs\rewardSystem\app\Controllers\Admin\CustomersController.php(1027): App\Controllers\Admin\CustomersController->logSettingsChange('1', 'checkin_setting...', '{"default_check...')
+#5 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\Admin\CustomersController->updateCheckinSettings()
+#6 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\CustomersController))
+#7 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+ERROR - 2025-06-26 21:40:40 --> Failed to log settings change: Cannot add or update a child row: a foreign key constraint fails (`rewardsystem`.`customer_profile_changes`, CONSTRAINT `fk_profile_changes_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE)
+ERROR - 2025-06-26 21:40:53 --> mysqli_sql_exception: Cannot add or update a child row: a foreign key constraint fails (`rewardsystem`.`customer_profile_changes`, CONSTRAINT `fk_profile_changes_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE) in C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('\r\n             ...', 0)
+#1 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('\r\n             ...')
+#2 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('\r\n             ...')
+#3 C:\xampp\htdocs\rewardSystem\app\Controllers\Admin\CustomersController.php(1435): CodeIgniter\Database\BaseConnection->query('\r\n             ...', Array)
+#4 C:\xampp\htdocs\rewardSystem\app\Controllers\Admin\CustomersController.php(1027): App\Controllers\Admin\CustomersController->logSettingsChange('1', 'checkin_setting...', '{"default_check...')
+#5 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\Admin\CustomersController->updateCheckinSettings()
+#6 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\CustomersController))
+#7 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+ERROR - 2025-06-26 21:40:53 --> Failed to log settings change: Cannot add or update a child row: a foreign key constraint fails (`rewardsystem`.`customer_profile_changes`, CONSTRAINT `fk_profile_changes_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE)
+ERROR - 2025-06-26 21:47:10 --> mysqli_sql_exception: Cannot add or update a child row: a foreign key constraint fails (`rewardsystem`.`customer_profile_changes`, CONSTRAINT `fk_profile_changes_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE) in C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('\r\n             ...', 0)
+#1 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('\r\n             ...')
+#2 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('\r\n             ...')
+#3 C:\xampp\htdocs\rewardSystem\app\Controllers\Admin\CustomersController.php(1435): CodeIgniter\Database\BaseConnection->query('\r\n             ...', Array)
+#4 C:\xampp\htdocs\rewardSystem\app\Controllers\Admin\CustomersController.php(1027): App\Controllers\Admin\CustomersController->logSettingsChange('1', 'checkin_setting...', '{"default_check...')
+#5 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\Admin\CustomersController->updateCheckinSettings()
+#6 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\CustomersController))
+#7 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+ERROR - 2025-06-26 21:47:10 --> Failed to log settings change: Cannot add or update a child row: a foreign key constraint fails (`rewardsystem`.`customer_profile_changes`, CONSTRAINT `fk_profile_changes_customer` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE)
+ERROR - 2025-06-26 21:58:08 --> mysqli_sql_exception: Unknown column 'ip_address' in 'field list' in C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `cu...', 0)
+#1 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `cu...')
+#2 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `cu...')
+#3 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `cu...', Array, false)
+#4 C:\xampp\htdocs\rewardSystem\app\Models\CustomerModel.php(470): CodeIgniter\Database\BaseBuilder->insert(Array)
+#5 C:\xampp\htdocs\rewardSystem\app\Models\CustomerModel.php(393): App\Models\CustomerModel->logPasswordChange(2, 1, 'Quick password ...')
+#6 C:\xampp\htdocs\rewardSystem\app\Controllers\Admin\CustomersController.php(359): App\Models\CustomerModel->changePassword(2, '11272003', 1, 'Quick password ...')
+#7 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\Admin\CustomersController->changePassword('2')
+#8 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\CustomersController))
+#9 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#10 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#11 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#12 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#13 {main}
+ERROR - 2025-06-26 21:58:08 --> Failed to log password change: Unknown column 'ip_address' in 'field list'

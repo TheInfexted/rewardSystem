@@ -104,21 +104,29 @@
                     <?php foreach ($weekly_progress as $day => $dayData): ?>
                         <div class="day-item-compact <?= $dayData['checked_in'] ? 'completed' : '' ?> 
                                                     <?= $dayData['is_today'] ? 'today' : '' ?>
-                                                    <?= $dayData['is_future'] ? 'future' : '' ?>">
+                                                    <?= $dayData['is_future'] ? 'future' : '' ?>
+                                                    <?= $dayData['status'] === 'missed' ? 'missed' : '' ?>
+                                                    <?= $dayData['status'] === 'available' ? 'available' : '' ?>">
                             <div class="day-name"><?= $dayData['day_short'] ?></div>
                             <div class="day-number"><?= $dayData['day'] ?></div>
                             <div class="day-points">
-                                <?php if ($dayData['checked_in']): ?>
+                                <?php if ($dayData['status'] === 'completed'): ?>
                                     <span class="earned">+<?= $dayData['actual_points'] ?></span>
-                                <?php elseif (!$dayData['is_future']): ?>
+                                <?php elseif ($dayData['status'] === 'available'): ?>
                                     <span class="available">+<?= $dayData['points'] ?></span>
-                                <?php else: ?>
+                                <?php elseif ($dayData['status'] === 'future'): ?>
                                     <span class="future">+<?= $dayData['points'] ?></span>
+                                <?php elseif ($dayData['status'] === 'missed'): ?>
+                                    <span class="missed"></span>
+                                <?php else: ?>
+                                    <span class="pending">--</span>
                                 <?php endif; ?>
                             </div>
                             
                             <?php if ($dayData['checked_in']): ?>
                                 <div class="check-mark">✓</div>
+                            <?php elseif ($dayData['status'] === 'missed'): ?>
+                                <div class="missed-mark">✗</div>
                             <?php endif; ?>
                         </div>
                     <?php endforeach; ?>
