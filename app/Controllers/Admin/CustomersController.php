@@ -639,6 +639,74 @@ class CustomersController extends BaseController
             ]);
         }
     }
+
+    /**
+     * Handle background image upload
+     */
+    private function handleBackgroundImageUpload($profileImage, $customerId, $customer)
+    {
+        try {
+            // Validate file type
+            $allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!in_array($profileImage->getMimeType(), $allowedMimes)) {
+                return [
+                    'success' => false,
+                    'message' => 'Invalid file type. Please upload JPEG, PNG, GIF, or WebP images only.'
+                ];
+            }
+            
+            // Check file size (5MB max)
+            if ($profileImage->getSize() > 5 * 1024 * 1024) {
+                return [
+                    'success' => false,
+                    'message' => 'File size too large. Maximum size is 5MB.'
+                ];
+            }
+            
+            $uploadPath = FCPATH . 'uploads/profile_backgrounds/';
+            
+            // Create directory if it doesn't exist
+            if (!is_dir($uploadPath)) {
+                if (!mkdir($uploadPath, 0755, true)) {
+                    return [
+                        'success' => false,
+                        'message' => 'Failed to create upload directory.'
+                    ];
+                }
+            }
+            
+            // Generate unique filename
+            $newName = $customerId . '_' . time() . '_' . $profileImage->getRandomName();
+            
+            if ($profileImage->move($uploadPath, $newName)) {
+                // Remove old image if exists
+                if (!empty($customer['profile_background_image'])) {
+                    $oldImagePath = $uploadPath . $customer['profile_background_image'];
+                    if (file_exists($oldImagePath)) {
+                        @unlink($oldImagePath);
+                    }
+                }
+                
+                return [
+                    'success' => true,
+                    'filename' => $newName,
+                    'message' => 'Image uploaded successfully'
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'message' => 'Failed to upload image file.'
+                ];
+            }
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Background image upload error: ' . $e->getMessage());
+            return [
+                'success' => false,
+                'message' => 'Upload failed: ' . $e->getMessage()
+            ];
+        }
+    }
     
     public function resetDashboard($customerId)
     {

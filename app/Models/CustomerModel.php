@@ -45,7 +45,9 @@ class CustomerModel extends Model
         'email' => 'permit_empty|valid_email|is_unique[customers.email,id,{id}]',
         'phone' => 'permit_empty|min_length[10]|max_length[20]',
         'name' => 'permit_empty|max_length[100]',
-        'dashboard_bg_color' => 'permit_empty|regex_match[/^#[0-9A-Fa-f]{6}$/]'
+        'dashboard_bg_color' => 'permit_empty|regex_match[/^#[0-9A-Fa-f]{6}$/]',
+        'points' => 'permit_empty|integer|greater_than_equal_to[0]',
+        'spin_tokens' => 'permit_empty|integer|greater_than_equal_to[0]'
     ];
 
     protected $validationMessages = [
