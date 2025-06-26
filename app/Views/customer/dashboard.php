@@ -32,13 +32,18 @@
                 <div class="user-header-row">
                     <div class="user-details">
                         <div class="username-with-settings">
-                            <h4 class="username"><?= esc($username) ?></h4>
+                            <h4 class="username copyable-username" 
+                                id="customerUsername" 
+                                onclick="copyUsername()" 
+                                title="Click to copy username">
+                                <?= esc($username) ?>
+                                <i class="bi bi-copy copy-icon" id="copyIcon"></i>
+                            </h4>
                             <button class="btn-settings" onclick="openSettingsModal()" title="Settings">
                                 <i class="bi bi-gear"></i>
                             </button>
                         </div>
                         <p class="user-subtitle">Premium Member</p>
-                        <!-- Updated Spin Tokens with Plus Button -->
                         <div class="spin-tokens-container">
                             <div class="spin-tokens">
                                 <i class="bi bi-coin"></i> 
@@ -117,6 +122,12 @@
                 <?php endif; ?>
             </div>
         </div>
+    </div>
+
+    <!-- Copy confirmation toast -->
+    <div class="copy-toast" id="copyToast">
+        <i class="bi bi-check-circle"></i>
+        <span>Username copied to clipboard!</span>
     </div>
         
     <!-- Statistics -->
@@ -309,6 +320,7 @@
 <script src="<?= base_url('js/dashboard/dashboard-ads.js') ?>"></script>
 <script src="<?= base_url('js/dashboard/dashboard-password.js') ?>"></script>
 <script src="<?= base_url('js/dashboard/dashboard-theme.js') ?>?v=<?= time() ?>"></script>
+<script src="<?= base_url('js/dashboard/dashboard-copy.js') ?>?v=<?= time() ?>"></script>
 
 <!-- Dashboard Configuration from PHP -->
 <script>
@@ -323,8 +335,8 @@ const dashboardPhpConfig = {
     todayCheckin: <?= $today_checkin ? 'true' : 'false' ?>,
     dashboardBgColor: '<?= $dashboard_bg_color ?? '#ffffff' ?>',
     profileBackground: '<?= $profile_background ?? 'default' ?>', 
-    whatsappNumber: '<?= $whatsapp_number ?>',  
-    telegramUsername: '<?= $telegram_username ?>',
+    whatsappNumber: '601159599022',  
+    telegramUsername: 'harryford19',
     spinTokens: <?= $spin_tokens ?? 0 ?>,
     <?php if (isset($weekly_progress) && is_array($weekly_progress)): ?>
     weeklyProgress: <?= json_encode($weekly_progress) ?>,
@@ -441,9 +453,9 @@ function contactCustomerService(platform) {
     const message = `Hi, I want to deposit into my ${walletName}.\nMy User ID is: ${dashboardPhpConfig.username}`;
     const encodedMessage = encodeURIComponent(message);
     
-    // Get contact details from config or use defaults
-    const whatsappNumber = dashboardPhpConfig.whatsappNumber || '601159599022';
-    const telegramUsername = dashboardPhpConfig.telegramUsername || 'harryford19';
+    // Get contact details from config 
+    const whatsappNumber = dashboardPhpConfig.whatsappNumber;
+    const telegramUsername = dashboardPhpConfig.telegramUsername;
     
     // Create platform URLs
     let redirectUrl = '';

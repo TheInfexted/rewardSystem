@@ -51,6 +51,8 @@ $routes->group('customer', function($routes) {
     $routes->get('theme-statistics', 'Admin\CustomersController::themeStatistics');
     $routes->post('bulk-reset-themes', 'Admin\CustomersController::bulkResetThemes');
     $routes->get('theme-colors', 'Admin\CustomersController::getAvailableThemeColors');
+    $routes->post('get-copyable-info', 'CustomerController::getCopyableInfo');
+    $routes->post('log-copy-action', 'CustomerController::logCopyAction');
 });
 
 // Authentication routes

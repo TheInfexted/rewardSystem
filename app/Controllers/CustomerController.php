@@ -89,6 +89,99 @@ class CustomerController extends BaseController
     }
 
     /**
+     * Get customer information for copy functionality
+     * Returns username and other copyable data
+     */
+    public function getCopyableInfo()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON(['error' => 'Invalid request']);
+        }
+        
+        $customerId = session()->get('customer_id');
+        if (!$customerId) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Please log in to continue'
+            ]);
+        }
+        
+        try {
+            $customer = $this->customerModel->find($customerId);
+            if (!$customer) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Customer not found'
+                ]);
+            }
+            
+            return $this->response->setJSON([
+                'success' => true,
+                'data' => [
+                    'username' => $customer['username'],
+                    'customer_id' => $customer['id'],
+                    'email' => $customer['email'] ?? null,
+                    'phone' => $customer['phone'] ?? null,
+                    'points' => $customer['points'] ?? 0,
+                    'spin_tokens' => $customer['spin_tokens'] ?? 0
+                ]
+            ]);
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Get copyable info error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Unable to retrieve information'
+            ]);
+        }
+    }
+
+    /**
+     * Log copy action for analytics/security
+     */
+    public function logCopyAction()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON(['error' => 'Invalid request']);
+        }
+        
+        $customerId = session()->get('customer_id');
+        if (!$customerId) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ]);
+        }
+        
+        $copyType = $this->request->getPost('copy_type'); // 'username', 'customer_id', etc.
+        $userAgent = $this->request->getUserAgent();
+        $ipAddress = $this->request->getIPAddress();
+        
+        try {
+            // Log the copy action (you can create a dedicated table for this)
+            log_message('info', sprintf(
+                'Copy Action - Customer ID: %d, Type: %s, IP: %s, User Agent: %s',
+                $customerId,
+                $copyType ?? 'unknown',
+                $ipAddress,
+                $userAgent
+            ));
+            
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Action logged'
+            ]);
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Log copy action error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Logging failed'
+            ]);
+        }
+    }
+
+    /**
      * Get current password (masked for security)
      * Returns the actual password only for display toggle functionality
      */
