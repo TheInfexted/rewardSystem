@@ -989,7 +989,7 @@
 
         // Store winner data and redirect to reward system
         function storeWinnerDataAndRedirect(winner) {
-            console.log('Storing winner data and redirecting:', winner);
+            console.log('Storing winner data and showing modal:', winner);
             
             // Store winner data in session via AJAX
             const formData = new FormData();
@@ -1007,17 +1007,23 @@
             .then(data => {
                 console.log('Store winner response:', data);
                 if (data.success) {
-                    // Show modal with redirect button
+                    // Store redirect data for later use
+                    window.rewardRedirectData = {
+                        type: data.redirect_type,
+                        url: data.redirect_url,
+                        token: data.api_token,
+                        apiUrl: data.api_url
+                    };
+                    
+                    // Show the modal first
                     showBonusWinModal(winner);
                 } else {
                     console.error('Failed to store winner data:', data.message);
-                    // Fallback to regular modal
                     showRegularWinModal(winner);
                 }
             })
             .catch(error => {
                 console.error('Error storing winner data:', error);
-                // Fallback to regular modal
                 showRegularWinModal(winner);
             });
         }
@@ -1029,7 +1035,6 @@
             const winTitle = document.querySelector('.win-title');
             const collectButton = document.querySelector('#winModal .btn');
             
-            // Update modal for bonus win
             winTitle.innerHTML = '🎉 CONGRATULATIONS! 🎉';
             modalPrize.textContent = `You Won: ${winner.name}${winner.prize > 0 ? ' - ¥' + parseFloat(winner.prize).toLocaleString() : ''}`;
             collectButton.textContent = 'Claim Reward';
@@ -1041,8 +1046,15 @@
             modalContent.style.background = 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)';
             modalContent.style.border = '3px solid #ffd700';
             
-            // Manual redirect functionality 
+            // Set click handler for claim button
             collectButton.onclick = function() {
+                // Hide modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('winModal'));
+                if (modal) {
+                    modal.hide();
+                }
+                
+                // Now redirect to claim page
                 handlePrizeRedirect(winner);
             };
             
@@ -1075,8 +1087,13 @@
                 
                 if (data.success) {
                     if (data.redirect_type === 'external') {
-                        // External redirect with API data
-                        redirectToExternalSite(data.redirect_url, data.api_token, winner);
+                        // External redirect with API data and winner data
+                        redirectToExternalSite(data.redirect_url, data.api_token, data.api_url, {
+                            name: winner.name,
+                            prize: winner.prize || 0,
+                            type: winner.type || 'product',
+                            timestamp: Math.floor(Date.now() / 1000)
+                        });
                     } else {
                         // Internal redirect to reward page
                         window.location.href = data.redirect_url;
@@ -1094,25 +1111,30 @@
         }
 
         // Redirect to external site with POST data
-        function redirectToExternalSite(redirectUrl, apiToken, winner) {
-            console.log('Redirecting to external site:', redirectUrl);
+        function redirectToExternalSite(redirectUrl, apiToken, apiUrl, sessionData) {
+            console.log('Redirecting to external domain:', redirectUrl);
+            console.log('API Token:', apiToken ? apiToken.substring(0, 10) + '...' : 'null');
+            console.log('API URL:', apiUrl);
+            console.log('Session Data:', sessionData);
             
             // Create a form to POST data to external URL
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = redirectUrl;
-            form.target = '_blank'; 
+            form.target = '_self';
             form.style.display = 'none';
             
-            // Add form fields
             const fields = {
                 'api_token': apiToken,
-                'api_url': '<?= base_url('api/winner-data') ?>',
-                'prize_name': winner.name,
-                'prize_type': winner.type || 'product',
-                'prize_value': winner.prize || 0,
-                'source': 'fortune_wheel'
+                'api_url': apiUrl,
+                'source': 'fortune_wheel',
+                'timestamp': new Date().toISOString()
             };
+            
+            // Add winner data if provided
+            if (sessionData) {
+                fields['winner_data'] = JSON.stringify(sessionData);
+            }
             
             Object.keys(fields).forEach(key => {
                 const input = document.createElement('input');
@@ -1123,18 +1145,8 @@
             });
             
             document.body.appendChild(form);
-            
-            // Submit form and clean up
             form.submit();
             document.body.removeChild(form);
-            
-            // Close the modal after opening external link
-            setTimeout(() => {
-                const modal = bootstrap.Modal.getInstance(document.getElementById('winModal'));
-                if (modal) {
-                    modal.hide();
-                }
-            }, 1000);
         }
 
         // Show regular win modal

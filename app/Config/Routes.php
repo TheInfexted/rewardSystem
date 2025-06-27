@@ -14,8 +14,6 @@ $routes->post('spin', 'LandingController::spin');
 $routes->post('claim-bonus', 'LandingController::claimBonus');
 $routes->post('store-winner', 'LandingController::storeWinner'); 
 $routes->get('spin-status', 'LandingController::getSpinStatus');
-$routes->get('claim-reward', 'RewardController::claimPage');
-$routes->post('claim-reward', 'RewardController::claimPage');
 
 // API Routes
 $routes->get('api/wheel-data', 'CustomerController::getWheelData');
@@ -27,7 +25,7 @@ $routes->match(['get', 'post', 'options'], 'api/winner-data', 'LandingController
 
 //Reward System routes
 $routes->group('reward', function($routes) {
-    $routes->get('/', 'RewardController::index');
+    $routes->match(['get', 'post'], '/', 'RewardController::index');
     $routes->get('test', 'RewardController::test');
     $routes->post('auto-register', 'RewardController::autoRegister');
     $routes->post('login', 'RewardController::login');

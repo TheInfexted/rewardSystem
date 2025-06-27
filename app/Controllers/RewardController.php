@@ -26,19 +26,36 @@ class RewardController extends BaseController
     public function index()
     {
         $session = session();
-        
-        // Check if user won a prize (from session)
+
+        // Check if user won a prize (from session OR from POST data)
         $winnerData = $session->get('winner_data');
         
-        // Debug logging
-        log_message('info', 'RewardController index - Winner data: ' . json_encode($winnerData));
-        log_message('info', 'RewardController index - Session data: ' . json_encode([
-            'customer_id' => $session->get('customer_id'),
-            'customer_logged_in' => $session->get('customer_logged_in'),
-            'session_id' => session_id()
-        ]));
+        // Check if winner data was passed directly via POST (PRIORITY)
+        $postedWinnerData = $this->request->getPost('winner_data');
+        if ($postedWinnerData) {
+            $decodedData = json_decode($postedWinnerData, true);
+            if ($decodedData && isset($decodedData['name'])) {
+                $winnerData = $decodedData;
+                // Store in session for consistency
+                $session->set('winner_data', $winnerData);
+                log_message('info', 'Winner data received via POST redirect');
+            }
+        }
         
-        // Check for customer login - check both customer_id and customer_logged_in
+        // Only try API if we don't have winner data from POST
+        $apiToken = $this->request->getPost('api_token') ?? $this->request->getGet('api_token');
+        $apiUrl = $this->request->getPost('api_url') ?? $this->request->getGet('api_url');
+        
+        if (!$winnerData && $apiToken && $apiUrl) {
+            $winnerData = $this->fetchWinnerDataFromApi($apiUrl, $apiToken);
+            
+            // Store fetched data in session for consistency
+            if ($winnerData) {
+                $session->set('winner_data', $winnerData);
+            }
+        }
+        
+        // Check for customer login
         $customerId = $session->get('customer_id');
         $customerLoggedIn = $session->get('customer_logged_in');
         $customerData = null;
@@ -58,10 +75,88 @@ class RewardController extends BaseController
             'logged_in' => $customerLoggedIn && !empty($customerData),
             'customer_data' => $customerData,
             'has_prize_data' => !empty($winnerData) && is_array($winnerData) && isset($winnerData['name']),
-            'show_dashboard_access' => true // Always allow dashboard access
+            'show_dashboard_access' => true,
+            'api_redirect' => !empty($apiToken)
         ];
 
         return view('public/reward_system', $data);
+    }
+
+    /**
+     * NEW: Fetch winner data from API
+     */
+    private function fetchWinnerDataFromApi($apiUrl, $apiToken)
+    {
+        try {
+            log_message('error', '=== CURL REQUEST DEBUG ===');
+            log_message('error', 'Making cURL request to: ' . $apiUrl);
+            log_message('error', 'With token: ' . substr($apiToken, 0, 10) . '...');
+            
+            $ch = curl_init();
+            curl_setopt_array($ch, [
+                CURLOPT_URL => $apiUrl,
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => http_build_query([
+                    'api_token' => $apiToken,
+                    'clear_session' => 'true'
+                ]),
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT => 15,
+                CURLOPT_CONNECTTIMEOUT => 10,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => false,  // Add this for local SSL issues
+                CURLOPT_HTTPHEADER => [
+                    'Content-Type: application/x-www-form-urlencoded',
+                    'User-Agent: RewardSystem/1.0'
+                ]
+            ]);
+            
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curlError = curl_error($ch);
+            curl_close($ch);
+            
+            log_message('error', 'cURL response code: ' . $httpCode);
+            log_message('error', 'cURL response: ' . substr($response, 0, 500));
+            log_message('error', 'cURL error: ' . ($curlError ?: 'none'));
+            log_message('error', '=== END CURL DEBUG ===');
+            log_message('info', 'API Response: ' . $response);
+            
+            if ($curlError) {
+                log_message('error', 'API cURL Error: ' . $curlError);
+                return null;
+            }
+            
+            if ($httpCode !== 200) {
+                log_message('error', 'API HTTP Error: ' . $httpCode);
+                return null;
+            }
+            
+            $apiData = json_decode($response, true);
+            
+            if ($apiData && $apiData['success']) {
+                // Convert API data format to session format
+                $winnerData = [
+                    'name' => $apiData['data']['prize_name'],
+                    'prize' => floatval($apiData['data']['prize_value']),
+                    'type' => $apiData['data']['prize_type'],
+                    'timestamp' => strtotime($apiData['data']['won_at']),
+                    'session_id' => $apiData['data']['session_id'],
+                    'user_ip' => $apiData['data']['user_ip']
+                ];
+                
+                log_message('info', 'Successfully fetched winner data: ' . json_encode($winnerData));
+                return $winnerData;
+            } else {
+                log_message('error', 'API returned error: ' . ($apiData['message'] ?? 'Unknown error'));
+                return null;
+            }
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Exception fetching winner data: ' . $e->getMessage());
+            return null;
+        }
     }
 
     /**
@@ -80,15 +175,28 @@ class RewardController extends BaseController
             $result = $this->customerModel->createAutoCustomer();
             
             if ($result) {
+                // AUTOMATICALLY LOG IN THE USER
+                $session->set([
+                    'customer_id' => $result['id'],
+                    'customer_logged_in' => true,
+                    'customer_data' => [
+                        'id' => $result['id'],
+                        'username' => $result['username'],
+                        'name' => $result['username'],
+                        'phone' => $result['username'],
+                        'points' => 0,
+                    ]
+                ]);
 
                 return $this->response->setJSON([
                     'success' => true,
-                    'message' => 'Account created successfully!',
+                    'message' => 'Account created and logged in successfully!',
                     'customer_data' => [
                         'username' => $result['username'],
                         'password' => $result['password'],
                         'id' => $result['id']
                     ],
+                    'auto_logged_in' => true, // Flag to show user is now logged in
                     'redirect' => base_url('customer/dashboard') 
                 ]);
             }
@@ -345,97 +453,23 @@ class RewardController extends BaseController
         echo '<pre>' . print_r($data, true) . '</pre>';
     }
 
-    /**
-     * External claim page for client domain
-     */
-    public function claimPage()
+    private function setCorsHeaders()
     {
-        $rewardData = null;
-        $error = null;
-        $success_message = null;
-        
-        // Handle POST data from fortune wheel redirect
-        if ($this->request->getMethod() === 'POST' && $this->request->getPost('api_token')) {
-            $apiToken = $this->request->getPost('api_token');
-            $apiUrl = $this->request->getPost('api_url');
-            $prizeName = $this->request->getPost('prize_name');
-            $prizeType = $this->request->getPost('prize_type');
-            $prizeValue = $this->request->getPost('prize_value');
-            $source = $this->request->getPost('source');
-            
-            // Fetch detailed reward data from API
-            if ($apiToken && $apiUrl) {
-                try {
-                    $client = \Config\Services::curlrequest();
-                    $response = $client->post($apiUrl, [
-                        'form_params' => [
-                            'api_token' => $apiToken
-                        ],
-                        'timeout' => 10
-                    ]);
-                    
-                    $apiData = json_decode($response->getBody(), true);
-                    if ($apiData && $apiData['success']) {
-                        $rewardData = $apiData['data'];
-                    } else {
-                        $error = $apiData['message'] ?? 'Failed to fetch reward data';
-                    }
-                } catch (\Exception $e) {
-                    $error = 'Unable to connect to reward API: ' . $e->getMessage();
-                }
-            }
-        }
-        
-        // Handle claim form submission
-        if ($this->request->getMethod() === 'POST' && $this->request->getPost('claim_reward')) {
-            $userName = $this->request->getPost('user_name');
-            $phone = $this->request->getPost('phone');
-            $email = $this->request->getPost('email');
-            $prizeName = $this->request->getPost('prize_name');
-            $prizeValue = $this->request->getPost('prize_value');
-            $sessionId = $this->request->getPost('session_id');
-            
-            // Validate input
-            if (empty($userName) || empty($phone)) {
-                $error = 'Please fill in all required fields.';
-            } else {
-                try {
-                    // Save claim to database
-                    $claimData = [
-                        'session_id' => $sessionId,
-                        'user_ip' => $this->request->getIPAddress(),
-                        'user_name' => $userName,
-                        'phone_number' => $phone,
-                        'email' => $email ?: null,
-                        'bonus_type' => $prizeName,
-                        'bonus_amount' => floatval($prizeValue),
-                        'user_agent' => $this->request->getUserAgent()->getAgentString(),
-                        'status' => 'pending'
-                    ];
-                    
-                    $claimId = $this->bonusClaimModel->insert($claimData);
-                    
-                    if ($claimId) {
-                        $success_message = "Thank you! Your claim has been submitted. We'll contact you soon. Claim ID: #" . $claimId;
-                    } else {
-                        $error = 'Failed to submit claim. Please try again.';
-                    }
-                } catch (\Exception $e) {
-                    log_message('error', 'Claim submission error: ' . $e->getMessage());
-                    $error = 'Failed to submit claim. Please try again.';
-                }
-            }
-        }
-        
-        $data = [
-            'title' => 'Claim Your Reward',
-            'rewardData' => $rewardData,
-            'error' => $error,
-            'success_message' => $success_message,
-            'whatsapp_number' => $this->adminSettingsModel->getSetting('reward_whatsapp_number', '601159599022'),
-            'telegram_username' => $this->adminSettingsModel->getSetting('reward_telegram_username', 'harryford19')
+        // FIXED: Set more specific CORS headers for security
+        $allowedOrigins = [
+            'https://clientzone.kopisugar.cc',
+            'https://rewardcheckin.kopisugar.cc',
         ];
         
-        return view('public/claim_reward', $data);
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+        
+        if (in_array($origin, $allowedOrigins)) {
+            $this->response->setHeader('Access-Control-Allow-Origin', $origin);
+        }
+        
+        $this->response->setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+        $this->response->setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+        $this->response->setHeader('Access-Control-Allow-Credentials', 'true');
+        $this->response->setHeader('Access-Control-Max-Age', '86400'); // Cache preflight for 24 hours
     }
 }

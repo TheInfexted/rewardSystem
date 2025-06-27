@@ -573,10 +573,10 @@ class LandingController extends BaseController
                     ]);
                 }
                 
-                // Store winner data in session
+                // Store winner data in session WITH all required fields
                 $sessionData = [
                     'name' => htmlspecialchars($winnerData['name']),
-                    'prize' => $winnerData['prize'] ?? 0.00,
+                    'prize' => floatval($winnerData['prize'] ?? 0.00),
                     'type' => htmlspecialchars($winnerData['type']),
                     'timestamp' => time(),
                     'session_id' => $session->get('session_id') ?? session_id(),
@@ -585,29 +585,40 @@ class LandingController extends BaseController
                 
                 $session->set('winner_data', $sessionData);
                 
-                // Get redirect URL from bonus settings
-                $redirectUrl = $this->adminSettingsModel->getSetting('bonus_redirect_url', '/reward');
+                // Generate API token for secure data transfer
+                $apiToken = bin2hex(random_bytes(32));
+                $session->set('api_token', $apiToken);
                 
-                // If it's a bonus type and we have a custom redirect URL
-                if (($winnerData['type'] === 'product' || strpos($winnerData['name'], 'BONUS') !== false) 
-                    && !empty($redirectUrl) && $redirectUrl !== '/reward') {
-                    
-                    // Generate API token for secure data transfer
-                    $apiToken = bin2hex(random_bytes(32));
-                    $session->set('api_token', $apiToken);
-                    
-                    log_message('info', 'Winner data stored for external redirect: ' . $winnerData['name']);
+                // Get redirect URL from bonus settings
+                $redirectUrl = $this->adminSettingsModel->getSetting('bonus_redirect_url', base_url('reward'));
+                
+                // Check if this is a bonus/product that needs external redirect
+                $isProduct = ($winnerData['type'] === 'product');
+                $hasBonus = (strpos($winnerData['name'], 'BONUS') !== false);
+                $has120 = (strpos($winnerData['name'], '120%') !== false);
+                
+                $needsExternalRedirect = ($isProduct || $hasBonus || $has120);
+                
+                // Check if redirect URL is different from current domain
+                $currentDomain = $this->request->getServer('HTTP_HOST');
+                $redirectDomain = parse_url($redirectUrl, PHP_URL_HOST);
+                $isExternalDomain = ($redirectDomain && $redirectDomain !== $currentDomain);
+                
+                if ($needsExternalRedirect && $isExternalDomain) {
+                    log_message('info', 'EXTERNAL REDIRECT - Winner: ' . $winnerData['name'] . ', URL: ' . $redirectUrl);
                     
                     return $this->response->setJSON([
                         'success' => true,
                         'message' => 'Winner data stored successfully.',
                         'redirect_type' => 'external',
                         'redirect_url' => $redirectUrl,
-                        'api_token' => $apiToken
+                        'api_token' => $apiToken,
+                        'api_url' => base_url('api/winner-data'),
+                        'session_data' => $sessionData  // Pass data directly for external redirect
                     ]);
                 } else {
                     // Regular internal redirect to reward page
-                    log_message('info', 'Winner data stored for internal redirect: ' . $winnerData['name']);
+                    log_message('info', 'INTERNAL REDIRECT - Winner: ' . $winnerData['name']);
                     
                     return $this->response->setJSON([
                         'success' => true,
@@ -634,7 +645,6 @@ class LandingController extends BaseController
      */
     public function getWinnerData()
     {
-        // Allow CORS for external domains
         $this->setCorsHeaders();
         
         if ($this->request->getMethod() === 'OPTIONS') {
@@ -642,11 +652,27 @@ class LandingController extends BaseController
         }
         
         $session = session();
-        $apiToken = $this->request->getPost('api_token') ?? $this->request->getGet('token');
+        
+        $apiToken = $this->request->getPost('api_token') ?? $this->request->getGet('api_token');
         $sessionToken = $session->get('api_token');
+        
+        log_message('error', '=== API TOKEN VALIDATION ===');
+        log_message('error', 'Received API token: ' . ($apiToken ?: 'NULL'));
+        log_message('error', 'Session API token: ' . ($sessionToken ?: 'NULL'));
+        log_message('error', 'Tokens match: ' . (($apiToken === $sessionToken) ? 'YES' : 'NO'));
+        log_message('error', 'Session ID: ' . session_id());
+        
+        $winnerData = $session->get('winner_data');
+        log_message('error', 'Winner data in session: ' . ($winnerData ? 'EXISTS' : 'NULL'));
+        if ($winnerData) {
+            log_message('error', 'Winner data timestamp: ' . ($winnerData['timestamp'] ?? 'NO_TIMESTAMP'));
+            log_message('error', 'Time diff: ' . (time() - ($winnerData['timestamp'] ?? 0)) . ' seconds');
+        }
+        log_message('error', '=== END TOKEN VALIDATION ===');
         
         // Validate API token
         if (empty($apiToken) || empty($sessionToken) || $apiToken !== $sessionToken) {
+            log_message('warning', 'Invalid API token access attempt');
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Invalid or expired token.'
@@ -656,27 +682,29 @@ class LandingController extends BaseController
         $winnerData = $session->get('winner_data');
         
         if (!$winnerData) {
+            log_message('warning', 'No winner data found in session');
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'No winner data found.'
             ], 404);
         }
         
-        // Check if data is not too old (valid for 10 minutes)
-        if ((time() - $winnerData['timestamp']) > 600) {
+        // Check if data is not too old (valid for 30 minutes)
+        if ((time() - $winnerData['timestamp']) > 1800) {
             $session->remove(['winner_data', 'api_token']);
+            log_message('warning', 'Winner data expired');
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Winner data has expired.'
             ], 410);
         }
         
-        // Return winner data
+        // Return winner data with proper structure
         $responseData = [
             'success' => true,
             'data' => [
                 'prize_name' => $winnerData['name'],
-                'prize_value' => $winnerData['prize'],
+                'prize_value' => floatval($winnerData['prize']),
                 'prize_type' => $winnerData['type'],
                 'won_at' => date('Y-m-d H:i:s', $winnerData['timestamp']),
                 'session_id' => $winnerData['session_id'],
@@ -686,8 +714,11 @@ class LandingController extends BaseController
         
         log_message('info', 'Winner data retrieved via API for session: ' . $winnerData['session_id']);
         
-        // Clear the data after successful retrieval (one-time use)
-        $session->remove(['winner_data', 'api_token']);
+        $clearSession = $this->request->getPost('clear_session') ?? $this->request->getGet('clear_session');
+        if ($clearSession === 'true' || $clearSession === true) {
+            $session->remove(['winner_data', 'api_token']);
+            log_message('info', 'Session data cleared after final API retrieval');
+        }
         
         return $this->response->setJSON($responseData);
     }

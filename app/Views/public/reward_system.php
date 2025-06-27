@@ -350,10 +350,10 @@ $isLoggedIn = isset($logged_in) && $logged_in;
 
         function autoRegister() {
             showLoading(true);
-            
+
             const formData = new FormData();
             formData.append(csrfName, csrfToken);
-            
+
             fetch('<?= base_url('reward/auto-register') ?>', {
                 method: 'POST',
                 body: formData,
@@ -364,16 +364,17 @@ $isLoggedIn = isset($logged_in) && $logged_in;
             .then(response => response.json())
             .then(data => {
                 showLoading(false);
-                
-                if (data.success) {
-                    // Display credentials first
+
+                if (data.success && data.customer_data) {
+                    // Hide registration options and show credentials step
                     document.getElementById('registrationOptions').style.display = 'none';
                     document.getElementById('accountCreatedStep').style.display = 'block';
+
+                    // Populate credentials
                     document.getElementById('displayUsername').textContent = data.customer_data.username;
                     document.getElementById('displayPassword').textContent = data.customer_data.password;
-                    
+
                     showAlert(data.message, 'success');
-                    
                 } else {
                     showAlert(data.message || 'Registration failed. Please try again.', 'danger');
                 }
