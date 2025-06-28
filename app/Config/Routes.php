@@ -114,10 +114,12 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
     // Wheel management routes
     $routes->group('wheel', function($routes) {
         $routes->get('/', 'Admin\WheelController::index');
+        $routes->get('add', 'Admin\WheelController::add');
         $routes->post('add', 'Admin\WheelController::add');
         $routes->get('edit/(:num)', 'Admin\WheelController::edit/$1');
         $routes->post('edit/(:num)', 'Admin\WheelController::edit/$1');
         $routes->get('delete/(:num)', 'Admin\WheelController::delete/$1');
+        $routes->get('check-rates', 'Admin\WheelController::checkRates'); 
     });
     
     // Bonus management routes
