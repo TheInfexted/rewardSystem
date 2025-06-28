@@ -835,7 +835,6 @@ body.modal-open {
     background: rgba(220, 53, 69, 0.2) !important;
     border-color: rgba(220, 53, 69, 0.4) !important;
     opacity: 0.7 !important;
-    width: 35px;
 }
 
 .day-item-compact.missed .day-name,
@@ -906,6 +905,112 @@ body.modal-open {
         right: 10px !important;
         left: 10px !important;
         max-width: none !important;
+    }
+}
+
+/* MOBILE RESPONSIVE BREAKPOINTS */
+
+/* Small mobile devices (320px-375px) */
+@media (max-width: 375px) {
+    .week-days-inline {
+        gap: 2px !important; /* Even smaller gap */
+    }
+    
+    .day-item-compact {
+        padding: 4px 1px !important; /* Minimal padding */
+        min-height: 50px !important; /* Smaller height */
+        border-radius: 4px !important;
+    }
+    
+    .day-item-compact .day-name {
+        font-size: 7px !important; /* Tiny text */
+        margin-bottom: 0;
+    }
+    
+    .day-item-compact .day-number {
+        font-size: 10px !important; /* Smaller number */
+        margin: 1px 0;
+    }
+    
+    .day-item-compact .day-points {
+        font-size: 6px !important; /* Micro text */
+    }
+    
+    .day-item-compact .check-mark,
+    .day-item-compact .missed-mark {
+        width: 8px !important;
+        height: 8px !important;
+        font-size: 5px !important;
+        top: -1px;
+        right: -1px;
+    }
+}
+
+/* Very small screens (320px and below) */
+@media (max-width: 320px) {
+    .week-days-inline {
+        gap: 1px !important; /* Minimal gap */
+    }
+    
+    .day-item-compact {
+        padding: 3px 1px !important;
+        min-height: 45px !important;
+        border-radius: 3px !important;
+    }
+    
+    .day-item-compact .day-name {
+        font-size: 6px !important;
+        margin-bottom: 0;
+    }
+    
+    .day-item-compact .day-number {
+        font-size: 9px !important;
+        margin: 1px 0;
+    }
+    
+    .day-item-compact .day-points {
+        font-size: 5px !important;
+    }
+    
+    .day-item-compact .check-mark,
+    .day-item-compact .missed-mark {
+        width: 7px !important;
+        height: 7px !important;
+        font-size: 4px !important;
+    }
+}
+
+/* Larger mobile screens (414px+) */
+@media (min-width: 414px) {
+    .week-days-inline {
+        gap: 6px !important; /* Slightly more space */
+    }
+    
+    .day-item-compact {
+        padding: 8px 3px !important;
+        min-height: 70px !important;
+        border-radius: 8px !important;
+    }
+    
+    .day-item-compact .day-name {
+        font-size: 9px !important;
+        margin-bottom: 2px;
+    }
+    
+    .day-item-compact .day-number {
+        font-size: 14px !important;
+        margin: 3px 0;
+    }
+    
+    .day-item-compact .day-points {
+        font-size: 8px !important;
+    }
+    
+    .day-item-compact .check-mark,
+    .day-item-compact .missed-mark {
+        width: 12px !important;
+        height: 12px !important;
+        font-size: 7px !important;
     }
 }
 

@@ -212,12 +212,12 @@
             max-width: 100%;
             width: 100%;
             height: 100%;
-            display: inline-block;
-            background: url('img/fortune_wheel/bg_wheel_frame.png') no-repeat top center;
-            background-size: 100%;
-            position: relative;
-            z-index: 0;
-            overflow: hidden;
+            display: block;
+            background: url('img/fortune_wheel/bg_wheel_frame.png') no-repeat top center !important;
+            background-size: 100% !important;
+            position: relative !important;
+            z-index: 15 !important;
+            overflow: hidden !important;
         }
         
         @keyframes shake {
@@ -413,9 +413,8 @@
                 
                     <figure class="d-block m-0 pt-1 p-4 innerWheel position-relative">
                         <canvas id="fortuneWheel" width="460" height="460" 
-                                data-responsiveMinWidth="180" 
-                                data-responsiveScaleHeight="true" 
-                                data-responsiveMargin="50">
+                                data-responsiveMinWidth="220" 
+                                data-responsiveMargin="-20">
                             <p class="text-white text-center">Sorry, your browser doesn't support canvas. Please try another.</p>
                         </canvas>
                     </figure>

@@ -416,14 +416,13 @@ class FortuneWheel {
                                                 width="460" 
                                                 height="460"
                                                 data-responsiveMinWidth="180" 
-                                                data-responsiveScaleHeight="true" 
+                                                data-responsiveScaleHeight="false" 
                                                 data-responsiveMargin="50"
                                                 style="
-                                                    padding: 1rem;
                                                     max-width: 100%;
                                                     width: 100%;
                                                     height: 100%;
-                                                    display: inline-block;
+                                                    display: block;
                                                     background: url('${DashboardConfig.baseUrl}img/fortune_wheel/bg_wheel_frame.png') no-repeat top center;
                                                     background-size: 100%;
                                                     position: relative;
@@ -583,44 +582,27 @@ class FortuneWheel {
 
         console.log('Creating modal wheel with segments:', segments);
 
-        // Detect mobile device
-        const isMobile = window.innerWidth <= 768;
-        const isSmallMobile = window.innerWidth <= 480;
-        
-        // Adjust wheel size based on screen size
-        let wheelRadius = 200;
-        let textFontSize = 16;
-        
-        if (isSmallMobile) {
-            wheelRadius = 125;
-            textFontSize = 12;
-        } else if (isMobile) {
-            wheelRadius = 140;
-            textFontSize = 14;
-        }
-
         try {
-            // Create the wheel with mobile-responsive settings
             this.wheel = new Winwheel({
                 'canvasId': 'fortuneWheelModal',
                 'numSegments': segments.length,
-                'outerRadius': wheelRadius,
+                'outerRadius': 200, 
                 'responsive': true,
                 'drawMode': 'segmentImage',
                 'drawText': true,
-                'textFontSize': textFontSize,
+                'textFontSize': 16,  
                 'textFontWeight': 'bold',
                 'textOrientation': 'horizontal',
                 'textAlignment': 'center',
                 'textDirection': 'reversed',
-                'textMargin': isMobile ? 10 : 15,
+                'textMargin': 15,  
                 'textFontFamily': 'Arial, sans-serif',
                 'segments': segments,
                 'pins': {
                     'number': segments.length * 2,
-                    'outerRadius': isMobile ? 3 : 5,
+                    'outerRadius': 5, 
                     'responsive': true,
-                    'margin': isMobile ? 3 : 5,
+                    'margin': 5,  
                     'fillStyle': '#f8b500',
                     'strokeStyle': '#f8b500'
                 },
@@ -638,13 +620,6 @@ class FortuneWheel {
             console.log('✅ Modal wheel created successfully:', this.wheel);
             this.updateSpinsCounter();
             this.addModalStyles();
-            
-            // Force canvas redraw for mobile
-            if (isMobile) {
-                setTimeout(() => {
-                    this.wheel.draw();
-                }, 100);
-            }
             
         } catch (error) {
             console.error('❌ Failed to create wheel:', error);

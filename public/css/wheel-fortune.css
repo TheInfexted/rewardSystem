@@ -34,17 +34,17 @@ body::-webkit-scrollbar,
 
 .innerWheel {
     width: 100% !important;
-    max-width: 280px !important; /* Reduced from 300px */
+    max-width: 280px !important; 
     margin: 0 auto !important;
-    padding: 15px !important; /* More padding to contain wheel */
+    padding: 15px !important; 
     box-sizing: border-box !important;
     overflow: hidden !important;
 }
 
 /* CRITICAL: Reduce canvas size to fit within frame */
 #fortuneWheel {
-    width: 220px !important; /* Reduced from 280px */
-    height: 220px !important; /* Reduced from 280px */
+    width: 220px !important; 
+    height: 220px !important; 
     max-width: 220px !important;
     max-height: 220px !important;
     display: block !important;
@@ -89,10 +89,10 @@ body::-webkit-scrollbar,
     }
     
     #fortuneWheel {
-        width: 200px !important;
-        height: 200px !important;
-        max-width: 200px !important;
-        max-height: 200px !important;
+        width: 220px !important;
+        height: 220px !important;
+        max-width: 220px !important;
+        max-height: 220px !important;
     }
     
     .wrap-text-frame {
@@ -119,10 +119,10 @@ body::-webkit-scrollbar,
     }
     
     #fortuneWheel {
-        width: 180px !important;
-        height: 180px !important;
-        max-width: 180px !important;
-        max-height: 180px !important;
+        width: 220px !important;
+        height: 220px !important;
+        max-width: 220px !important;
+        max-height: 220px !important;
     }
     
     .wrap-text-frame {

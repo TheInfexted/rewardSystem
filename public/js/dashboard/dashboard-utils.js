@@ -177,23 +177,7 @@ class DashboardUtils {
                     animation: glow 1s ease-in-out infinite alternate;
                 }
                 
-                /* Mobile optimizations */
-                @media (max-width: 768px) {
-                    #wheelModal .modal-dialog {
-                        margin: 0.5rem;
-                        max-width: calc(100% - 1rem);
-                    }
-                    
-                    #fortuneWheelModal {
-                        width: 280px !important;
-                        height: 280px !important;
-                    }
-                    
-                    .wrap-text-frame {
-                        margin: 0 1rem;
-                        font-size: 0.7rem;
-                    }
-                }
+
             `;
             document.head.appendChild(rippleStyle);
         }

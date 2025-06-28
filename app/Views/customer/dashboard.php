@@ -354,11 +354,11 @@
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 <!-- Dashboard JavaScript Modules - Load in correct order -->
-<script src="<?= base_url('js/dashboard/dashboard-config.js') ?>" onerror="console.log('dashboard-config.js not found')"></script>
-<script src="<?= base_url('js/dashboard/dashboard-utils.js') ?>" onerror="console.log('dashboard-utils.js not found')"></script>
-<script src="<?= base_url('js/dashboard/dashboard-core.js') ?>" onerror="console.log('dashboard-core.js not found')"></script>
-<script src="<?= base_url('js/dashboard/fortune-wheel.js') ?>" onerror="console.log('fortune-wheel.js not found')"></script>
-<script src="<?= base_url('js/dashboard/dashboard-init.js') ?>" onerror="console.log('dashboard-init.js not found')"></script>
+<script src="<?= base_url('js/dashboard/dashboard-config.js') ?>?v=<?= time() ?>" onerror="console.log('dashboard-config.js not found')"></script>
+<script src="<?= base_url('js/dashboard/dashboard-utils.js') ?>?v=<?= time() ?>" onerror="console.log('dashboard-utils.js not found')"></script>
+<script src="<?= base_url('js/dashboard/dashboard-core.js') ?>?v=<?= time() ?>" onerror="console.log('dashboard-core.js not found')"></script>
+<script src="<?= base_url('js/dashboard/fortune-wheel.js') ?>?v=<?= time() ?>" onerror="console.log('fortune-wheel.js not found')"></script>
+<script src="<?= base_url('js/dashboard/dashboard-init.js') ?>?v=<?= time() ?>" onerror="console.log('dashboard-init.js not found')"></script>
 <script src="<?= base_url('js/dashboard/dashboard-copy.js') ?>?v=<?= time() ?>" onerror="console.log('dashboard-copy.js not found')"></script>
 <script src="<?= base_url('js/dashboard/dashboard-swiper.js') ?>?v=<?= time() ?>" onerror="console.log('dashboard-swiper.js not found')"></script>
 
