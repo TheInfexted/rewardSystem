@@ -599,6 +599,11 @@
         let winSoundEnabled = <?= (isset($win_sound) && $win_sound['enabled']) ? 'true' : 'false' ?>;
         let tickInterval = null;
         let lastPinNumber = 0;
+        let tickSoundContext = null;
+        let tickSoundBuffer = null;
+        let tickSoundVolume = <?= isset($spin_sound) && isset($spin_sound['volume']) ? $spin_sound['volume'] : 0.7 ?>;
+        let lastTickTime = 0;
+        let winSoundBuffer = null;
 
         //Welcome Overlay Handler
         document.addEventListener('DOMContentLoaded', function() {
@@ -636,7 +641,9 @@
                             
                             console.log('Welcome overlay hidden, wheel should be visible now');
                             
-                            // Initialize wheel after overlay is hidden
+                            initializeTickSound();
+                            initializeWinSound();
+                            
                             if (typeof initializeWheel === 'function') {
                                 initializeWheel();
                             }
@@ -667,6 +674,52 @@
             }
         `;
         document.head.appendChild(welcomeStyle);
+
+        function initializeTickSound() {
+        <?php if (isset($spin_sound) && !empty($spin_sound['sound_file']) && $spin_sound['enabled']): ?>
+        try {
+            if (!tickSoundContext) {
+                tickSoundContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            fetch('<?= base_url('uploads/sounds/' . $spin_sound['sound_file']) ?>')
+                .then(response => response.arrayBuffer())
+                .then(data => tickSoundContext.decodeAudioData(data))
+                .then(buffer => {
+                    tickSoundBuffer = buffer;
+                    console.log('Tick sound loaded successfully');
+                })
+                .catch(error => {
+                    console.error('Error loading tick sound:', error);
+                });
+        } catch (error) {
+            console.error('Web Audio API not supported:', error);
+        }
+        <?php endif; ?>
+    }
+
+    function initializeWinSound() {
+        <?php if (isset($win_sound) && !empty($win_sound['sound_file']) && $win_sound['enabled']): ?>
+        try {
+            if (!tickSoundContext) {
+                tickSoundContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            fetch('<?= base_url('uploads/sounds/' . $win_sound['sound_file']) ?>')
+                .then(response => response.arrayBuffer())
+                .then(data => tickSoundContext.decodeAudioData(data))
+                .then(buffer => {
+                    winSoundBuffer = buffer;
+                    console.log('Win sound loaded successfully');
+                })
+                .catch(error => {
+                    console.error('Error loading win sound:', error);
+                });
+        } catch (error) {
+            console.error('Win sound initialization error:', error);
+        }
+        <?php endif; ?>
+    }
 
         // Store the wheel items from database
         const wheelItems = [
@@ -744,10 +797,12 @@
                 'animation': {
                     'type': 'spinToStop',
                     'duration': 8,
-                    'spins': 12,
+                    'spins': 15,
                     'callbackFinished': alertPrize,
                     'callbackBefore': animationBefore,
                     'callbackAfter': animationAfter,
+                    'soundTrigger': 'pin',
+                    'callbackSound': playTickSound,
                     'easing': 'Power3.easeOut'
                 }
             });
@@ -757,14 +812,6 @@
 
         // Animation callbacks for manual sound handling
         function animationBefore() {
-            // This is called before each frame update
-            if (tickSoundEnabled && theWheel) {
-                const currentPinNumber = theWheel.getCurrentPinNumber();
-                if (currentPinNumber !== lastPinNumber) {
-                    playTickSound();
-                    lastPinNumber = currentPinNumber;
-                }
-            }
         }
 
         function animationAfter() {
@@ -872,26 +919,7 @@
 
         // NEW function for wheel animation
         function performWheelSpin() {
-            // Manual tick sound interval (fallback if callback doesn't work)
-            if (tickSoundEnabled) {
-                let tickCount = 0;
-                const totalTicks = 100; // Approximate number of ticks during spin
-                const tickDuration = (theWheel.animation.duration * 1000) / totalTicks;
-                
-                tickInterval = setInterval(() => {
-                    tickCount++;
-                    // Gradually slow down the ticks
-                    const progress = tickCount / totalTicks;
-                    const delay = tickDuration * (1 + progress * 3); // Slow down more as it progresses
-                    
-                    if (tickCount < totalTicks * 0.8) { // Only tick for 80% of the animation
-                        playTickSound();
-                    } else {
-                        clearInterval(tickInterval);
-                    }
-                }, tickDuration);
-            }
-
+            
             // Determine winner
             const winnerResult = determineWinner();
             const winnerIndex = winnerResult.winnerIndex;
@@ -904,7 +932,7 @@
             const targetAngle = (winnerIndex * segmentAngle) + (segmentAngle / 2);
             
             // Add many rotations for dramatic effect
-            const additionalSpins = Math.floor(Math.random() * 5) + 8;
+            const additionalSpins = Math.floor(Math.random() * 8) + 8;
             const finalRotation = (360 * additionalSpins) + targetAngle;
             
             // Set the wheel to stop at the predetermined segment
@@ -914,7 +942,10 @@
             theWheel.winnerData = winnerItem;
             theWheel.winnerIndex = winnerIndex;
             
-            // Start the animation
+            // Reset pin tracking for proper sound triggering
+            lastPinNumber = -1;
+            
+            // Start the animation - Winwheel will handle sounds automatically
             theWheel.startAnimation();
             
             // Update spins counter immediately (already decremented on server)
@@ -1273,34 +1304,57 @@
             updateSpinButton();
         }
 
-        // Record spin result - SIMPLIFIED (no longer needed for tracking spins)
-        function recordSpinResult(winner) {
-            // This is now optional - just for logging purposes
-            console.log('Spin result recorded:', winner);
-        }
-
         // Sound functions
         function playTickSound() {
-            const spinAudio = document.getElementById('spinAudio');
-            if (spinAudio && tickSoundEnabled) {
-                // Clone the audio element for overlapping sounds
-                const audioClone = spinAudio.cloneNode();
-                audioClone.volume = <?= isset($spin_sound['volume']) ? $spin_sound['volume'] : 0.5 ?>;
-                audioClone.play().catch(e => {
-                    // Fallback to original element if clone fails
-                    spinAudio.currentTime = 0;
-                    spinAudio.volume = <?= isset($spin_sound['volume']) ? $spin_sound['volume'] : 0.5 ?>;
-                    spinAudio.play().catch(err => console.log('Tick sound play failed:', err));
-                });
+            if (!tickSoundEnabled || !tickSoundBuffer || !tickSoundContext) return;
+            
+            try {
+                if (tickSoundContext.state === 'suspended') {
+                    tickSoundContext.resume();
+                }
+                
+                const source = tickSoundContext.createBufferSource();
+                source.buffer = tickSoundBuffer;
+                
+                const gainNode = tickSoundContext.createGain();
+                gainNode.gain.value = tickSoundVolume;
+                
+                source.connect(gainNode);
+                gainNode.connect(tickSoundContext.destination);
+                
+                source.start(0);
+                
+                source.onended = function() {
+                    source.disconnect();
+                    gainNode.disconnect();
+                };
+                
+            } catch (error) {
+                console.error('Error playing tick sound:', error);
             }
         }
 
         function playWinSound() {
-            const winAudio = document.getElementById('winAudio');
-            if (winAudio && winSoundEnabled) {
-                winAudio.currentTime = 0;
-                winAudio.volume = <?= isset($win_sound['volume']) ? $win_sound['volume'] : 0.8 ?>;
-                winAudio.play().catch(e => console.log('Win sound play failed:', e));
+            if (!winSoundEnabled || !winSoundBuffer || !tickSoundContext) return;
+            
+            try {
+                const source = tickSoundContext.createBufferSource();
+                source.buffer = winSoundBuffer;
+                
+                const gainNode = tickSoundContext.createGain();
+                gainNode.gain.value = <?= isset($win_sound) && isset($win_sound['volume']) ? $win_sound['volume'] : 0.8 ?>;
+                
+                source.connect(gainNode);
+                gainNode.connect(tickSoundContext.destination);
+                
+                source.start(0);
+                
+                source.onended = function() {
+                    source.disconnect();
+                    gainNode.disconnect();
+                };
+            } catch (error) {
+                console.error('Error playing win sound:', error);
             }
         }
 
@@ -1316,18 +1370,6 @@
             });
             startSpin();
         }
-
-        function testTickSound() {
-            console.log('Testing tick sound...');
-            playTickSound();
-        }
-
-        // Periodic sync with server (every 30 seconds)
-        setInterval(() => {
-            if (!wheelSpinning) {
-                updateSpinStatus();
-            }
-        }, 30000);
 
         // Add some CSS for better visual effects
         const style = document.createElement('style');
