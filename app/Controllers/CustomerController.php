@@ -542,42 +542,35 @@ class CustomerController extends BaseController
         try {
             $db = \Config\Database::connect();
             $builder = $db->table('customer_checkins');
-            
-            // Get current week dates
-            $weekDates = $this->getCurrentWeekDates();
             $today = date('Y-m-d');
             
             // Check if already checked in today
-            $todayCheckin = $builder->where([
-                'customer_id' => $customerId,
-                'checkin_date' => $today
-            ])->get()->getRow();
+            $todayCheckin = $builder->where('customer_id', $customerId)
+                                ->where('checkin_date', $today)
+                                ->countAllResults();
             
-            if ($todayCheckin) {
+            if ($todayCheckin > 0) {
                 return $this->response->setJSON([
                     'success' => false,
-                    'message' => 'You have already checked in today'
+                    'message' => 'You have already checked in today!'
                 ]);
             }
             
-            // Get current week check-ins
-            $weekCheckins = $builder->where('customer_id', $customerId)
-                                  ->where('checkin_date >=', $weekDates['week_start'])
-                                  ->where('checkin_date <=', $weekDates['week_end'])
-                                  ->countAllResults();
+            // Calculate TRUE consecutive streak
+            $consecutiveStreak = $this->calculateConsecutiveStreak($customerId);
             
             // Calculate day of week (1=Monday, 7=Sunday)
             $dayOfWeek = date('N');
             
-            // Progressive reward system using customer-specific settings
-            $rewardPoints = $this->calculateCheckinReward($weekCheckins + 1, $dayOfWeek, $customerId);
+            // Calculate reward points based on TRUE streak
+            $rewardPoints = $this->calculateCheckinReward($consecutiveStreak + 1, $dayOfWeek, $customerId);
             
             // Insert check-in record
             $inserted = $builder->insert([
                 'customer_id' => $customerId,
                 'checkin_date' => $today,
                 'reward_points' => $rewardPoints,
-                'streak_day' => $weekCheckins + 1,
+                'streak_day' => $consecutiveStreak + 1, // TRUE consecutive streak
                 'created_at' => date('Y-m-d H:i:s')
             ]);
             
@@ -590,7 +583,7 @@ class CustomerController extends BaseController
                         'success' => true,
                         'message' => 'Check-in successful!',
                         'points' => $rewardPoints,
-                        'day' => $weekCheckins + 1
+                        'day' => $consecutiveStreak + 1
                     ]);
                 } else {
                     log_message('error', 'Failed to add points after check-in');
@@ -598,7 +591,7 @@ class CustomerController extends BaseController
                         'success' => true,
                         'message' => 'Check-in recorded but failed to add points',
                         'points' => $rewardPoints,
-                        'day' => $weekCheckins + 1
+                        'day' => $consecutiveStreak + 1
                     ]);
                 }
             } else {
@@ -615,6 +608,43 @@ class CustomerController extends BaseController
                 'message' => 'Check-in failed. Please try again.'
             ]);
         }
+    }
+
+    /**
+     * Calculate TRUE consecutive streak - counts back from today until gap found
+     */
+    private function calculateConsecutiveStreak($customerId)
+    {
+        $db = \Config\Database::connect();
+        $streak = 0;
+        $currentDate = date('Y-m-d');
+        
+        // Start from yesterday (since today hasn't been checked in yet)
+        $checkDate = date('Y-m-d', strtotime('-1 day'));
+        
+        while (true) {
+            // Check if customer checked in on this date
+            $checkin = $db->table('customer_checkins')
+                        ->where('customer_id', $customerId)
+                        ->where('checkin_date', $checkDate)
+                        ->countAllResults();
+            
+            if ($checkin > 0) {
+                $streak++;
+                // Go back one more day
+                $checkDate = date('Y-m-d', strtotime($checkDate . ' -1 day'));
+            } else {
+                // Gap found, streak ends here
+                break;
+            }
+            
+            // Safety limit to prevent infinite loop
+            if ($streak >= 365) {
+                break;
+            }
+        }
+        
+        return $streak;
     }
 
     private function getCheckinSettings($customerId = null)
@@ -869,12 +899,12 @@ class CustomerController extends BaseController
             
             // Get week check-ins
             $weekCheckins = $db->table('customer_checkins')
-                              ->where('customer_id', $customerId)
-                              ->where('checkin_date >=', $weekDates['week_start'])
-                              ->where('checkin_date <=', $weekDates['week_end'])
-                              ->orderBy('checkin_date', 'ASC')
-                              ->get()
-                              ->getResultArray();
+                            ->where('customer_id', $customerId)
+                            ->where('checkin_date >=', $weekDates['week_start'])
+                            ->where('checkin_date <=', $weekDates['week_end'])
+                            ->orderBy('checkin_date', 'ASC')
+                            ->get()
+                            ->getResultArray();
             
             // Check if checked in today
             $todayCheckin = false;
@@ -893,7 +923,12 @@ class CustomerController extends BaseController
             
             // Find the first check-in date this week to determine streak start
             $firstCheckinDate = !empty($weekCheckins) ? $weekCheckins[0]['checkin_date'] : null;
-            $currentStreak = count($weekCheckins);
+            
+            // Calculate TRUE consecutive streak instead of weekly count
+            $currentStreak = $this->calculateConsecutiveStreak($customerId);
+            if ($todayCheckin) {
+                $currentStreak++; // Include today if already checked in
+            }
             
             // Create weekly progress array (1=Monday to 7=Sunday)
             $weeklyProgress = [];
@@ -922,9 +957,9 @@ class CustomerController extends BaseController
                     $dayData['streak_day'] = $checkinMap[$date]['streak_day'];
                     
                 } elseif ($date > $today) {
-                    // Future day - calculate predicted points based on current streak
-                    $daysFromToday = (strtotime($date) - strtotime($today)) / (24 * 60 * 60);
-                    $predictedStreakDay = $currentStreak + $daysFromToday;
+                    // Future day - calculate predicted points if streak continues
+                    $daysBetween = (strtotime($date) - strtotime($today)) / (24 * 60 * 60);
+                    $predictedStreakDay = $currentStreak + $daysBetween;
                     $dayData['points'] = $this->calculateCheckinReward($predictedStreakDay, $dayOfWeek, $customerId);
                     $dayData['status'] = 'future';
                     
@@ -935,7 +970,7 @@ class CustomerController extends BaseController
                     $dayData['status'] = 'available';
                     
                 } else {
-                    // Past day, not checked in - missed day
+                    // Past day, not checked in - missed day (breaks streak)
                     $dayData['points'] = 0;
                     $dayData['status'] = 'missed';
                 }
@@ -950,7 +985,7 @@ class CustomerController extends BaseController
                 'weekly_progress' => $weeklyProgress,
                 'week_start' => $weekDates['week_start'],
                 'week_end' => $weekDates['week_end'],
-                'current_streak' => $currentStreak,
+                'current_streak' => $currentStreak, // TRUE consecutive streak
                 'first_checkin_date' => $firstCheckinDate
             ];
             

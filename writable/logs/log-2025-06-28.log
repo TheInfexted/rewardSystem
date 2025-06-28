@@ -1,0 +1,17 @@
+ERROR - 2025-06-28 15:07:09 --> mysqli_sql_exception: Unknown column 'ip_address' in 'field list' in C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `cu...', 0)
+#1 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(738): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `cu...')
+#2 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseConnection.php(652): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `cu...')
+#3 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(2345): CodeIgniter\Database\BaseConnection->query('INSERT INTO `cu...', Array, false)
+#4 C:\xampp\htdocs\rewardSystem\app\Models\CustomerModel.php(470): CodeIgniter\Database\BaseBuilder->insert(Array)
+#5 C:\xampp\htdocs\rewardSystem\app\Models\CustomerModel.php(393): App\Models\CustomerModel->logPasswordChange(1, 1, 'Password change...')
+#6 C:\xampp\htdocs\rewardSystem\app\Controllers\Admin\CustomersController.php(359): App\Models\CustomerModel->changePassword(1, '11272003', 1, 'Password change...')
+#7 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(933): App\Controllers\Admin\CustomersController->changePassword('1')
+#8 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\CustomersController))
+#9 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#10 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(334): CodeIgniter\CodeIgniter->run()
+#11 C:\xampp\htdocs\rewardSystem\vendor\codeigniter4\framework\system\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#12 C:\xampp\htdocs\rewardSystem\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#13 {main}
+ERROR - 2025-06-28 15:07:09 --> Failed to log password change: Unknown column 'ip_address' in 'field list'

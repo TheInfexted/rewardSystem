@@ -52,11 +52,10 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label text-light">Weekly Bonus Multiplier</label>
-                            <input type="number" class="form-control" name="weekly_bonus_multiplier" 
-                                   value="<?= $checkin_settings['weekly_bonus_multiplier'] ?>" 
-                                   min="1" max="10" step="0.1">
-                            <small class="text-muted">Multiplier for perfect week completion</small>
+                            <label class="form-label text-light">Consecutive Bonus Points</label>
+                            <input type="number" class="form-control" name="consecutive_bonus_points" 
+                                value="<?= $checkin_settings['consecutive_bonus_points'] ?? 5 ?>" min="0" max="50" step="0.1">
+                            <small class="text-muted">Additional points per consecutive day (Day 1: +0, Day 2: +5, Day 3: +10, etc.)</small>
                         </div>
 
                         <div class="mb-3">
@@ -67,10 +66,18 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label text-light">Weekend Bonus Points</label>
+                            <label class="form-label text-info">Weekend Bonus Points</label>
                             <input type="number" class="form-control" name="weekend_bonus_points" 
                                    value="<?= $checkin_settings['weekend_bonus_points'] ?>" min="0" max="500">
                             <small class="text-muted">Extra points for weekend check-ins</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-info">Weekly Bonus Multiplier</label>
+                            <input type="number" class="form-control" name="weekly_bonus_multiplier" 
+                                   value="<?= $checkin_settings['weekly_bonus_multiplier'] ?>" 
+                                   min="1" max="10" step="0.1">
+                            <small class="text-muted">Multiplier for perfect week completion</small>
                         </div>
 
                         <button type="submit" class="btn btn-gold btn-sm w-100">

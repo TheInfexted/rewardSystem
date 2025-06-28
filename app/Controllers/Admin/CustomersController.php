@@ -1049,7 +1049,7 @@ class CustomersController extends BaseController
                 'weekly_bonus_multiplier' => $settingsData['weekly_bonus_multiplier'],
                 'max_streak_days' => $settingsData['max_streak_days'],
                 'weekend_bonus_points' => $settingsData['weekend_bonus_points'],
-                'consecutive_bonus_points' => 5, // Default value, can be made configurable
+                'consecutive_bonus_points' => $settingsData['consecutive_bonus_points'],
                 'updated_at' => date('Y-m-d H:i:s')
             ];
             
@@ -1330,7 +1330,8 @@ class CustomersController extends BaseController
                 'default_checkin_points', 
                 'weekly_bonus_multiplier', 
                 'max_streak_days', 
-                'weekend_bonus_points'
+                'weekend_bonus_points',
+                'consecutive_bonus_points'
             )
         ");
         
