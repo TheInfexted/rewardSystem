@@ -6,9 +6,9 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="card-title mb-0">Manage Spin Tokens - <?= esc($customer['username']) ?></h4>
+                    <h4 class="card-title mb-0"><?= t('Admin.customers.tokens.title') ?> - <?= esc($customer['username']) ?></h4>
                     <a href="<?= base_url('admin/customers/view/' . $customer['id']) ?>" class="btn btn-secondary btn-sm">
-                        <i class="fas fa-arrow-left"></i> Back to Profile
+                        <i class="fas fa-arrow-left"></i> <?= t('Admin.customers.tokens.back_to_profile') ?>
                     </a>
                 </div>
                 <div class="card-body">
@@ -18,9 +18,9 @@
                             <div class="col">
                                 <h5 class="mb-1 text-dark">
                                     <i class="fas fa-coins text-warning"></i>
-                                    Current Balance: <span id="currentBalance"><?= $customer['spin_tokens'] ?></span> Tokens
+                                    <?= t('Admin.customers.tokens.current_balance') ?>: <span id="currentBalance"><?= $customer['spin_tokens'] ?></span> <?= t('Admin.customers.tokens.balance_tokens', ['balance' => '']) ?>
                                 </h5>
-                                <small class="text-dark">Customer: <?= esc($customer['username']) ?></small>
+                                <small class="text-dark"><?= t('Admin.customers.tokens.customer') ?>: <?= esc($customer['username']) ?></small>
                             </div>
                         </div>
                     </div>
@@ -33,35 +33,35 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
-                                    <label for="action" class="form-label">Action</label>
+                                    <label for="action" class="form-label"><?= t('Admin.customers.tokens.action') ?></label>
                                     <select class="form-control" id="action" name="action" required>
-                                        <option value="">Select Action</option>
-                                        <option value="add">Add Tokens</option>
-                                        <option value="remove">Remove Tokens</option>
+                                        <option value=""><?= t('Admin.customers.tokens.select_action') ?></option>
+                                        <option value="add"><?= t('Admin.customers.tokens.add_tokens') ?></option>
+                                        <option value="remove"><?= t('Admin.customers.tokens.remove_tokens') ?></option>
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
-                                    <label for="amount" class="form-label">Amount</label>
+                                    <label for="amount" class="form-label"><?= t('Admin.customers.tokens.amount') ?></label>
                                     <input type="number" class="form-control" id="amount" name="amount" 
-                                           min="1" max="10000" required placeholder="Enter amount">
+                                           min="1" max="10000" required placeholder="<?= t('Admin.customers.tokens.enter_amount') ?>">
                                 </div>
                             </div>
                         </div>
                         
                         <div class="form-group mb-3">
-                            <label for="reason" class="form-label">Reason (Optional)</label>
+                            <label for="reason" class="form-label"><?= t('Admin.customers.tokens.reason') ?></label>
                             <input type="text" class="form-control" id="reason" name="reason" 
-                                   placeholder="Enter reason for this transaction">
+                                   placeholder="<?= t('Admin.customers.tokens.reason_placeholder') ?>">
                         </div>
                         
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary" id="submitBtn">
-                                <i class="fas fa-save"></i> Update Tokens
+                                <i class="fas fa-save"></i> <?= t('Admin.customers.tokens.update_tokens') ?>
                             </button>
                             <button type="reset" class="btn btn-secondary">
-                                <i class="fas fa-undo"></i> Reset
+                                <i class="fas fa-undo"></i> <?= t('Admin.customers.tokens.reset') ?>
                             </button>
                         </div>
                     </form>
@@ -73,13 +73,13 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">Recent Transactions</h5>
+                    <h5 class="card-title mb-0"><?= t('Admin.customers.tokens.recent_transactions') ?></h5>
                 </div>
                 <div class="card-body" style="max-height: 500px; overflow-y: auto;">
                     <?php if (empty($history)): ?>
                         <div class="text-center text-muted py-4">
                             <i class="fas fa-history fa-2x mb-2"></i>
-                            <p>No transaction history available</p>
+                            <p><?= t('Admin.customers.tokens.no_history') ?></p>
                         </div>
                     <?php else: ?>
                         <div class="transaction-list" id="transactionList">
@@ -88,13 +88,16 @@
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
                                             <span class="badge badge-<?= $transaction['action'] === 'add' ? 'success' : 'danger' ?> mb-1">
-                                                <?= ucfirst($transaction['action']) ?>
+                                                <?= t('Admin.customers.tokens.' . $transaction['action']) ?>
                                             </span>
                                             <div class="amount">
                                                 <?= $transaction['action'] === 'add' ? '+' : '-' ?><?= $transaction['amount'] ?> tokens
                                             </div>
                                             <small class="text-muted">
-                                                Balance: <?= $transaction['old_balance'] ?> → <?= $transaction['new_balance'] ?>
+                                                <?= t('Admin.customers.tokens.balance_change', [
+                                                    'old' => $transaction['old_balance'], 
+                                                    'new' => $transaction['new_balance']
+                                                ]) ?>
                                             </small>
                                             <?php if (!empty($transaction['reason'])): ?>
                                                 <div class="reason mt-1">
@@ -211,18 +214,18 @@ async function updateTokens(event) {
     const amount = parseInt(formData.get('amount'));
     
     if (!action) {
-        showAlert('danger', 'Please select an action');
+        showAlert('danger', '<?= t('Admin.customers.tokens.select_action_error') ?>');
         return;
     }
     
     if (!amount || amount <= 0) {
-        showAlert('danger', 'Please enter a valid amount');
+        showAlert('danger', '<?= t('Admin.customers.tokens.valid_amount_error') ?>');
         return;
     }
     
     // Disable submit button
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <?= t('Admin.customers.tokens.processing') ?>';
     
     try {
         const response = await fetch('<?= base_url('admin/customers/updateTokens') ?>', {
@@ -277,11 +280,11 @@ async function updateTokens(event) {
         }
     } catch (error) {
         console.error('Error:', error);
-        showAlert('danger', 'Network error: ' + error.message);
+        showAlert('danger', '<?= t('Admin.customers.tokens.network_error') ?>: ' + error.message);
     } finally {
         // Re-enable submit button
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Tokens';
+        submitBtn.innerHTML = '<i class="fas fa-save"></i> <?= t('Admin.customers.tokens.update_tokens') ?>';
     }
 }
 
@@ -321,17 +324,19 @@ function addTransactionToHistory(action, amount, newBalance, reason) {
     
     const badgeClass = action === 'add' ? 'success' : 'danger';
     const amountPrefix = action === 'add' ? '+' : '-';
+    const actionText = action === 'add' ? '<?= t('Admin.customers.tokens.add') ?>' : '<?= t('Admin.customers.tokens.remove') ?>';
+    const balanceChangeText = '<?= t('Admin.customers.tokens.balance_change', ['old' => '', 'new' => '']) ?>'.replace('{old}', oldBalance).replace('{new}', newBalance);
     const reasonHtml = reason ? `<div class="reason mt-1"><small class="text-info">${reason}</small></div>` : '';
     
     transactionItem.innerHTML = `
         <div class="d-flex justify-content-between align-items-start">
             <div>
-                <span class="badge badge-${badgeClass} mb-1">${action.charAt(0).toUpperCase() + action.slice(1)}</span>
+                <span class="badge badge-${badgeClass} mb-1">${actionText}</span>
                 <div class="amount">${amountPrefix}${amount} tokens</div>
-                <small class="text-muted">Balance: ${oldBalance} → ${newBalance}</small>
+                <small class="text-muted">${balanceChangeText}</small>
                 ${reasonHtml}
             </div>
-            <small class="text-muted">Just now</small>
+            <small class="text-muted"><?= t('Admin.customers.tokens.just_now') ?></small>
         </div>
     `;
     
@@ -365,7 +370,7 @@ function updateFormValidation() {
     
     if (actionSelect.value === 'remove') {
         amountInput.max = currentBalance;
-        amountInput.placeholder = `Enter amount (max: ${currentBalance})`;
+        amountInput.placeholder = `<?= t('Admin.customers.tokens.enter_amount') ?> (max: ${currentBalance})`;
         
         // Update warning
         const existingWarning = document.querySelector('.remove-warning');
@@ -374,12 +379,12 @@ function updateFormValidation() {
         if (currentBalance > 0) {
             const warningDiv = document.createElement('div');
             warningDiv.className = 'alert alert-warning remove-warning mt-2';
-            warningDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Maximum tokens that can be removed: ${currentBalance}`;
+            warningDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <?= t('Admin.customers.tokens.max_remove_warning', ['max' => '']) ?>${currentBalance}`;
             actionSelect.parentElement.appendChild(warningDiv);
         }
     } else {
         amountInput.max = 10000;
-        amountInput.placeholder = 'Enter amount';
+        amountInput.placeholder = '<?= t('Admin.customers.tokens.enter_amount') ?>';
         
         // Remove warning
         const existingWarning = document.querySelector('.remove-warning');
@@ -402,9 +407,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentBalance = getCurrentBalance(); // Get real-time balance
         
         if (action === 'remove' && amount > currentBalance) {
-            this.setCustomValidity(`Cannot remove more than current balance (${currentBalance})`);
+            this.setCustomValidity('<?= t('Admin.customers.tokens.cannot_remove_more', ['balance' => '']) ?>' + currentBalance + ')');
         } else if (amount <= 0) {
-            this.setCustomValidity('Amount must be greater than 0');
+            this.setCustomValidity('<?= t('Admin.customers.tokens.amount_greater_zero') ?>');
         } else {
             this.setCustomValidity('');
         }

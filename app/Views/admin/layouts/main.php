@@ -36,7 +36,7 @@
                             <a class="nav-link <?= uri_string() === 'admin' || uri_string() === 'admin/dashboard' ? 'active' : '' ?>" 
                                href="<?= base_url('admin/dashboard') ?>">
                                 <i class="bi bi-speedometer2"></i>
-                                <?= t('Admin.nav.dashboard') ?>
+                                <?= t('Admin.dashboard.title') ?>
                             </a>
                         </li>
                     </ul>
@@ -93,13 +93,13 @@
 
                 <!-- Customer Management Section -->
                 <div class="nav-section">
-                    <div class="nav-section-title">Customer Management</div>
+                    <div class="nav-section-title"><?= t('Admin.nav.customer_management') ?></div>
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a class="nav-link <?= strpos(uri_string(), 'admin/customers') !== false && strpos(uri_string(), 'checkin-settings') === false ? 'active' : '' ?>" 
                             href="<?= base_url('admin/customers') ?>">
                                 <i class="fas fa-users"></i>
-                                Customer List
+                                <?= t('Admin.nav.customer_list') ?>
                             </a>
                         </li>
                     </ul>

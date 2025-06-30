@@ -3,12 +3,14 @@
 return [
     // 导航
     'nav' => [
-        'dashboard' => '仪表板',
+        'dashboard' => '主页',
         'content_management' => '内容管理',
-        'landing_page' => '落地页',
+        'landing_page' => '落地页设置',
         'media_library' => '媒体库',
         'wheel_management' => '转盘管理',
         'wheel_items' => '转盘项目',
+        'customer_management' => '客户管理',
+        'customer_list' => '客户名单',
         'reward_system' => '奖励系统',
         'reward_ads' => '广告管理',
         'bonus_claims' => '奖金领取',
@@ -23,7 +25,7 @@ return [
 
     // 仪表板
     'dashboard' => [
-        'title' => '仪表板',
+        'title' => '系统面板',
         'welcome' => '欢迎回来，{name}！',
         'quick_actions' => '快速操作',
         'landing_settings' => '落地页设置',
@@ -88,7 +90,7 @@ return [
         
         // Modal content
         'modal' => [
-            'title' => '奖金设置',
+            'title' => '跳转设置',
             'redirect_url' => '跳转网址',
             'redirect_placeholder' => 'https://example.com/register',
             'redirect_help' => '用户领取奖金后将跳转到此网址',
@@ -480,7 +482,7 @@ return [
             'last_checkin' => '最后签到',
             'today' => '今天',
             'yesterday' => '昨天',
-            'days_ago' => '{days}天前',
+            'days_ago' => '{days} 天前',
             'never' => '从未',
             'no_checkins' => '无签到记录',
             'keyboard_shortcuts' => '键盘快捷键',
@@ -591,6 +593,7 @@ return [
         // 签到设置
         'checkin' => [
             'settings_history' => '签到设置与历史',
+            'customer_username' => '客户',
             'customer_points' => '总积分：{points}',
             'back_to_profile' => '返回个人资料',
             'checkin_settings' => '签到设置',
@@ -603,7 +606,7 @@ return [
             'weekend_bonus' => '周末奖励积分',
             'weekend_desc' => '周末签到的额外积分',
             'weekly_multiplier' => '每周奖励倍数',
-            'weekly_desc' => '完美一周完成的倍数',
+            'weekly_desc' => '一周完美签到的倍数',
             'update_settings' => '更新设置',
             'quick_actions' => '快速操作',
             'reset_current_streak' => '重置当前连击',
@@ -611,10 +614,10 @@ return [
             'reset_all_history' => '重置所有历史',
             'current_week_progress' => '本周进度',
             'week_summary' => '周总结',
-            'days_completed' => '已完成 {count}/7 天',
+            'days_completed' => '{count}天已被签到',
             'perfect_week' => '完美一周！',
             'previous_week' => '上周',
-            'days_points' => '{days}/7 天 | {points} 积分',
+            'days_points' => '{days}天',
             'checkin_history' => '签到历史',
             'date' => '日期',
             'day' => '日',

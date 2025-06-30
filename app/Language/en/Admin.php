@@ -5,10 +5,12 @@ return [
     'nav' => [
         'dashboard' => 'Dashboard',
         'content_management' => 'Content Management',
-        'landing_page' => 'Landing Page',
+        'landing_page' => 'Landing Page Builder',
         'media_library' => 'Media Library',
         'wheel_management' => 'Fortune Wheel',
         'wheel_items' => 'Wheel Items',
+        'customer_management' => 'Customers Management',
+        'customer_list' => 'Customer List',
         'reward_system' => 'Reward System',
         'reward_ads' => 'Advertisement Management',
         'bonus_claims' => 'Bonus Claims',
@@ -88,7 +90,7 @@ return [
         
         // Modal content
         'modal' => [
-            'title' => 'Bonus Settings',
+            'title' => 'Redirect Settings',
             'redirect_url' => 'Redirect URL',
             'redirect_placeholder' => 'https://example.com/register',
             'redirect_help' => 'Users will be redirected here after claiming bonus',
@@ -591,7 +593,8 @@ return [
         // Check-in settings
         'checkin' => [
             'settings_history' => 'Check-in Settings & History',
-            'customer_points' => 'Total Points: {points}',
+            'customer_username' => 'Customer',
+            'customer_points' => 'Total Points: ',
             'back_to_profile' => 'Back to Profile',
             'checkin_settings' => 'Check-in Settings',
             'daily_points' => 'Daily Check-in Points',
@@ -611,10 +614,10 @@ return [
             'reset_all_history' => 'Reset All History',
             'current_week_progress' => 'Current Week Progress',
             'week_summary' => 'Week Summary',
-            'days_completed' => '{count}/7 days completed',
+            'days_completed' => '{count} days completed',
             'perfect_week' => 'Perfect Week!',
             'previous_week' => 'Previous Week',
-            'days_points' => '{days}/7 days | {points} points',
+            'days_points' => '{days} days ',
             'checkin_history' => 'Check-in History',
             'date' => 'Date',
             'day' => 'Day',
@@ -665,6 +668,7 @@ return [
             'data_exported' => 'Customer data exported successfully!',
         ],
     ],
+    
     'reward_system' => [
         'title' => 'Reward System Advertisement Manager',
         'add_new' => 'Add New Ad',

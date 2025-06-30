@@ -11,17 +11,17 @@
                         <div class="col-md-8">
                             <h4 class="text-gold mb-1">
                                 <i class="fas fa-calendar-check me-2"></i>
-                                Check-in Settings & History
+                                <?= t('Admin.customers.checkin.settings_history') ?>
                             </h4>
                             <p class="text-light mb-0">
-                                Customer: <strong class="text-gold"><?= esc($customer['username']) ?></strong>
-                                | Total Points: <span class="badge bg-warning text-dark"><?= $customer['points'] ?></span>
+                                <?= t('Admin.customers.checkin.customer_username')?>: <strong class="text-gold"><?= esc($customer['username']) ?></strong>
+                                | <?= t('Admin.customers.checkin.customer_points', ['points' => '']) ?><span class="badge bg-warning text-dark"><?= $customer['points'] ?></span>
                             </p>
                         </div>
                         <div class="col-md-4 text-end">
                             <a href="<?= base_url('admin/customers/view/' . $customer['id']) ?>" 
                                class="btn btn-outline-gold btn-sm">
-                                <i class="fas fa-arrow-left me-1"></i> Back to Profile
+                                <i class="fas fa-arrow-left me-1"></i> <?= t('Admin.customers.checkin.back_to_profile') ?>
                             </a>
                         </div>
                     </div>
@@ -36,7 +36,7 @@
             <div class="card mb-4">
                 <div class="card-header bg-primary-black border-gold">
                     <h5 class="text-gold mb-0">
-                        <i class="fas fa-cogs me-2"></i>Check-in Settings
+                        <i class="fas fa-cogs me-2"></i><?= t('Admin.customers.checkin.checkin_settings') ?>
                     </h5>
                 </div>
                 <div class="card-body">
@@ -45,43 +45,43 @@
                         <input type="hidden" name="customer_id" value="<?= $customer['id'] ?>">
 
                         <div class="mb-3">
-                            <label class="form-label text-light">Daily Check-in Points</label>
+                            <label class="form-label text-light"><?= t('Admin.customers.checkin.daily_points') ?></label>
                             <input type="number" class="form-control" name="default_checkin_points" 
                                    value="<?= $checkin_settings['default_checkin_points'] ?>" min="1" max="999">
-                            <small class="text-muted">Base points awarded for daily check-ins</small>
+                            <small class="text-muted"><?= t('Admin.customers.checkin.base_points_desc') ?></small>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label text-light">Consecutive Bonus Points</label>
+                            <label class="form-label text-light"><?= t('Admin.customers.checkin.consecutive_bonus') ?></label>
                             <input type="number" class="form-control" name="consecutive_bonus_points" 
                                 value="<?= $checkin_settings['consecutive_bonus_points'] ?? 5 ?>" min="0" max="50" step="0.1">
-                            <small class="text-muted">Additional points per consecutive day (Day 1: +0, Day 2: +5, Day 3: +10, etc.)</small>
+                            <small class="text-muted"><?= t('Admin.customers.checkin.consecutive_desc') ?></small>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label text-light">Max Streak Days</label>
+                            <label class="form-label text-light"><?= t('Admin.customers.checkin.max_streak_days') ?></label>
                             <input type="number" class="form-control" name="max_streak_days" 
                                    value="<?= $checkin_settings['max_streak_days'] ?>" min="1" max="365">
-                            <small class="text-muted">Maximum consecutive days for streak bonus</small>
+                            <small class="text-muted"><?= t('Admin.customers.checkin.max_streak_desc') ?></small>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label text-info">Weekend Bonus Points</label>
+                            <label class="form-label text-info"><?= t('Admin.customers.checkin.weekend_bonus') ?></label>
                             <input type="number" class="form-control" name="weekend_bonus_points" 
                                    value="<?= $checkin_settings['weekend_bonus_points'] ?>" min="0" max="500">
-                            <small class="text-muted">Extra points for weekend check-ins</small>
+                            <small class="text-muted"><?= t('Admin.customers.checkin.weekend_desc') ?></small>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label text-info">Weekly Bonus Multiplier</label>
+                            <label class="form-label text-info"><?= t('Admin.customers.checkin.weekly_multiplier') ?></label>
                             <input type="number" class="form-control" name="weekly_bonus_multiplier" 
                                    value="<?= $checkin_settings['weekly_bonus_multiplier'] ?>" 
                                    min="1" max="10" step="0.1">
-                            <small class="text-muted">Multiplier for perfect week completion</small>
+                            <small class="text-muted"><?= t('Admin.customers.checkin.weekly_desc') ?></small>
                         </div>
 
                         <button type="submit" class="btn btn-gold btn-sm w-100">
-                            <i class="fas fa-save me-1"></i> Update Settings
+                            <i class="fas fa-save me-1"></i> <?= t('Admin.customers.checkin.update_settings') ?>
                         </button>
                     </form>
                 </div>
@@ -91,22 +91,22 @@
             <div class="card">
                 <div class="card-header bg-primary-black border-gold">
                     <h5 class="text-gold mb-0">
-                        <i class="fas fa-tools me-2"></i>Quick Actions
+                        <i class="fas fa-tools me-2"></i><?= t('Admin.customers.checkin.quick_actions') ?>
                     </h5>
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
                         <button class="btn btn-outline-warning btn-sm" 
                                 onclick="resetCheckinProgress('current_streak')">
-                            <i class="fas fa-redo me-1"></i> Reset Current Streak
+                            <i class="fas fa-redo me-1"></i> <?= t('Admin.customers.checkin.reset_current_streak') ?>
                         </button>
                         <button class="btn btn-outline-info btn-sm" 
                                 onclick="resetCheckinProgress('monthly_progress')">
-                            <i class="fas fa-calendar-times me-1"></i> Reset Monthly Progress
+                            <i class="fas fa-calendar-times me-1"></i> <?= t('Admin.customers.checkin.reset_monthly') ?>
                         </button>
                         <button class="btn btn-outline-danger btn-sm" 
                                 onclick="resetCheckinProgress('all_history')">
-                            <i class="fas fa-trash me-1"></i> Reset All History
+                            <i class="fas fa-trash me-1"></i> <?= t('Admin.customers.checkin.reset_all_history') ?>
                         </button>
                     </div>
                 </div>
@@ -118,7 +118,7 @@
             <div class="card mb-4">
                 <div class="card-header bg-primary-black border-gold">
                     <h5 class="text-gold mb-0">
-                        <i class="fas fa-calendar-week me-2"></i>Current Week Progress
+                        <i class="fas fa-calendar-week me-2"></i><?= t('Admin.customers.checkin.current_week_progress') ?>
                     </h5>
                 </div>
                 <div class="card-body">
@@ -137,7 +137,7 @@
                                             +<?= $day['checkin_data']['reward_points'] ?>
                                         </div>
                                         <div class="streak-day">
-                                            Streak: <?= $day['checkin_data']['streak_day'] ?>
+                                            <?= t('Admin.customers.checkin.streak') ?>: <?= $day['checkin_data']['streak_day'] ?>
                                         </div>
                                     <?php else: ?>
                                         <div class="no-checkin">
@@ -153,13 +153,13 @@
                     <div class="row mt-3">
                         <div class="col-md-6">
                             <div class="progress-summary">
-                                <h6 class="text-light">Week Summary</h6>
+                                <h6 class="text-light"><?= t('Admin.customers.checkin.week_summary') ?></h6>
                                 <p class="mb-1">
-                                    <span class="text-gold"><?= $weekly_progress['total_current_week'] ?>/7</span> days completed
+                                    <span class="text-gold"><?= $weekly_progress['total_current_week'] ?>/7</span> <?= t('Admin.customers.checkin.days_completed', ['count' => '']) ?>
                                 </p>
                                 <?php if ($weekly_progress['perfect_week']): ?>
                                     <span class="badge bg-success">
-                                        <i class="fas fa-trophy me-1"></i>Perfect Week!
+                                        <i class="fas fa-trophy me-1"></i><?= t('Admin.customers.checkin.perfect_week') ?>
                                     </span>
                                 <?php endif; ?>
                             </div>
@@ -167,10 +167,13 @@
                         <div class="col-md-6">
                             <?php if ($weekly_progress['previous_week']): ?>
                                 <div class="previous-week-info">
-                                    <h6 class="text-light">Previous Week</h6>
+                                    <h6 class="text-light"><?= t('Admin.customers.checkin.previous_week') ?></h6>
                                     <p class="mb-1">
-                                        <span class="text-info"><?= $weekly_progress['previous_week']['checkin_count'] ?>/7</span> days
-                                        | <span class="text-warning"><?= $weekly_progress['previous_week']['reward_points'] ?></span> points
+                                        <span class="text-info"><?= $weekly_progress['previous_week']['checkin_count'] ?>/7</span> <?= t('Admin.customers.checkin.days_points', [
+                                            'days' => '',
+                                            'points' => $weekly_progress['previous_week']['reward_points']
+                                        ]) ?>
+                                        | <span class="text-warning"><?= $weekly_progress['previous_week']['reward_points'] ?></span> <?= t('Admin.customers.checkin.points') ?>
                                     </p>
                                 </div>
                             <?php endif; ?>
@@ -184,25 +187,25 @@
                 <div class="col-md-3">
                     <div class="stats-card">
                         <div class="stats-number"><?= $checkin_statistics['basic']['total_checkins'] ?: 0 ?></div>
-                        <div class="stats-label">Total Check-ins</div>
+                        <div class="stats-label"><?= t('Admin.customers.view.total_checkins') ?></div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="stats-card">
                         <div class="stats-number"><?= $checkin_statistics['basic']['total_points_earned'] ?: 0 ?></div>
-                        <div class="stats-label">Points Earned</div>
+                        <div class="stats-label"><?= t('Admin.customers.view.points_from_checkins') ?></div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="stats-card">
                         <div class="stats-number"><?= $checkin_statistics['basic']['max_streak'] ?: 0 ?></div>
-                        <div class="stats-label">Max Streak</div>
+                        <div class="stats-label">Max <?= t('Admin.customers.checkin.streak') ?></div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="stats-card">
                         <div class="stats-number"><?= round($checkin_statistics['basic']['avg_points_per_checkin'] ?: 0) ?></div>
-                        <div class="stats-label">Avg Points</div>
+                        <div class="stats-label">Avg <?= t('Admin.customers.checkin.points') ?></div>
                     </div>
                 </div>
             </div>
@@ -211,7 +214,7 @@
             <div class="card">
                 <div class="card-header bg-primary-black border-gold">
                     <h5 class="text-gold mb-0">
-                        <i class="fas fa-history me-2"></i>Check-in History
+                        <i class="fas fa-history me-2"></i><?= t('Admin.customers.checkin.checkin_history') ?>
                     </h5>
                 </div>
                 <div class="card-body">
@@ -219,12 +222,12 @@
                         <table class="table table-dark table-striped">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Day</th>
-                                    <th>Points</th>
-                                    <th>Streak</th>
-                                    <th>Type</th>
-                                    <th>Time</th>
+                                    <th><?= t('Admin.customers.checkin.date') ?></th>
+                                    <th><?= t('Admin.customers.checkin.day') ?></th>
+                                    <th><?= t('Admin.customers.checkin.points') ?></th>
+                                    <th><?= t('Admin.customers.checkin.streak') ?></th>
+                                    <th><?= t('Admin.customers.checkin.type') ?></th>
+                                    <th><?= t('Admin.customers.checkin.time') ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -252,7 +255,7 @@
                                             <?php endif; ?>
                                         </td>
                                         <td>
-                                            <?= ucfirst($checkin['day_type']) ?>
+                                            <?= $checkin['day_type'] === 'weekend' ? t('Admin.customers.checkin.weekend') : t('Admin.customers.checkin.weekday') ?>
                                         </td>
                                         <td>
                                             <small class="text-muted">
@@ -265,7 +268,7 @@
                                     <tr>
                                         <td colspan="6" class="text-center text-muted">
                                             <i class="fas fa-inbox fa-2x mb-2"></i>
-                                            <br>No check-in history found
+                                            <br><?= t('Admin.customers.checkin.no_history') ?>
                                         </td>
                                     </tr>
                                 <?php endif; ?>
@@ -284,7 +287,7 @@
             <div class="card">
                 <div class="card-header bg-primary-black border-gold">
                     <h5 class="text-gold mb-0">
-                        <i class="fas fa-chart-bar me-2"></i>Monthly Statistics
+                        <i class="fas fa-chart-bar me-2"></i><?= t('Admin.customers.checkin.monthly_statistics') ?>
                     </h5>
                 </div>
                 <div class="card-body">
@@ -293,8 +296,8 @@
                         <div class="col-md-2">
                             <div class="monthly-stat-card">
                                 <div class="month-name"><?= $month['month_name'] ?> <?= $month['year'] ?></div>
-                                <div class="checkin-count"><?= $month['checkin_count'] ?> days</div>
-                                <div class="points-earned"><?= $month['points_earned'] ?> points</div>
+                                <div class="checkin-count"><?= $month['checkin_count'] ?> <?= t('Admin.customers.checkin.days_points', ['days' => '', 'points' => '']) ?></div>
+                                <div class="points-earned"><?= $month['points_earned'] ?> <?= t('Admin.customers.checkin.points') ?></div>
                             </div>
                         </div>
                         <?php endforeach; ?>
@@ -437,7 +440,7 @@ function updateCheckinSettings() {
     // Show loading state
     const submitBtn = document.querySelector('#checkinSettingsForm button[type="submit"]');
     const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Updating...';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> <?= t('Admin.customers.checkin.updating') ?>';
     submitBtn.disabled = true;
     
     fetch('<?= base_url('admin/customers/updateCheckinSettings') ?>', {
@@ -475,9 +478,9 @@ function updateCheckinSettings() {
  */
 function resetCheckinProgress(resetType) {
     const messages = {
-        'current_streak': 'Are you sure you want to reset the current streak?',
-        'monthly_progress': 'Are you sure you want to reset this month\'s progress? This will delete all check-ins for the current month.',
-        'all_history': 'Are you sure you want to reset ALL check-in history? This action cannot be undone!'
+        'current_streak': '<?= t('Admin.customers.checkin.confirm_reset_streak') ?>',
+        'monthly_progress': '<?= t('Admin.customers.checkin.confirm_reset_monthly') ?>',
+        'all_history': '<?= t('Admin.customers.checkin.confirm_reset_all') ?>'
     };
     
     if (!confirm(messages[resetType] || 'Are you sure you want to proceed?')) {

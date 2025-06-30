@@ -8,9 +8,9 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="card-title mb-0">Edit Customer - <?= esc($customer['username']) ?></h4>
+                    <h4 class="card-title mb-0"><?= t('Admin.customers.edit.title') ?> - <?= esc($customer['username']) ?></h4>
                     <a href="<?= base_url('admin/customers/view/' . $customer['id']) ?>" class="btn btn-warning btn-sm text-dark">
-                        <i class="fas fa-cogs"></i> Feature Settings
+                        <i class="fas fa-cogs"></i> <?= t('Admin.customers.edit.feature_settings') ?>
                     </a>
                 </div>
                 
@@ -33,15 +33,15 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="username" class="form-label">Username</label>
+                                    <label for="username" class="form-label"><?= t('Admin.customers.table.username') ?></label>
                                     <input type="text" class="form-control" id="username" 
                                            value="<?= esc($customer['username']) ?>" disabled>
-                                    <small class="form-text text-muted">Username cannot be changed</small>
+                                    <small class="form-text text-muted"><?= t('Admin.customers.edit.username_readonly') ?></small>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="name" class="form-label">Full Name</label>
+                                    <label for="name" class="form-label"><?= t('Admin.customers.edit.full_name') ?></label>
                                     <input type="text" class="form-control" id="name" name="name" 
                                            value="<?= esc(old('name', $customer['name'])) ?>">
                                 </div>
@@ -51,17 +51,17 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="email" class="form-label">Email</label>
+                                    <label for="email" class="form-label"><?= t('Admin.customers.edit.email') ?></label>
                                     <input type="email" class="form-control" id="email" name="email" 
                                            value="<?= esc(old('email', $customer['email'])) ?>">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="is_active" class="form-label">Status</label>
-                                    <select class="form-control" id="is_active" name="is_active">
-                                        <option value="1" <?= old('is_active', $customer['is_active']) == 1 ? 'selected' : '' ?>>Active</option>
-                                        <option value="0" <?= old('is_active', $customer['is_active']) == 0 ? 'selected' : '' ?>>Inactive</option>
+                                    <label for="is_active" class="form-label"><?= t('Admin.customers.edit.status') ?></label>
+                                    <select class="form-select" id="is_active" name="is_active">
+                                        <option value="1" <?= old('is_active', $customer['is_active']) == 1 ? 'selected' : '' ?>><?= t('Admin.customers.table.active') ?></option>
+                                        <option value="0" <?= old('is_active', $customer['is_active']) == 0 ? 'selected' : '' ?>><?= t('Admin.customers.table.inactive') ?></option>
                                     </select>
                                 </div>
                             </div>
@@ -71,14 +71,14 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="points" class="form-label">Total Points</label>
+                                    <label for="points" class="form-label"><?= t('Admin.customers.edit.total_points') ?></label>
                                     <input type="number" class="form-control" id="points" name="points" 
                                            value="<?= old('points', $customer['points']) ?>" min="0">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="spin_tokens" class="form-label">Spin Tokens</label>
+                                    <label for="spin_tokens" class="form-label"><?= t('Admin.customers.edit.spin_tokens') ?></label>
                                     <input type="number" class="form-control" id="spin_tokens" name="spin_tokens" 
                                            value="<?= old('spin_tokens', $customer['spin_tokens']) ?>" min="0">
                                 </div>
@@ -88,32 +88,31 @@
                         <!-- Password Management Section -->
                         <hr>
                         <div class="d-flex align-items-center justify-content-between mb-3">
-                            <h5 class="mb-0">Password Management</h5>
+                            <h5 class="mb-0"><?= t('Admin.customers.edit.password_management') ?></h5>
                             <div class="btn-group" role="group">
                                 <button type="button" class="btn btn-warning btn-sm" onclick="openChangePasswordModal()">
-                                    <i class="fas fa-key"></i> Change Password
+                                    <i class="fas fa-key"></i> <?= t('Admin.customers.edit.change_password') ?>
                                 </button>
                                 <button type="button" class="btn btn-info btn-sm" onclick="generateNewPassword()">
-                                    <i class="fas fa-random"></i> Generate New Password
+                                    <i class="fas fa-random"></i> <?= t('Admin.customers.edit.generate_password') ?>
                                 </button>
                             </div>
                         </div>
                         
                         <div class="password-security-box mb-3">
                             <i class="fas fa-shield-alt text-primary me-2"></i>
-                            <strong>Password Security:</strong> Passwords are securely hashed and cannot be viewed. 
-                            You can either change to a specific password or generate a random one.
+                            <strong><?= t('Admin.customers.edit.password_security') ?>:</strong> <?= t('Admin.customers.edit.password_security_desc') ?>
                         </div>
                         
                         <!-- Appearance Settings -->
                         <hr>
-                        <h5 class="mb-3">Appearance Settings</h5>
+                        <h5 class="mb-3"><?= t('Admin.customers.edit.appearance_settings') ?></h5>
                         
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="profile_background" class="form-label">Profile Background Theme</label>
-                                    <select class="form-control" id="profile_background" name="profile_background">
+                                    <label for="profile_background" class="form-label"><?= t('Admin.customers.edit.profile_background') ?></label>
+                                    <select class="form-select" id="profile_background" name="profile_background">
                                         <?php foreach ($profile_backgrounds as $key => $label): ?>
                                             <option value="<?= $key ?>" 
                                                 <?= old('profile_background', $customer['profile_background']) == $key ? 'selected' : '' ?>>
@@ -125,7 +124,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="dashboard_bg_color" class="form-label">Dashboard Background Color</label>
+                                    <label for="dashboard_bg_color" class="form-label"><?= t('Admin.customers.edit.dashboard_bg_color') ?></label>
                                     <div class="input-group">
                                         <input type="color" class="form-control form-control-color" 
                                                id="dashboard_bg_color" name="dashboard_bg_color" 
@@ -141,16 +140,16 @@
                         
                         <!-- Profile Background Image -->
                         <div class="form-group">
-                            <label for="profile_background_image" class="form-label">Custom Profile Background Image</label>
+                            <label for="profile_background_image" class="form-label"><?= t('Admin.customers.edit.custom_background') ?></label>
                             <?php if (!empty($customer['profile_background_image'])): ?>
                                 <div class="current-image mb-2">
                                     <img src="<?= base_url('uploads/profile_backgrounds/' . $customer['profile_background_image']) ?>" 
-                                         alt="Current Background" class="img-thumbnail" style="max-width: 200px; max-height: 120px;">
+                                         alt="<?= t('Admin.customers.edit.current_background') ?>" class="img-thumbnail" style="max-width: 200px; max-height: 120px;">
                                     <div class="form-check mt-2">
                                         <input class="form-check-input" type="checkbox" 
                                                id="remove_background_image" name="remove_background_image" value="1">
                                         <label class="form-check-label" for="remove_background_image">
-                                            Remove current background image
+                                            <?= t('Admin.customers.edit.remove_current_bg') ?>
                                         </label>
                                     </div>
                                 </div>
@@ -158,17 +157,17 @@
                             <input type="file" class="form-control" id="profile_background_image" 
                                    name="profile_background_image" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
                             <small class="form-text text-muted">
-                                Upload a new background image (JPEG, PNG, GIF, WebP). Max file size: 2MB. Recommended size: 800x400px
+                                <?= t('Admin.customers.edit.upload_background') ?>
                             </small>
                         </div>
                         
                         <div class="form-group text-center mt-4">
                             <button type="submit" class="btn btn-success">
-                                <i class="fas fa-save"></i> Update Customer
+                                <i class="fas fa-save"></i> <?= t('Admin.customers.edit.update_customer') ?>
                             </button>
                             <a href="<?= base_url('admin/customers/view/' . $customer['id']) ?>" 
                                class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> Cancel
+                                <i class="fas fa-arrow-left"></i> <?= t('Admin.customers.edit.cancel') ?>
                             </a>
                         </div>
                     </form>
@@ -180,29 +179,29 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title">Live Preview</h5>
+                    <h5 class="card-title"><?= t('Admin.customers.edit.live_preview') ?></h5>
                 </div>
                 <div class="card-body">
                     <!-- Profile Header Preview -->
                     <div class="preview-section">
-                        <h6>Profile Header</h6>
+                        <h6><?= t('Admin.customers.edit.profile_header') ?></h6>
                         <div class="profile-header-preview" id="profilePreview">
                             <div class="profile-header-overlay" id="profileOverlay" style="display: none;"></div>
                             <div class="profile-content">
                                 <h6 class="text-white mb-1"><?= esc($customer['username']) ?></h6>
-                                <small class="text-white-50">Premium Member</small>
+                                <small class="text-white-50"><?= t('Admin.customers.view.premium_member') ?></small>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Dashboard Background Preview -->
                     <div class="preview-section mt-4">
-                        <h6>Dashboard Background</h6>
+                        <h6><?= t('Admin.customers.view.dashboard_background') ?></h6>
                         <div class="dashboard-preview" id="dashboardPreview">
                             <div class="dashboard-content">
                                 <div class="stat-card-preview">
                                     <div class="stat-number"><?= number_format($customer['points']) ?></div>
-                                    <div class="stat-label">Total Points</div>
+                                    <div class="stat-label"><?= t('Admin.customers.edit.total_points') ?></div>
                                 </div>
                             </div>
                         </div>
@@ -210,7 +209,7 @@
                     
                     <!-- Color Info -->
                     <div class="color-info mt-3">
-                        <small class="text-muted d-block">Selected Color:</small>
+                        <small class="text-muted d-block"><?= t('Admin.customers.edit.selected_color') ?>:</small>
                         <div class="color-display" id="colorDisplay">
                             <div class="color-swatch" id="colorSwatch"></div>
                             <span id="colorValue"><?= $customer['dashboard_bg_color'] ?></span>
@@ -229,7 +228,7 @@
             <div class="modal-header bg-warning text-dark">
                 <h5 class="modal-title">
                     <i class="fas fa-key"></i>
-                    Change Customer Password
+                    <?= t('Admin.customers.password.set_custom_password') ?>
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -237,27 +236,27 @@
                 <form id="changePasswordForm">
                     <div class="alert alert-warning">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <strong>Security Notice:</strong> You are about to change the password for customer: 
+                        <strong><?= t('Admin.customers.password.security_note') ?>:</strong> <?= t('Admin.customers.password.managing_for') ?>: 
                         <strong><?= esc($customer['username']) ?></strong>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="new_password" class="form-label">New Password</label>
+                        <label for="new_password" class="form-label"><?= t('Admin.customers.password.new_password') ?></label>
                         <div class="input-group">
                             <input type="password" class="form-control" id="new_password" name="new_password" 
-                                   placeholder="Enter new password" minlength="4" required>
+                                   placeholder="<?= t('Admin.customers.password.enter_new') ?>" minlength="4" required>
                             <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('new_password')">
                                 <i class="fas fa-eye" id="new_password_icon"></i>
                             </button>
                         </div>
-                        <small class="form-text text-muted">Minimum 4 characters required</small>
+                        <small class="form-text text-muted"><?= t('Admin.customers.password.min_4_chars') ?></small>
                     </div>
                     
                     <div class="mb-3">
-                        <label for="confirm_password" class="form-label">Confirm New Password</label>
+                        <label for="confirm_password" class="form-label"><?= t('Admin.customers.password.confirm_password') ?></label>
                         <div class="input-group">
                             <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
-                                   placeholder="Confirm new password" minlength="4" required>
+                                   placeholder="<?= t('Admin.customers.password.confirm_new') ?>" minlength="4" required>
                             <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('confirm_password')">
                                 <i class="fas fa-eye" id="confirm_password_icon"></i>
                             </button>
@@ -265,9 +264,9 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label for="password_reason" class="form-label">Reason for Change (Optional)</label>
+                        <label for="password_reason" class="form-label"><?= t('Admin.customers.password.reason_optional') ?></label>
                         <textarea class="form-control" id="password_reason" name="reason" rows="2" 
-                                  placeholder="e.g., Customer forgot password, security concern, etc."></textarea>
+                                  placeholder="<?= t('Admin.customers.password.reason_placeholder') ?>"></textarea>
                     </div>
                     
                     <div class="password-strength-indicator">
@@ -281,10 +280,10 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times"></i> Cancel
+                    <i class="fas fa-times"></i> <?= t('Admin.customers.password.cancel') ?>
                 </button>
                 <button type="button" class="btn btn-warning" id="confirmChangePasswordBtn">
-                    <i class="fas fa-save"></i> Change Password
+                    <i class="fas fa-save"></i> <?= t('Admin.customers.password.change_password_btn') ?>
                 </button>
             </div>
         </div>
@@ -298,33 +297,33 @@
             <div class="modal-header bg-info text-white">
                 <h5 class="modal-title">
                     <i class="fas fa-random"></i>
-                    Generate New Password
+                    <?= t('Admin.customers.password.generate_random') ?>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle"></i>
-                    A secure random password will be generated for customer: <strong><?= esc($customer['username']) ?></strong>
+                    <?= t('Admin.customers.password.auto_generate') ?>: <strong><?= esc($customer['username']) ?></strong>
                 </div>
                 
                 <div class="mb-3">
-                    <label for="generation_reason" class="form-label">Reason for Generation (Optional)</label>
+                    <label for="generation_reason" class="form-label"><?= t('Admin.customers.password.reason_optional') ?></label>
                     <textarea class="form-control" id="generation_reason" name="reason" rows="2" 
-                              placeholder="e.g., Initial setup, account recovery, etc."></textarea>
+                              placeholder="<?= t('Admin.customers.password.reason_placeholder') ?>"></textarea>
                 </div>
                 
                 <div class="alert alert-warning">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <strong>Important:</strong> Make sure to securely share the generated password with the customer.
+                    <strong><?= t('Admin.customers.password.security_note') ?>:</strong> <?= t('Admin.customers.password.save_securely') ?>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times"></i> Cancel
+                    <i class="fas fa-times"></i> <?= t('Admin.customers.password.cancel') ?>
                 </button>
                 <button type="button" class="btn btn-info" id="confirmGeneratePasswordBtn">
-                    <i class="fas fa-random"></i> Generate Password
+                    <i class="fas fa-random"></i> <?= t('Admin.customers.password.generate_password') ?>
                 </button>
             </div>
         </div>
@@ -699,12 +698,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Validation
             if (!newPassword || newPassword.length < 4) {
-                showToast('Password must be at least 4 characters long', 'error');
+                showToast('<?= t('Admin.customers.password.min_length_error') ?>', 'error');
                 return;
             }
             
             if (newPassword !== confirmPassword) {
-                showToast('Password confirmation does not match', 'error');
+                showToast('<?= t('Admin.customers.password.confirmation_error') ?>', 'error');
                 return;
             }
             
@@ -753,7 +752,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     // Show success result
-                    showPasswordResult(data.message || 'Password changed successfully!');
+                    showPasswordResult(data.message || '<?= t('Admin.customers.messages.password_changed') ?>');
                     
                     // Reset form
                     const form = document.getElementById('changePasswordForm');
@@ -827,7 +826,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Show success result with generated password
                     showPasswordResult(
-                        data.message || 'Password generated successfully!',
+                        data.message || '<?= t('Admin.customers.messages.password_generated') ?>',
                         data.new_password
                     );
                     
@@ -865,7 +864,7 @@ function showPasswordResult(message, newPassword = null) {
                         <div class="modal-header bg-success text-white">
                             <h5 class="modal-title">
                                 <i class="fas fa-check-circle"></i>
-                                Password Updated Successfully
+                                <?= t('Admin.customers.password.update_successful') ?>
                             </h5>
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                         </div>
@@ -877,28 +876,28 @@ function showPasswordResult(message, newPassword = null) {
                             
                             ${newPassword ? `
                             <div class="mb-3">
-                                <label class="form-label"><strong>Generated Password:</strong></label>
+                                <label class="form-label"><strong><?= t('Admin.customers.password.generated_password') ?>:</strong></label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="dynamicGeneratedPasswordField" value="${newPassword}" readonly>
                                     <button type="button" class="btn btn-outline-secondary" onclick="copyGeneratedPassword()">
-                                        <i class="fas fa-copy"></i> Copy
+                                        <i class="fas fa-copy"></i> <?= t('Admin.common.copy') ?>
                                     </button>
                                 </div>
                                 <small class="form-text text-danger">
                                     <i class="fas fa-exclamation-triangle"></i>
-                                    Please save this password securely. It cannot be retrieved again.
+                                    <?= t('Admin.customers.password.save_securely') ?>
                                 </small>
                             </div>
                             ` : ''}
                             
                             <div class="alert alert-info">
                                 <i class="fas fa-shield-alt"></i>
-                                <strong>Security Note:</strong> The password has been securely hashed in the database.
+                                <strong><?= t('Admin.customers.password.security_note') ?>:</strong> <?= t('Admin.customers.password.securely_hashed') ?>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-success" data-bs-dismiss="modal">
-                                <i class="fas fa-check"></i> Understood
+                                <i class="fas fa-check"></i> <?= t('Admin.customers.password.understood') ?>
                             </button>
                         </div>
                     </div>
@@ -928,7 +927,7 @@ function showPasswordResult(message, newPassword = null) {
         console.error('Error in showPasswordResult:', error);
         // Fallback to simple alert
         if (newPassword) {
-            alert(`${message}\n\nGenerated Password: ${newPassword}\n\nPlease save this password securely!`);
+            alert(`${message}\n\n<?= t('Admin.customers.password.generated_password') ?>: ${newPassword}\n\n<?= t('Admin.customers.password.save_securely') ?>`);
         } else {
             alert(message);
         }
@@ -948,7 +947,7 @@ function copyToClipboard(text) {
     try {
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(text).then(() => {
-                showToast('Password copied to clipboard!', 'success');
+                showToast('<?= t('Admin.customers.password.copied_clipboard') ?>', 'success');
             }).catch(err => {
                 console.error('Clipboard write failed:', err);
                 fallbackCopyToClipboard(text);
@@ -979,13 +978,13 @@ function fallbackCopyToClipboard(text) {
         document.body.removeChild(textArea);
         
         if (successful) {
-            showToast('Password copied to clipboard!', 'success');
+            showToast('<?= t('Admin.customers.password.copied_clipboard') ?>', 'success');
         } else {
-            prompt('Copy this password manually:', text);
+            prompt('<?= t('Admin.customers.password.copy_manual') ?>', text);
         }
     } catch (error) {
         console.error('Fallback copy failed:', error);
-        prompt('Copy this password manually:', text);
+        prompt('<?= t('Admin.customers.password.copy_manual') ?>', text);
     }
 }
 

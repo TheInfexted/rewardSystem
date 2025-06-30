@@ -9,7 +9,7 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Customer Profile</h4>
+                    <h4 class="card-title"><?= t('Admin.customers.view.profile') ?></h4>
                 </div>
                 <div class="card-body text-center">
                     <!-- Profile Background Preview -->
@@ -21,14 +21,14 @@
                             <?php endif; ?>
                             <div class="profile-content">
                                 <h5 class="text-white"><?= esc($customer['username']) ?></h5>
-                                <p class="text-white-50 mb-0">Premium Member</p>
+                                <p class="text-white-50 mb-0"><?= t('Admin.customers.view.premium_member') ?></p>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Dashboard Color Preview -->
                     <div class="dashboard-color-preview mb-3">
-                        <small class="text-muted d-block mb-1">Dashboard Background</small>
+                        <small class="text-muted d-block mb-1"><?= t('Admin.customers.view.dashboard_background') ?></small>
                         <div class="color-swatch-large" style="background-color: <?= $customer['dashboard_bg_color'] ?>"></div>
                         <small class="text-muted"><?= $customer['dashboard_bg_color'] ?></small>
                     </div>
@@ -41,34 +41,34 @@
                                 <td><?= $customer['id'] ?></td>
                             </tr>
                             <tr>
-                                <td><strong>Username:</strong></td>
+                                <td><strong><?= t('Admin.customers.table.username') ?>:</strong></td>
                                 <td><?= esc($customer['username']) ?></td>
                             </tr>
                             <tr>
-                                <td><strong>Name:</strong></td>
+                                <td><strong><?= t('Admin.customers.table.name') ?>:</strong></td>
                                 <td><?= esc($customer['name'] ?? 'N/A') ?></td>
                             </tr>
                             <tr>
-                                <td><strong>Email:</strong></td>
+                                <td><strong><?= t('Admin.customers.table.email') ?>:</strong></td>
                                 <td><?= esc($customer['email'] ?? 'N/A') ?></td>
                             </tr>
                             <tr>
-                                <td><strong>Status:</strong></td>
+                                <td><strong><?= t('Admin.customers.table.status') ?>:</strong></td>
                                 <td>
                                     <?php if ($customer['is_active']): ?>
-                                        <span class="badge badge-success">Active</span>
+                                        <span class="badge badge-success"><?= t('Admin.customers.table.active') ?></span>
                                     <?php else: ?>
-                                        <span class="badge badge-danger">Inactive</span>
+                                        <span class="badge badge-danger"><?= t('Admin.customers.table.inactive') ?></span>
                                     <?php endif; ?>
                                 </td>
                             </tr>
                             <tr>
-                                <td><strong>Joined:</strong></td>
+                                <td><strong><?= t('Admin.customers.table.joined') ?>:</strong></td>
                                 <td><?= date('M j, Y', strtotime($customer['created_at'])) ?></td>
                             </tr>
                             <?php if (!empty($customer['last_login'])): ?>
                             <tr>
-                                <td><strong>Last Login:</strong></td>
+                                <td><strong><?= t('Admin.customers.table.last_login') ?>:</strong></td>
                                 <td><?= date('M j, Y H:i', strtotime($customer['last_login'])) ?></td>
                             </tr>
                             <?php endif; ?>
@@ -79,11 +79,11 @@
                     <div class="mt-3">
                         <a href="<?= base_url('admin/customers/edit/' . $customer['id']) ?>" 
                            class="btn btn-warning btn-sm">
-                            <i class="fas fa-edit"></i> Edit Customer
+                            <i class="fas fa-edit"></i> <?= t('Admin.customers.actions.edit_customer') ?>
                         </a>
                         <button type="button" class="btn btn-danger btn-sm" 
                                 onclick="resetDashboard(<?= $customer['id'] ?>)">
-                            <i class="fas fa-undo"></i> Reset Dashboard
+                            <i class="fas fa-undo"></i> <?= t('Admin.customers.view.reset_dashboard') ?>
                         </button>
                     </div>
                 </div>
@@ -95,22 +95,22 @@
             <div class="card mb-4">
                 <div class="card-header bg-primary-black border-gold d-flex justify-content-between align-items-center">
                     <h5 class="text-gold mb-0">
-                        <i class="fas fa-tools me-2"></i>Customer Management Actions
+                        <i class="fas fa-tools me-2"></i><?= t('Admin.customers.view.management_actions') ?>
                     </h5>
                     <div class="dropdown">
                         <button class="btn btn-outline-gold btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-ellipsis-v"></i> More Actions
+                            <i class="fas fa-ellipsis-v"></i> <?= t('Admin.customers.view.more_actions') ?>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-dark">
                             <li><a class="dropdown-item" href="#" onclick="copyCustomerInfo(<?= $customer['id'] ?>)">
-                                <i class="fas fa-copy me-2"></i>Copy Info</a></li>
+                                <i class="fas fa-copy me-2"></i><?= t('Admin.customers.view.copy_info') ?></a></li>
                             <li><a class="dropdown-item" href="#" onclick="exportCustomerData(<?= $customer['id'] ?>)">
-                                <i class="fas fa-download me-2"></i>Export Data</a></li>
+                                <i class="fas fa-download me-2"></i><?= t('Admin.customers.view.export_data') ?></a></li>
                             <li><a class="dropdown-item" href="#" onclick="refreshStatistics()">
-                                <i class="fas fa-refresh me-2"></i>Refresh Stats</a></li>
+                                <i class="fas fa-refresh me-2"></i><?= t('Admin.customers.view.refresh_stats') ?></a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-danger" href="#" onclick="deleteCustomer(<?= $customer['id'] ?>)">
-                                <i class="fas fa-trash me-2"></i>Delete Customer</a></li>
+                                <i class="fas fa-trash me-2"></i><?= t('Admin.customers.view.delete_customer') ?></a></li>
                         </ul>
                     </div>
                 </div>
@@ -119,22 +119,22 @@
                         <!-- Profile Management Column -->
                         <div class="col-md-6">
                             <h6 class="text-light mb-3 border-bottom border-secondary pb-2">
-                                <i class="fas fa-user-edit me-2"></i>Profile Management
+                                <i class="fas fa-user-edit me-2"></i><?= t('Admin.customers.view.profile_management') ?>
                             </h6>
                             <div class="d-grid gap-2">
                                 <a href="<?= base_url('admin/customers/edit/' . $customer['id']) ?>" 
                                 class="btn btn-outline-warning btn-sm"
                                 data-bs-toggle="tooltip" 
-                                title="Edit customer profile information">
-                                    <i class="fas fa-edit me-1"></i> Edit Profile
+                                title="<?= t('Admin.customers.view.edit_profile_desc') ?>">
+                                    <i class="fas fa-edit me-1"></i> <?= t('Admin.customers.view.edit_profile') ?>
                                 </a>
                                 
                                 <div class="btn-group" role="group">
                                     <a href="<?= base_url('admin/customers/tokens/' . $customer['id']) ?>" 
                                     class="btn btn-outline-info btn-sm"
                                     data-bs-toggle="tooltip" 
-                                    title="Manage spin tokens">
-                                        <i class="fas fa-coins me-1"></i> Manage Tokens
+                                    title="<?= t('Admin.customers.view.manage_tokens_desc') ?>">
+                                        <i class="fas fa-coins me-1"></i> <?= t('Admin.customers.actions.manage_tokens') ?>
                                     </a>
                                     <button type="button" 
                                             class="btn btn-outline-info btn-sm dropdown-toggle dropdown-toggle-split" 
@@ -143,30 +143,30 @@
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-dark">
                                         <li><a class="dropdown-item" href="#" onclick="quickAddTokens(<?= $customer['id'] ?>, 5)">
-                                            <i class="fas fa-plus me-2"></i>Quick Add 5</a></li>
+                                            <i class="fas fa-plus me-2"></i><?= t('Admin.customers.view.quick_add_5') ?></a></li>
                                         <li><a class="dropdown-item" href="#" onclick="quickAddTokens(<?= $customer['id'] ?>, 10)">
-                                            <i class="fas fa-plus me-2"></i>Quick Add 10</a></li>
+                                            <i class="fas fa-plus me-2"></i><?= t('Admin.customers.view.quick_add_10') ?></a></li>
                                         <li><a class="dropdown-item" href="#" onclick="quickAddTokens(<?= $customer['id'] ?>)">
-                                            <i class="fas fa-plus me-2"></i>Custom Amount</a></li>
+                                            <i class="fas fa-plus me-2"></i><?= t('Admin.customers.view.custom_amount') ?></a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item text-warning" href="#" onclick="quickRemoveTokens(<?= $customer['id'] ?>)">
-                                            <i class="fas fa-minus me-2"></i>Remove Tokens</a></li>
+                                            <i class="fas fa-minus me-2"></i><?= t('Admin.customers.view.remove_tokens') ?></a></li>
                                     </ul>
                                 </div>
                                 
                                 <button class="btn btn-outline-secondary btn-sm" 
                                         onclick="resetDashboard(<?= $customer['id'] ?>)"
                                         data-bs-toggle="tooltip" 
-                                        title="Reset dashboard to default settings">
-                                    <i class="fas fa-undo me-1"></i> Reset Dashboard
+                                        title="<?= t('Admin.customers.view.reset_dashboard_desc') ?>">
+                                    <i class="fas fa-undo me-1"></i> <?= t('Admin.customers.view.reset_dashboard') ?>
                                 </button>
                                 
                                 <button class="btn btn-outline-<?= $customer['is_active'] ? 'danger' : 'success' ?> btn-sm" 
                                         onclick="toggleCustomerStatus(<?= $customer['id'] ?>)"
                                         data-bs-toggle="tooltip" 
-                                        title="<?= $customer['is_active'] ? 'Deactivate' : 'Activate' ?> customer account">
+                                        title="<?= $customer['is_active'] ? t('Admin.customers.view.deactivate_desc') : t('Admin.customers.view.activate_desc') ?>">
                                     <i class="fas fa-<?= $customer['is_active'] ? 'user-slash' : 'user-check' ?> me-1"></i> 
-                                    <?= $customer['is_active'] ? 'Deactivate' : 'Activate' ?>
+                                    <?= $customer['is_active'] ? t('Admin.customers.actions.deactivate') : t('Admin.customers.actions.activate') ?>
                                 </button>
                             </div>
                         </div>
@@ -174,29 +174,29 @@
                         <!-- Activity & Analytics Column -->
                         <div class="col-md-6">
                             <h6 class="text-light mb-3 border-bottom border-secondary pb-2">
-                                <i class="fas fa-chart-line me-2"></i>Activity & Analytics
+                                <i class="fas fa-chart-line me-2"></i><?= t('Admin.customers.view.activity_analytics') ?>
                             </h6>
                             <div class="d-grid gap-2">
                                 <a href="<?= base_url('admin/customers/checkin-settings/' . $customer['id']) ?>" 
                                 class="btn btn-gold btn-sm"
                                 data-bs-toggle="tooltip" 
-                                title="View and manage check-in settings">
-                                    <i class="fas fa-calendar-check me-1"></i> Check-in Settings
+                                title="<?= t('Admin.customers.view.checkin_settings_desc') ?>">
+                                    <i class="fas fa-calendar-check me-1"></i> <?= t('Admin.customers.view.checkin_settings') ?>
                                 </a>
                                 
                                 <button class="btn btn-outline-success btn-sm" 
                                         onclick="viewActivityHistory(<?= $customer['id'] ?>)"
                                         data-bs-toggle="tooltip" 
-                                        title="View detailed activity history">
-                                    <i class="fas fa-history me-1"></i> Activity History
+                                        title="<?= t('Admin.customers.view.activity_history_desc') ?>">
+                                    <i class="fas fa-history me-1"></i> <?= t('Admin.customers.view.activity_history') ?>
                                 </button>
                                 
                                 <div class="btn-group" role="group">
                                     <button class="btn btn-outline-light btn-sm" 
                                             onclick="exportCustomerData(<?= $customer['id'] ?>)"
                                             data-bs-toggle="tooltip" 
-                                            title="Export customer data">
-                                        <i class="fas fa-download me-1"></i> Export Data
+                                            title="<?= t('Admin.customers.view.export_data_desc') ?>">
+                                        <i class="fas fa-download me-1"></i> <?= t('Admin.customers.view.export_data') ?>
                                     </button>
                                     <button type="button" 
                                             class="btn btn-outline-light btn-sm dropdown-toggle dropdown-toggle-split" 
@@ -205,9 +205,9 @@
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-dark">
                                         <li><a class="dropdown-item" href="#" onclick="exportCustomerData(<?= $customer['id'] ?>)">
-                                            <i class="fas fa-file-csv me-2"></i>Export as CSV</a></li>
+                                            <i class="fas fa-file-csv me-2"></i><?= t('Admin.customers.view.export_csv') ?></a></li>
                                         <li><a class="dropdown-item" href="#" onclick="copyCustomerInfo(<?= $customer['id'] ?>)">
-                                            <i class="fas fa-clipboard me-2"></i>Copy to Clipboard</a></li>
+                                            <i class="fas fa-clipboard me-2"></i><?= t('Admin.customers.view.copy_clipboard') ?></a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -221,7 +221,7 @@
                                 <div class="h5 text-success mb-1" id="total-checkins">
                                     <?= $stats['checkins']['total_checkins'] ?: 0 ?>
                                 </div>
-                                <small class="text-muted">Total Check-ins</small>
+                                <small class="text-muted"><?= t('Admin.customers.view.total_checkins') ?></small>
                                 <div class="progress mt-1" style="height: 4px;">
                                     <div class="progress-bar bg-success" 
                                         style="width: <?= min(100, ($stats['checkins']['total_checkins'] ?: 0) * 2) ?>%"></div>
@@ -233,7 +233,7 @@
                                 <div class="h5 text-warning mb-1" id="points-from-checkins">
                                     <?= $stats['checkins']['total_points_earned'] ?: 0 ?>
                                 </div>
-                                <small class="text-muted">Points from Check-ins</small>
+                                <small class="text-muted"><?= t('Admin.customers.view.points_from_checkins') ?></small>
                                 <div class="progress mt-1" style="height: 4px;">
                                     <div class="progress-bar bg-warning" 
                                         style="width: <?= min(100, (($stats['checkins']['total_points_earned'] ?: 0) / 500) * 100) ?>%"></div>
@@ -245,7 +245,7 @@
                                 <div class="h5 text-info mb-1" id="monthly-checkins">
                                     <?= $stats['monthly']['monthly_checkins'] ?: 0 ?>
                                 </div>
-                                <small class="text-muted">This Month</small>
+                                <small class="text-muted"><?= t('Admin.customers.view.this_month') ?></small>
                                 <div class="progress mt-1" style="height: 4px;">
                                     <div class="progress-bar bg-info" 
                                         style="width: <?= min(100, (($stats['monthly']['monthly_checkins'] ?: 0) / 31) * 100) ?>%"></div>
@@ -255,9 +255,9 @@
                         <div class="col-md-3">
                             <div class="text-center">
                                 <div class="h5 text-primary mb-1" id="last-checkin">
-                                    <?= $stats['checkins']['last_checkin'] ? date('M j', strtotime($stats['checkins']['last_checkin'])) : 'Never' ?>
+                                    <?= $stats['checkins']['last_checkin'] ? date('M j', strtotime($stats['checkins']['last_checkin'])) : t('Admin.customers.view.never') ?>
                                 </div>
-                                <small class="text-muted">Last Check-in</small>
+                                <small class="text-muted"><?= t('Admin.customers.view.last_checkin') ?></small>
                                 <div class="mt-1">
                                     <?php if ($stats['checkins']['last_checkin']): ?>
                                         <?php 
@@ -267,10 +267,10 @@
                                         $statusColor = $diff == 0 ? 'success' : ($diff <= 3 ? 'warning' : 'danger');
                                         ?>
                                         <span class="badge bg-<?= $statusColor ?> badge-sm">
-                                            <?= $diff == 0 ? 'Today' : ($diff == 1 ? 'Yesterday' : $diff . ' days ago') ?>
+                                            <?= $diff == 0 ? t('Admin.customers.view.today') : ($diff == 1 ? t('Admin.customers.view.yesterday') : t('Admin.customers.view.days_ago', ['days' => $diff])) ?>
                                         </span>
                                     <?php else: ?>
-                                        <span class="badge bg-secondary badge-sm">No check-ins</span>
+                                        <span class="badge bg-secondary badge-sm"><?= t('Admin.customers.view.no_checkins') ?></span>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -282,8 +282,8 @@
                         <div class="col-12">
                             <small class="text-muted">
                                 <i class="fas fa-keyboard me-1"></i>
-                                <strong>Keyboard Shortcuts:</strong> 
-                                Ctrl+E (Edit), Ctrl+T (Tokens), Ctrl+H (History)
+                                <strong><?= t('Admin.customers.view.keyboard_shortcuts') ?>:</strong> 
+                                <?= t('Admin.customers.view.ctrl_e_edit') ?>, <?= t('Admin.customers.view.ctrl_t_tokens') ?>, <?= t('Admin.customers.view.ctrl_h_history') ?>
                             </small>
                         </div>
                     </div>
@@ -294,8 +294,8 @@
             <?php if (!$customer['is_active']): ?>
             <div class="alert alert-warning" role="alert">
                 <i class="fas fa-exclamation-triangle me-2"></i>
-                <strong>Customer Account Inactive:</strong> This customer account is currently deactivated.
-                <a href="#" onclick="toggleCustomerStatus(<?= $customer['id'] ?>)" class="alert-link">Click here to activate</a>.
+                <strong><?= t('Admin.customers.view.account_inactive') ?>:</strong> <?= t('Admin.customers.view.account_inactive_desc') ?>
+                <a href="#" onclick="toggleCustomerStatus(<?= $customer['id'] ?>)" class="alert-link"><?= t('Admin.customers.view.click_activate') ?></a>.
             </div>
             <?php endif; ?>
             
@@ -307,7 +307,7 @@
                             onclick="viewActivityHistory(<?= $customer['id'] ?>)"
                             data-bs-toggle="tooltip" 
                             data-bs-placement="left"
-                            title="Quick access to check-in settings">
+                            title="<?= t('Admin.customers.view.checkin_settings_desc') ?>">
                         <i class="fas fa-calendar-check"></i>
                     </button>
                     <button type="button" 
@@ -315,7 +315,7 @@
                             onclick="refreshStatistics()"
                             data-bs-toggle="tooltip" 
                             data-bs-placement="left"
-                            title="Refresh page data"
+                            title="<?= t('Admin.customers.view.refresh_stats') ?>"
                             id="refreshStatsBtn">
                         <i class="fas fa-refresh"></i>
                     </button>
@@ -336,7 +336,7 @@
     <div class="row mt-3">
         <div class="col-12">
             <a href="<?= base_url('admin/customers') ?>" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Customer List
+                <i class="fas fa-arrow-left"></i> <?= t('Admin.customers.view.back_to_list') ?>
             </a>
         </div>
     </div>
@@ -497,7 +497,7 @@
 
 <script>
 function resetDashboard(customerId) {
-    if (confirm('Are you sure you want to reset this customer\'s dashboard to default settings? This will remove their custom background image and reset colors.')) {
+    if (confirm('<?= t('Admin.customers.messages.dashboard_reset') ?>')) {
         fetch(`<?= base_url('admin/customers/resetDashboard/') ?>${customerId}`, {
             method: 'POST',
             headers: {
@@ -508,7 +508,7 @@ function resetDashboard(customerId) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Dashboard reset successfully!');
+                alert('<?= t('Admin.customers.messages.dashboard_reset') ?>');
                 location.reload();
             } else {
                 alert('Failed to reset dashboard: ' + data.message);
@@ -622,9 +622,9 @@ function editCustomer(customerId) {
 
 // Quick actions for tokens management
 function quickAddTokens(customerId, amount = null) {
-    const tokens = amount || prompt('How many spin tokens would you like to add?');
+    const tokens = amount || prompt('<?= t('Admin.customers.view.custom_amount') ?>');
     if (tokens && !isNaN(tokens) && parseInt(tokens) > 0) {
-        const reason = prompt('Reason for adding tokens:');
+        const reason = prompt('<?= t('Admin.customers.tokens.reason_placeholder') ?>');
         if (reason) {
             updateTokensQuick(customerId, 'add', parseInt(tokens), reason);
         }
@@ -634,7 +634,7 @@ function quickAddTokens(customerId, amount = null) {
 function quickRemoveTokens(customerId, amount = null) {
     const tokens = amount || prompt('How many spin tokens would you like to remove?');
     if (tokens && !isNaN(tokens) && parseInt(tokens) > 0) {
-        const reason = prompt('Reason for removing tokens:');
+        const reason = prompt('<?= t('Admin.customers.tokens.reason_placeholder') ?>');
         if (reason) {
             updateTokensQuick(customerId, 'remove', parseInt(tokens), reason);
         }
@@ -659,7 +659,7 @@ function updateTokensQuick(customerId, action, amount, reason) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert(`Tokens ${action}ed successfully! New balance: ${data.new_balance}`);
+            alert(`<?= t('Admin.customers.messages.tokens_updated', ['balance' => '']) ?>${data.new_balance}`);
             window.location.reload();
         } else {
             alert(data.message || 'Failed to update tokens');
@@ -729,17 +729,17 @@ function copyCustomerInfo(customerId) {
         created: '<?= date('Y-m-d H:i:s', strtotime($customer['created_at'])) ?>'
     };
 
-    const textToCopy = `Customer Information:
+    const textToCopy = `<?= t('Admin.customers.view.profile') ?>:
 ID: ${customerData.id}
-Username: ${customerData.username}
-Email: ${customerData.email}
-Points: ${customerData.points}
-Spin Tokens: ${customerData.tokens}
+<?= t('Admin.customers.table.username') ?>: ${customerData.username}
+<?= t('Admin.customers.table.email') ?>: ${customerData.email}
+<?= t('Admin.customers.table.points') ?>: ${customerData.points}
+<?= t('Admin.customers.table.spin_tokens') ?>: ${customerData.tokens}
 Created: ${customerData.created}`;
 
     if (navigator.clipboard) {
         navigator.clipboard.writeText(textToCopy).then(() => {
-            alert('Customer information copied to clipboard!');
+            alert('<?= t('Admin.customers.messages.info_copied') ?>');
         }).catch(err => {
             console.error('Failed to copy: ', err);
             fallbackCopyTextToClipboard(textToCopy);
@@ -765,7 +765,7 @@ function fallbackCopyTextToClipboard(text) {
     try {
         const successful = document.execCommand('copy');
         if (successful) {
-            alert('Customer information copied to clipboard!');
+            alert('<?= t('Admin.customers.messages.info_copied') ?>');
         } else {
             alert('Failed to copy customer information');
         }
@@ -779,21 +779,21 @@ function fallbackCopyTextToClipboard(text) {
 
 // Export customer data
 function exportCustomerData(customerId) {
-    if (confirm('Export customer data to CSV?')) {
+    if (confirm('<?= t('Admin.customers.view.export_csv') ?>?')) {
         // Create a simple CSV export
         const customerData = [
             ['Field', 'Value'],
             ['Customer ID', customerId],
-            ['Username', '<?= esc($customer['username']) ?>'],
-            ['Email', '<?= esc($customer['email'] ?? 'N/A') ?>'],
-            ['Name', '<?= esc($customer['name'] ?? 'N/A') ?>'],
-            ['Points', '<?= $customer['points'] ?>'],
-            ['Spin Tokens', '<?= $customer['spin_tokens'] ?>'],
+            ['<?= t('Admin.customers.table.username') ?>', '<?= esc($customer['username']) ?>'],
+            ['<?= t('Admin.customers.table.email') ?>', '<?= esc($customer['email'] ?? 'N/A') ?>'],
+            ['<?= t('Admin.customers.table.name') ?>', '<?= esc($customer['name'] ?? 'N/A') ?>'],
+            ['<?= t('Admin.customers.table.points') ?>', '<?= $customer['points'] ?>'],
+            ['<?= t('Admin.customers.table.spin_tokens') ?>', '<?= $customer['spin_tokens'] ?>'],
             ['Monthly Check-ins', '<?= $customer['monthly_checkins'] ?>'],
-            ['Status', '<?= $customer['is_active'] ? 'Active' : 'Inactive' ?>'],
+            ['<?= t('Admin.customers.table.status') ?>', '<?= $customer['is_active'] ? t('Admin.customers.table.active') : t('Admin.customers.table.inactive') ?>'],
             ['Created', '<?= date('Y-m-d H:i:s', strtotime($customer['created_at'])) ?>'],
             ['Last Updated', '<?= date('Y-m-d H:i:s', strtotime($customer['updated_at'])) ?>'],
-            ['Last Login', '<?= $customer['last_login'] ? date('Y-m-d H:i:s', strtotime($customer['last_login'])) : 'Never' ?>']
+            ['<?= t('Admin.customers.table.last_login') ?>', '<?= $customer['last_login'] ? date('Y-m-d H:i:s', strtotime($customer['last_login'])) : t('Admin.customers.view.never') ?>']
         ];
 
         const csvContent = customerData.map(row => row.map(field => `"${field}"`).join(',')).join('\n');
@@ -805,6 +805,8 @@ function exportCustomerData(customerId) {
         link.download = `customer_${customerId}_data.csv`;
         link.click();
         window.URL.revokeObjectURL(url);
+        
+        alert('<?= t('Admin.customers.messages.data_exported') ?>');
     }
 }
 

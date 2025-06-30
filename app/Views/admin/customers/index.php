@@ -7,15 +7,15 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">Customer Management</h3>
+                    <h3 class="card-title"><?= t('Admin.customers.title') ?></h3>
                     <div class="card-tools">
                         <form method="get" class="form-inline">
                             <div class="input-group">
                                 <input type="text" name="search" class="form-control" 
-                                       placeholder="Search customers..." value="<?= esc($search) ?>">
+                                       placeholder="<?= t('Admin.customers.search_placeholder') ?>" value="<?= esc($search) ?>">
                                 <div class="input-group-append">
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-search"></i> Search
+                                        <i class="fas fa-search"></i> <?= t('Admin.common.search') ?>
                                     </button>
                                 </div>
                             </div>
@@ -27,15 +27,15 @@
                         <table class="table table-striped table-hover">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Username</th>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Points</th>
-                                    <th>Spin Tokens</th>
-                                    <th>Profile Theme</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th><?= t('Admin.customers.table.id') ?></th>
+                                    <th><?= t('Admin.customers.table.username') ?></th>
+                                    <th><?= t('Admin.customers.table.name') ?></th>
+                                    <th><?= t('Admin.customers.table.email') ?></th>
+                                    <th><?= t('Admin.customers.table.points') ?></th>
+                                    <th><?= t('Admin.customers.table.spin_tokens') ?></th>
+                                    <th><?= t('Admin.customers.table.profile_theme') ?></th>
+                                    <th><?= t('Admin.customers.table.status') ?></th>
+                                    <th><?= t('Admin.customers.table.actions') ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -46,19 +46,19 @@
                                         <strong><?= esc($customer['username']) ?></strong>
                                         <br>
                                         <small class="text-muted">
-                                            Joined: <?= date('M j, Y', strtotime($customer['created_at'])) ?>
+                                            <?= t('Admin.customers.table.joined') ?>: <?= date('M j, Y', strtotime($customer['created_at'])) ?>
                                         </small>
                                     </td>
                                     <td><?= esc($customer['name'] ?? 'N/A') ?></td>
                                     <td><?= esc($customer['email'] ?? 'N/A') ?></td>
                                     <td>
                                         <span class="badge badge-success">
-                                            <?= number_format($customer['points']) ?> pts
+                                            <?= number_format($customer['points']) ?> <?= t('Admin.customers.table.pts') ?>
                                         </span>
                                     </td>
                                     <td>
                                         <span class="badge badge-info">
-                                            <?= $customer['spin_tokens'] ?? 0 ?> tokens
+                                            <?= $customer['spin_tokens'] ?? 0 ?> <?= t('Admin.customers.table.tokens') ?>
                                         </span>
                                     </td>
                                     <td>
@@ -82,45 +82,45 @@
                                     </td>
                                     <td>
                                         <?php if ($customer['is_active']): ?>
-                                            <span class="badge badge-success">Active</span>
+                                            <span class="badge badge-success"><?= t('Admin.customers.table.active') ?></span>
                                         <?php else: ?>
-                                            <span class="badge badge-danger">Inactive</span>
+                                            <span class="badge badge-danger"><?= t('Admin.customers.table.inactive') ?></span>
                                         <?php endif; ?>
                                         <?php if (!empty($customer['last_login'])): ?>
                                             <br><small class="text-muted">
-                                                Last: <?= date('M j, H:i', strtotime($customer['last_login'])) ?>
+                                                <?= t('Admin.customers.table.last_login') ?>: <?= date('M j, H:i', strtotime($customer['last_login'])) ?>
                                             </small>
                                         <?php endif; ?>
                                     </td>
                                     <td>
                                         <div class="btn-group btn-group-sm" role="group">
                                             <a href="<?= base_url('admin/customers/view/' . $customer['id']) ?>" 
-                                               class="btn btn-info" title="View Details">
+                                               class="btn btn-info" title="<?= t('Admin.customers.actions.view_details') ?>">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                             <a href="<?= base_url('admin/customers/edit/' . $customer['id']) ?>" 
-                                               class="btn btn-warning" title="Edit Customer">
+                                               class="btn btn-warning" title="<?= t('Admin.customers.actions.edit_customer') ?>">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <button type="button" 
                                                     class="btn btn-secondary" 
-                                                    title="Change Password"
+                                                    title="<?= t('Admin.customers.actions.change_password') ?>"
                                                     onclick="openPasswordModal(<?= $customer['id'] ?>, '<?= esc($customer['username']) ?>')">
                                                 <i class="fas fa-key"></i>
                                             </button>
                                             <a href="<?= base_url('admin/customers/tokens/' . $customer['id']) ?>" 
-                                               class="btn btn-primary" title="Manage Tokens">
+                                               class="btn btn-primary" title="<?= t('Admin.customers.actions.manage_tokens') ?>">
                                                 <i class="fas fa-coins"></i>
                                             </a>
                                             <button type="button" 
                                                     class="btn btn-<?= $customer['is_active'] ? 'secondary' : 'success' ?>" 
-                                                    title="<?= $customer['is_active'] ? 'Deactivate' : 'Activate' ?> Customer"
+                                                    title="<?= $customer['is_active'] ? t('Admin.customers.actions.deactivate') : t('Admin.customers.actions.activate') ?>"
                                                     onclick="toggleCustomerStatus(<?= $customer['id'] ?>, <?= $customer['is_active'] ?>)">
                                                 <i class="fas fa-<?= $customer['is_active'] ? 'user-slash' : 'user-check' ?>"></i>
                                             </button>
                                             <button type="button" 
                                                     class="btn btn-danger" 
-                                                    title="Delete Customer"
+                                                    title="<?= t('Admin.customers.actions.delete') ?>"
                                                     onclick="deleteCustomer(<?= $customer['id'] ?>, '<?= esc($customer['username']) ?>')">
                                                 <i class="fas fa-trash"></i>
                                             </button>
@@ -135,9 +135,9 @@
                     <?php if (empty($customers)): ?>
                         <div class="text-center py-4">
                             <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                            <h5>No customers found</h5>
+                            <h5><?= t('Admin.customers.no_customers') ?></h5>
                             <p class="text-muted">
-                                <?= $search ? 'No customers match your search criteria.' : 'No customers registered yet.' ?>
+                                <?= $search ? t('Admin.customers.no_customers_desc') : t('Admin.customers.no_customers_registered') ?>
                             </p>
                         </div>
                     <?php endif; ?>
@@ -157,7 +157,7 @@
                             <li class="page-item <?= $currentPage === 1 ? 'disabled' : '' ?>">
                                 <?php $query['page'] = $currentPage - 1; ?>
                                 <a class="page-link bg-secondary border-secondary text-light" href="<?= $currentPage > 1 ? current_url() . '?' . http_build_query($query) : '#' ?>">
-                                    Previous
+                                    <?= t('Admin.common.previous') ?>
                                 </a>
                             </li>
 
@@ -176,7 +176,7 @@
                             <li class="page-item <?= $currentPage === $totalPages ? 'disabled' : '' ?>">
                                 <?php $query['page'] = $currentPage + 1; ?>
                                 <a class="page-link bg-secondary border-secondary text-light" href="<?= $currentPage < $totalPages ? current_url() . '?' . http_build_query($query) : '#' ?>">
-                                    Next
+                                    <?= t('Admin.common.next') ?>
                                 </a>
                             </li>
                         </ul>
@@ -195,14 +195,14 @@
             <div class="modal-header bg-secondary text-white">
                 <h5 class="modal-title">
                     <i class="fas fa-key"></i>
-                    Quick Password Management
+                    <?= t('Admin.customers.password.quick_management') ?>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle"></i>
-                    Managing password for customer: <strong id="quickPasswordCustomerName"></strong>
+                    <?= t('Admin.customers.password.managing_for') ?>: <strong id="quickPasswordCustomerName"></strong>
                 </div>
                 
                 <div class="row">
@@ -210,10 +210,10 @@
                         <div class="card h-100">
                             <div class="card-body text-center">
                                 <i class="fas fa-edit fa-2x text-warning mb-3"></i>
-                                <h6>Set Custom Password</h6>
-                                <p class="text-muted">Choose a specific password for the customer</p>
+                                <h6><?= t('Admin.customers.password.set_custom') ?></h6>
+                                <p class="text-muted"><?= t('Admin.customers.password.choose_specific') ?></p>
                                 <button type="button" class="btn btn-warning" onclick="openCustomPasswordForm()">
-                                    <i class="fas fa-edit"></i> Custom Password
+                                    <i class="fas fa-edit"></i> <?= t('Admin.customers.password.custom_password') ?>
                                 </button>
                             </div>
                         </div>
@@ -222,10 +222,10 @@
                         <div class="card h-100">
                             <div class="card-body text-center">
                                 <i class="fas fa-random fa-2x text-info mb-3"></i>
-                                <h6>Generate Random Password</h6>
-                                <p class="text-muted">Automatically generate a secure password</p>
+                                <h6><?= t('Admin.customers.password.generate_random') ?></h6>
+                                <p class="text-muted"><?= t('Admin.customers.password.auto_generate') ?></p>
                                 <button type="button" class="btn btn-info" onclick="quickGeneratePassword()">
-                                    <i class="fas fa-random"></i> Generate Password
+                                    <i class="fas fa-random"></i> <?= t('Admin.customers.password.generate_password') ?>
                                 </button>
                             </div>
                         </div>
@@ -235,24 +235,25 @@
                 <!-- Custom Password Form -->
                 <div id="customPasswordForm" style="display: none;">
                     <hr>
-                    <h6><i class="fas fa-edit"></i> Set Custom Password</h6>
+                    <h6><i class="fas fa-edit"></i> <?= t('Admin.customers.password.set_custom_password') ?></h6>
                     <form id="quickPasswordForm">
                         <div class="mb-3">
-                            <label for="quick_new_password" class="form-label">New Password</label>
+                            <label for="quick_new_password" class="form-label"><?= t('Admin.customers.password.new_password') ?></label>
                             <div class="input-group">
                                 <input type="password" class="form-control" id="quick_new_password" 
-                                       placeholder="Enter new password" minlength="4" required>
+                                       placeholder="<?= t('Admin.customers.password.enter_new') ?>" minlength="4" required>
                                 <button type="button" class="btn btn-outline-secondary" onclick="toggleQuickPasswordVisibility('quick_new_password')">
                                     <i class="fas fa-eye" id="quick_new_password_icon"></i>
                                 </button>
                             </div>
+                            <small class="text-muted"><?= t('Admin.customers.password.min_4_chars') ?></small>
                         </div>
                         
                         <div class="mb-3">
-                            <label for="quick_confirm_password" class="form-label">Confirm Password</label>
+                            <label for="quick_confirm_password" class="form-label"><?= t('Admin.customers.password.confirm_password') ?></label>
                             <div class="input-group">
                                 <input type="password" class="form-control" id="quick_confirm_password" 
-                                       placeholder="Confirm new password" minlength="4" required>
+                                       placeholder="<?= t('Admin.customers.password.confirm_new') ?>" minlength="4" required>
                                 <button type="button" class="btn btn-outline-secondary" onclick="toggleQuickPasswordVisibility('quick_confirm_password')">
                                     <i class="fas fa-eye" id="quick_confirm_password_icon"></i>
                                 </button>
@@ -260,16 +261,16 @@
                         </div>
                         
                         <div class="mb-3">
-                            <label for="quick_reason" class="form-label">Reason (Optional)</label>
+                            <label for="quick_reason" class="form-label"><?= t('Admin.customers.password.reason_optional') ?></label>
                             <input type="text" class="form-control" id="quick_reason" 
-                                   placeholder="e.g., Customer request, account recovery">
+                                   placeholder="<?= t('Admin.customers.password.reason_placeholder') ?>">
                         </div>
                         
                         <button type="button" class="btn btn-warning" onclick="submitQuickPasswordChange()">
-                            <i class="fas fa-save"></i> Change Password
+                            <i class="fas fa-save"></i> <?= t('Admin.customers.password.change_password_btn') ?>
                         </button>
                         <button type="button" class="btn btn-secondary" onclick="cancelCustomPasswordForm()">
-                            <i class="fas fa-times"></i> Cancel
+                            <i class="fas fa-times"></i> <?= t('Admin.customers.password.cancel') ?>
                         </button>
                     </form>
                 </div>
@@ -285,7 +286,7 @@
             <div class="modal-header bg-success text-white">
                 <h5 class="modal-title">
                     <i class="fas fa-check-circle"></i>
-                    Password Updated Successfully
+                    <?= t('Admin.customers.password.update_successful') ?>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -297,28 +298,28 @@
                 
                 <div id="quickGeneratedPasswordDisplay" style="display: none;">
                     <div class="mb-3">
-                        <label class="form-label"><strong>Generated Password:</strong></label>
+                        <label class="form-label"><strong><?= t('Admin.customers.password.generated_password') ?>:</strong></label>
                         <div class="input-group">
                             <input type="text" class="form-control font-monospace" id="quickGeneratedPasswordField" readonly>
                             <button type="button" class="btn btn-outline-secondary" onclick="copyToClipboard('quickGeneratedPasswordField')">
-                                <i class="fas fa-copy"></i> Copy
+                                <i class="fas fa-copy"></i> <?= t('Admin.common.copy') ?>
                             </button>
                         </div>
                         <small class="form-text text-danger">
                             <i class="fas fa-exclamation-triangle"></i>
-                            Please save this password securely. It cannot be retrieved again.
+                            <?= t('Admin.customers.password.save_securely') ?>
                         </small>
                     </div>
                 </div>
                 
                 <div class="alert alert-info">
                     <i class="fas fa-shield-alt"></i>
-                    <strong>Security Note:</strong> The password has been securely hashed in the database.
+                    <strong><?= t('Admin.customers.password.security_note') ?>:</strong> <?= t('Admin.customers.password.securely_hashed') ?>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" data-bs-dismiss="modal">
-                    <i class="fas fa-check"></i> Understood
+                    <i class="fas fa-check"></i> <?= t('Admin.customers.password.understood') ?>
                 </button>
             </div>
         </div>
@@ -332,49 +333,49 @@
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">
                     <i class="fas fa-exclamation-triangle"></i>
-                    Permanently Delete Customer
+                    <?= t('Admin.customers.delete.title') ?>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-danger">
-                    <strong>⚠️ WARNING: This action cannot be undone!</strong>
+                    <strong><?= t('Admin.customers.delete.warning') ?></strong>
                 </div>
                 
-                <p>You are about to permanently delete customer: <strong id="deleteCustomerName"></strong></p>
+                <p><?= t('Admin.customers.delete.about_to_delete') ?>: <strong id="deleteCustomerName"></strong></p>
                 
                 <div class="mb-3">
-                    <p><strong>This will:</strong></p>
+                    <p><strong><?= t('Admin.customers.delete.this_will') ?></strong></p>
                     <ul class="text-danger">
-                        <li>Permanently remove all customer data</li>
-                        <li>Delete profile images and customizations</li>
-                        <li>Remove access to the customer dashboard</li>
-                        <li><strong>Cannot be reversed or undone</strong></li>
+                        <li><?= t('Admin.customers.delete.remove_data') ?></li>
+                        <li><?= t('Admin.customers.delete.delete_images') ?></li>
+                        <li><?= t('Admin.customers.delete.remove_access') ?></li>
+                        <li><strong><?= t('Admin.customers.delete.cannot_reverse') ?></strong></li>
                     </ul>
                 </div>
                 
                 <div class="alert alert-info">
                     <i class="fas fa-lightbulb"></i>
-                    <strong>Recommendation:</strong> Consider deactivating the customer instead to preserve data while preventing access.
+                    <strong><?= t('Admin.customers.delete.recommendation') ?>:</strong> <?= t('Admin.customers.delete.consider_deactivate') ?>
                 </div>
                 
                 <div class="mb-3">
                     <label for="confirmUsername" class="form-label">
-                        To confirm deletion, type the customer's username: <strong id="confirmUsernameTarget"></strong>
+                        <?= t('Admin.customers.delete.confirm_deletion') ?>: <strong id="confirmUsernameTarget"></strong>
                     </label>
                     <input type="text" class="form-control" id="confirmUsername" 
-                           placeholder="Enter username to confirm deletion">
+                           placeholder="<?= t('Admin.customers.delete.enter_username') ?>">
                     <div class="form-text text-danger" id="confirmUsernameError" style="display: none;">
-                        Username doesn't match. Please type the exact username to confirm.
+                        <?= t('Admin.customers.delete.username_mismatch') ?>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times"></i> Cancel
+                    <i class="fas fa-times"></i> <?= t('Admin.common.cancel') ?>
                 </button>
                 <button type="button" class="btn btn-danger" id="confirmDeleteBtn" disabled>
-                    <i class="fas fa-trash"></i> Permanently Delete Customer
+                    <i class="fas fa-trash"></i> <?= t('Admin.customers.delete.permanently_delete') ?>
                 </button>
             </div>
         </div>
@@ -547,16 +548,16 @@ function toggleQuickPasswordVisibility(fieldId) {
 function submitQuickPasswordChange() {
     const newPassword = document.getElementById('quick_new_password')?.value;
     const confirmPassword = document.getElementById('quick_confirm_password')?.value;
-    const reason = document.getElementById('quick_reason')?.value || 'Quick password change from customer list';
+    const reason = document.getElementById('quick_reason')?.value || '<?= t('Admin.customers.password.reason_placeholder') ?>';
     
     // Validation
     if (!newPassword || newPassword.length < 4) {
-        showToast('Password must be at least 4 characters long', 'error');
+        showToast('<?= t('Admin.customers.password.min_length_error') ?>', 'error');
         return;
     }
     
     if (newPassword !== confirmPassword) {
-        showToast('Password confirmation does not match', 'error');
+        showToast('<?= t('Admin.customers.password.confirmation_error') ?>', 'error');
         return;
     }
     
@@ -610,7 +611,7 @@ function submitQuickPasswordChange() {
             }
             
             // Show success result
-            showPasswordResult(data.message || 'Password changed successfully!');
+            showPasswordResult(data.message || '<?= t('Admin.customers.messages.password_changed') ?>');
             
         } else {
             showToast('Error: ' + (data.message || 'Unknown error occurred'), 'error');
@@ -678,7 +679,7 @@ function quickGeneratePassword() {
             
             // Show success result with generated password
             showPasswordResult(
-                data.message || 'Password generated successfully!',
+                data.message || '<?= t('Admin.customers.messages.password_generated') ?>',
                 data.new_password
             );
             
@@ -736,12 +737,12 @@ function copyToClipboard(fieldId) {
         
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(field.value).then(() => {
-                showToast('Password copied to clipboard!', 'success');
+                showToast('<?= t('Admin.customers.password.copied_clipboard') ?>', 'success');
             }).catch(() => {
                 // Fallback to execCommand
                 const successful = document.execCommand('copy');
                 if (successful) {
-                    showToast('Password copied to clipboard!', 'success');
+                    showToast('<?= t('Admin.customers.password.copied_clipboard') ?>', 'success');
                 } else {
                     showToast('Failed to copy password', 'error');
                 }
@@ -750,7 +751,7 @@ function copyToClipboard(fieldId) {
             // Fallback to execCommand
             const successful = document.execCommand('copy');
             if (successful) {
-                showToast('Password copied to clipboard!', 'success');
+                showToast('<?= t('Admin.customers.password.copied_clipboard') ?>', 'success');
             } else {
                 showToast('Failed to copy password', 'error');
             }
@@ -895,7 +896,7 @@ function toggleCustomerStatus(customerId, currentStatus) {
     const statusText = currentStatus ? 'deactivated' : 'activated';
     
     const confirmed = confirm(
-        `Are you sure you want to ${action} this customer?\n\n` +
+        `<?= t('Admin.customers.actions.activate') ?> / <?= t('Admin.customers.actions.deactivate') ?>?\n\n` +
         `${currentStatus ? 
             '• Customer will not be able to login\n• Dashboard will be inaccessible\n• Data will be preserved' : 
             '• Customer will regain access\n• Dashboard will be accessible\n• All data will be restored'
@@ -938,7 +939,7 @@ function toggleCustomerStatus(customerId, currentStatus) {
             // Update button appearance
             const newStatus = data.new_status;
             statusBtn.className = `btn btn-sm btn-${newStatus ? 'secondary' : 'success'}`;
-            statusBtn.title = `${newStatus ? 'Deactivate' : 'Activate'} Customer`;
+            statusBtn.title = `${newStatus ? '<?= t('Admin.customers.actions.deactivate') ?>' : '<?= t('Admin.customers.actions.activate') ?>'} Customer`;
             statusBtn.innerHTML = `<i class="fas fa-${newStatus ? 'user-slash' : 'user-check'}"></i>`;
             
             // Update status badge in the table
@@ -946,7 +947,7 @@ function toggleCustomerStatus(customerId, currentStatus) {
             const badge = statusCell?.querySelector('.badge');
             if (badge) {
                 badge.className = `badge badge-${newStatus ? 'success' : 'danger'}`;
-                badge.textContent = newStatus ? 'Active' : 'Inactive';
+                badge.textContent = newStatus ? '<?= t('Admin.customers.table.active') ?>' : '<?= t('Admin.customers.table.inactive') ?>';
             }
             
             // Update the onclick attribute for next toggle
