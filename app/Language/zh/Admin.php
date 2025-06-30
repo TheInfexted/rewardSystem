@@ -35,9 +35,11 @@ return [
         'title' => '奖金领取管理',
         'export_csv' => '导出CSV',
         'settings' => '设置',
-        'total_claims' => '总领取次数',
-        'today_claims' => '今日领取',
-        'unique_ips' => '独立IP',
+        'total_claims' => '总领取数',
+        'today_claims' => '今日领取数',
+        'unique_ips' => '独立IP数',
+        
+        // Filters
         'filters' => [
             'from_date' => '开始日期',
             'to_date' => '结束日期',
@@ -48,6 +50,8 @@ return [
             'filter' => '筛选',
             'clear' => '清除',
         ],
+        
+        // Table headers
         'table' => [
             'id' => 'ID',
             'claim_time' => '领取时间',
@@ -58,15 +62,34 @@ return [
             'actions' => '操作',
             'session' => '会话',
             'no_email' => '未提供邮箱',
-            'claims' => '次领取',
+            'claims' => '个领取记录',
         ],
+        
+        // Messages
         'no_claims' => '未找到领取记录',
         'no_claims_desc' => '没有符合当前筛选条件的奖金领取记录。',
+        'claim_not_found' => '未找到领取记录',
+        'view_failed' => '加载领取详情失败',
+        'export_failed' => '导出领取数据失败',
+        'ip_analysis_failed' => '生成IP分析失败',
+        
+        // Status messages
+        'invalid_status' => '提供的状态无效',
+        'status_updated' => '领取状态更新成功！',
+        'status_update_failed' => '更新领取状态失败',
+        'status_update_error' => '更新领取记录时发生错误',
+        'invalid_url' => '请提供有效的网址',
+        'settings_updated' => '设置更新成功！',
+        'settings_load_failed' => '加载奖金设置失败',
+        'settings_update_failed' => '更新设置失败，请重试。',
+        'confirm_status_update' => '您确定要将此领取记录标记为',
+        
+        // Modal content
         'modal' => [
             'title' => '奖金设置',
-            'redirect_url' => '跳转链接',
+            'redirect_url' => '跳转网址',
             'redirect_placeholder' => 'https://example.com/register',
-            'redirect_help' => '用户领取奖金后将跳转到此链接',
+            'redirect_help' => '用户领取奖金后将跳转到此网址',
             'terms' => '条款和条件',
             'terms_placeholder' => '输入条款和条件文本...',
             'terms_help' => '此文本将在条款弹窗中显示',
@@ -75,6 +98,8 @@ return [
             'save' => '保存设置',
             'cancel' => '取消',
         ],
+        
+        // Details modal
         'details' => [
             'title' => '领取详情',
             'claim_id' => '领取ID',
@@ -360,30 +385,29 @@ return [
 
     // 通用
     'common' => [
-        'save' => '保存',
+        'saving' => '保存中...',
+        'success' => '成功',
+        'error' => '错误',
+        'invalid_request' => '无效请求',
+        'network_error' => '网络错误',
+        'language_changed' => '语言切换成功！',
+        'loading' => '加载中...',
+        'confirm' => '确认',
         'cancel' => '取消',
+        'save' => '保存',
         'delete' => '删除',
         'edit' => '编辑',
         'view' => '查看',
         'back' => '返回',
+        'next' => '下一页',
+        'previous' => '上一页',
+        'search' => '搜索',
+        'filter' => '筛选',
+        'export' => '导出',
+        'import' => '导入',
+        'refresh' => '刷新',
         'close' => '关闭',
-        'confirm' => '确认',
         'yes' => '是',
         'no' => '否',
-        'active' => '启用',
-        'inactive' => '禁用',
-        'required' => '必填',
-        'optional' => '可选',
-        'loading' => '加载中...',
-        'success' => '成功',
-        'error' => '错误',
-        'warning' => '警告',
-        'info' => '信息',
-        'previous' => '上一页',
-        'next' => '下一页',
-        'language' => '语言',
-        'saving' => '保存中...',
-        'network_error' => '网络错误。请重试。',
-        'language_changed' => '语言切换成功！',
     ],
 ];

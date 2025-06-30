@@ -40,6 +40,8 @@ return [
         'total_claims' => 'Total Claims',
         'today_claims' => "Today's Claims",
         'unique_ips' => 'Unique IPs',
+        
+        // Filters
         'filters' => [
             'from_date' => 'From Date',
             'to_date' => 'To Date',
@@ -50,6 +52,8 @@ return [
             'filter' => 'Filter',
             'clear' => 'Clear',
         ],
+        
+        // Table headers
         'table' => [
             'id' => 'ID',
             'claim_time' => 'Claim Time',
@@ -62,8 +66,27 @@ return [
             'no_email' => 'No email provided',
             'claims' => 'claim(s)',
         ],
-        'no_claims' => 'No claims found',
+        
+        // Messages
+        'no_claims' => 'No Claims Found',
         'no_claims_desc' => 'No bonus claims match your current filters.',
+        'claim_not_found' => 'Claim not found',
+        'view_failed' => 'Failed to load claim details',
+        'export_failed' => 'Failed to export claims data',
+        'ip_analysis_failed' => 'Failed to generate IP analysis',
+        
+        // Status messages
+        'invalid_status' => 'Invalid status provided',
+        'status_updated' => 'Claim status updated successfully!',
+        'status_update_failed' => 'Failed to update claim status',
+        'status_update_error' => 'An error occurred while updating the claim',
+        'invalid_url' => 'Please provide a valid URL',
+        'settings_updated' => 'Settings updated successfully!',
+        'settings_load_failed' => 'Failed to load bonus settings',
+        'settings_update_failed' => 'Failed to update settings. Please try again.',
+        'confirm_status_update' => 'Are you sure you want to mark this claim as',
+        
+        // Modal content
         'modal' => [
             'title' => 'Bonus Settings',
             'redirect_url' => 'Redirect URL',
@@ -77,6 +100,8 @@ return [
             'save' => 'Save Settings',
             'cancel' => 'Cancel',
         ],
+        
+        // Details modal
         'details' => [
             'title' => 'Claim Details',
             'claim_id' => 'Claim ID',
@@ -411,30 +436,29 @@ return [
 
     // Common
     'common' => [
-        'save' => 'Save',
+        'saving' => 'Saving...',
+        'success' => 'Success',
+        'error' => 'Error',
+        'invalid_request' => 'Invalid request',
+        'network_error' => 'Network error occurred',
+        'language_changed' => 'Language changed successfully!',
+        'loading' => 'Loading...',
+        'confirm' => 'Confirm',
         'cancel' => 'Cancel',
+        'save' => 'Save',
         'delete' => 'Delete',
         'edit' => 'Edit',
         'view' => 'View',
         'back' => 'Back',
+        'next' => 'Next',
+        'previous' => 'Previous',
+        'search' => 'Search',
+        'filter' => 'Filter',
+        'export' => 'Export',
+        'import' => 'Import',
+        'refresh' => 'Refresh',
         'close' => 'Close',
-        'confirm' => 'Confirm',
         'yes' => 'Yes',
         'no' => 'No',
-        'active' => 'Active',
-        'inactive' => 'Inactive',
-        'required' => 'required',
-        'optional' => 'optional',
-        'loading' => 'Loading...',
-        'success' => 'Success',
-        'error' => 'Error',
-        'warning' => 'Warning',
-        'info' => 'Info',
-        'previous' => 'Previous',
-        'next' => 'Next',
-        'language' => 'Language',
-        'saving' => 'Saving...',
-        'network_error' => 'Network error occurred. Please try again.',
-        'language_changed' => 'Language changed successfully!',
     ],
 ];
