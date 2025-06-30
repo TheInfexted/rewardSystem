@@ -43,7 +43,6 @@ $routes->group('customer', function($routes) {
     $routes->post('remove-background-image', 'CustomerController::removeBackgroundImage');
     $routes->get('wheel-data', 'CustomerController::getWheelData');
     $routes->get('ads', 'CustomerController::getAds');
-    // NEW: Optional ad tracking route (if you want to add basic tracking later)
     $routes->post('track-ad', 'CustomerController::trackAd');
     $routes->post('get-current-password', 'CustomerController::getCurrentPassword');
     $routes->post('change-password', 'CustomerController::changePassword');
