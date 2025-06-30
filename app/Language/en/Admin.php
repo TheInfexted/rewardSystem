@@ -88,7 +88,7 @@ return [
         
         // Modal content
         'modal' => [
-            'title' => 'Bonus Settings',
+            'title' => 'Redirect Settings',
             'redirect_url' => 'Redirect URL',
             'redirect_placeholder' => 'https://example.com/register',
             'redirect_help' => 'Users will be redirected here after claiming bonus',
@@ -104,6 +104,9 @@ return [
         // Details modal
         'details' => [
             'title' => 'Claim Details',
+            'bonus_user' => 'User Details',
+            'bonus_technical' => 'Technical Details',
+            'bonus_info' => 'Bonus Information',
             'claim_id' => 'Claim ID',
             'user_name' => 'User Name',
             'phone' => 'Phone',
@@ -305,6 +308,8 @@ return [
             'member_since' => 'Member Since',
             'last_login' => 'Last Login',
             'update' => 'Update Profile',
+            'update_success' => 'Profile updated successfully.',
+            'update_failed' => 'Failed to update profile.',
         ],
         'password' => [
             'title' => 'Change Password',
@@ -313,11 +318,29 @@ return [
             'new_help' => 'Minimum 6 characters',
             'confirm' => 'Confirm New Password',
             'update' => 'Update Password',
+            'current_incorrect' => 'Current password is incorrect.',
+            'update_success' => 'Password updated successfully.',
+            'update_failed' => 'Failed to update password.',
+        ],
+        'customer_service' => [
+            'title' => 'Customer Service Contact',
+            'whatsapp_number' => 'WhatsApp Number',
+            'whatsapp_help' => 'Include country code (e.g., 60123456789)',
+            'telegram_username' => 'Telegram Username',
+            'telegram_help' => 'Username without @ symbol',
+            'service_hours' => 'Service Hours',
+            'service_hours_help' => 'Operating hours for customer service',
+            'update' => 'Update Customer Service Settings',
+            'update_success' => 'Customer service settings updated successfully!',
+            'update_failed' => 'Failed to update customer service settings. Please try again.',
         ],
         'expiration' => [
             'title' => 'System Expiration',
             'notice' => 'This system license is valid until:',
         ],
+        'validation_errors' => 'Validation errors',
+        'update_error' => 'An error occurred while updating settings',
+        'session_expired' => 'Session expired. Please log in again.',
     ],
 
     // Wheel Items

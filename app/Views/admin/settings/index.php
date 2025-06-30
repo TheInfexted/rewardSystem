@@ -137,7 +137,7 @@
         <div class="col-md-6">
             <div class="card bg-dark border-gold mb-4">
                 <div class="card-header bg-black border-gold">
-                    <h5 class="text-gold mb-0"><i class="bi bi-chat-dots"></i> Customer Service Contact</h5>
+                    <h5 class="text-gold mb-0"><i class="bi bi-chat-dots"></i> <?= t('Admin.settings.customer_service.title') ?></h5>
                 </div>
                 <div class="card-body">
                     <div id="customerServiceAlert"></div>
@@ -147,51 +147,39 @@
                         
                         <div class="mb-3">
                             <label class="form-label text-gold">
-                                <i class="bi bi-whatsapp me-1"></i>WhatsApp Number
+                                <i class="bi bi-whatsapp me-1"></i><?= t('Admin.settings.customer_service.whatsapp_number') ?>
                             </label>
                             <input type="text" name="reward_whatsapp_number" 
                                    class="form-control bg-dark text-light border-gold"
                                    value="<?= esc($customer_service_settings['reward_whatsapp_number'] ?? '601159599022') ?>" 
                                    placeholder="60xxxxxxxxx" required>
-                            <small class="text-muted">Include country code (e.g., 60123456789)</small>
+                            <small class="text-muted"><?= t('Admin.settings.customer_service.whatsapp_help') ?></small>
                         </div>
                         
                         <div class="mb-3">
                             <label class="form-label text-gold">
-                                <i class="bi bi-telegram me-1"></i>Telegram Username
+                                <i class="bi bi-telegram me-1"></i><?= t('Admin.settings.customer_service.telegram_username') ?>
                             </label>
                             <input type="text" name="reward_telegram_username" 
                                    class="form-control bg-dark text-light border-gold"
                                    value="<?= esc($customer_service_settings['reward_telegram_username'] ?? 'harryford19') ?>" 
                                    placeholder="username" required>
-                            <small class="text-muted">Username without @ symbol</small>
+                            <small class="text-muted"><?= t('Admin.settings.customer_service.telegram_help') ?></small>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label text-gold">
-                                <i class="bi bi-clock me-1"></i>Service Hours
+                                <i class="bi bi-clock me-1"></i><?= t('Admin.settings.customer_service.service_hours') ?>
                             </label>
                             <input type="text" name="customer_service_hours" 
                                    class="form-control bg-dark text-light border-gold"
                                    value="<?= esc($customer_service_settings['customer_service_hours'] ?? '9:00 AM - 6:00 PM (GMT+8)') ?>" 
                                    placeholder="9:00 AM - 6:00 PM (GMT+8)">
-                            <small class="text-muted">Operating hours for customer service</small>
+                            <small class="text-muted"><?= t('Admin.settings.customer_service.service_hours_help') ?></small>
                         </div>
                         
-                        <!--div class="mb-3">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="customer_service_enabled" 
-                                       id="customerServiceEnabled" value="1" 
-                                       <?= ($customer_service_settings['customer_service_enabled'] ?? '1') == '1' ? 'checked' : '' ?>>
-                                <label class="form-check-label text-gold" for="customerServiceEnabled">
-                                    Enable Customer Service Contact Options
-                                </label>
-                            </div>
-                            <small class="text-muted">When disabled, customers won't see contact options</small>
-                        </div!-->
-                        
                         <button type="submit" class="btn btn-gold" id="updateCustomerServiceBtn">
-                            <i class="bi bi-save"></i> Update Customer Service Settings
+                            <i class="bi bi-save"></i> <?= t('Admin.settings.customer_service.update') ?>
                         </button>
                     </form>
                 </div>
@@ -220,7 +208,7 @@
     <div id="settingsToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
             <i class="bi bi-gear me-2"></i>
-            <strong class="me-auto">Settings</strong>
+            <strong class="me-auto"><?= t('Admin.settings.title') ?></strong>
             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body" id="settingsToastBody">
@@ -255,7 +243,7 @@ function updateCustomerServiceSettings() {
     
     // Show loading state
     const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i>Updating...';
+    submitBtn.innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i><?= t('Admin.common.saving') ?>...';
     submitBtn.disabled = true;
     
     // Clear previous alerts
@@ -283,13 +271,13 @@ function updateCustomerServiceSettings() {
                     errorList += `<li>${data.errors[field]}</li>`;
                 }
                 errorList += '</ul>';
-                showAlert(alertDiv, 'danger', 'Validation errors:<br>' + errorList);
+                showAlert(alertDiv, 'danger', '<?= t('Admin.settings.validation_errors') ?>:<br>' + errorList);
             }
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        showAlert(alertDiv, 'danger', 'An error occurred while updating settings');
+        showAlert(alertDiv, 'danger', '<?= t('Admin.settings.update_error') ?>');
     })
     .finally(() => {
         // Restore button state

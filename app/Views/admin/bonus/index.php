@@ -233,14 +233,14 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <h6 class="text-gold">User Information</h6>
+                        <h6 class="text-gold"><?= t('Admin.bonus.details.bonus_user')?></h6>
                         <p><strong><?= t('Admin.bonus.details.claim_id', [], 'ID') ?>:</strong> <span id="detail-id"></span></p>
                         <p><strong><?= t('Admin.bonus.details.user_name', [], 'Name') ?>:</strong> <span id="detail-name"></span></p>
                         <p><strong><?= t('Admin.bonus.details.phone', [], 'Phone') ?>:</strong> <span id="detail-phone"></span></p>
                         <p><strong><?= t('Admin.bonus.details.email', [], 'Email') ?>:</strong> <span id="detail-email"></span></p>
                     </div>
                     <div class="col-md-6">
-                        <h6 class="text-gold">Technical Details</h6>
+                        <h6 class="text-gold"><?= t('Admin.bonus.details.bonus_technical')?></h6>
                         <p><strong><?= t('Admin.bonus.details.ip_address', [], 'IP Address') ?>:</strong> <code id="detail-ip"></code></p>
                         <p><strong><?= t('Admin.bonus.details.session_id', [], 'Session') ?>:</strong> <code id="detail-session"></code></p>
                         <p><strong><?= t('Admin.bonus.details.user_agent', [], 'User Agent') ?>:</strong> <small id="detail-agent"></small></p>
@@ -248,7 +248,7 @@
                 </div>
                 <div class="row mt-3">
                     <div class="col-md-6">
-                        <h6 class="text-gold">Bonus Information</h6>
+                        <h6 class="text-gold"><?= t('Admin.bonus.details.bonus_info')?></h6>
                         <p><strong><?= t('Admin.bonus.details.bonus_type', [], 'Type') ?>:</strong> <span id="detail-bonus"></span></p>
                         <p><strong><?= t('Admin.bonus.details.bonus_amount', [], 'Amount') ?>:</strong> <span id="detail-amount"></span></p>
                         <p><strong><?= t('Admin.bonus.details.claim_time', [], 'Claim Time') ?>:</strong> <span id="detail-time"></span></p>

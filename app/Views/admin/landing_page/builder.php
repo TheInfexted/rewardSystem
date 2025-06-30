@@ -13,7 +13,7 @@
                 <i class="bi bi-trash"></i> <?= t('Admin.landing.cleanup') ?>
             </button>
             <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#bonusSettingsModal">
-                <i class="bi bi-gear"></i> Bonus Settings
+                <i class="bi bi-gear"></i> <?= t('Admin.bonus.modal.title') ?>
             </button>
         </div>
     </div>

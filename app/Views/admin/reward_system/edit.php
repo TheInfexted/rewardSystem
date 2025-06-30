@@ -4,9 +4,9 @@
 <div class="container-fluid">
     <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 text-gold">Edit Advertisement</h1>
+        <h1 class="h3 text-gold"><?= t('Admin.reward_system.edit_ad') ?></h1>
         <a href="<?= base_url('admin/reward-system') ?>" class="btn btn-outline-danger">
-            <i class="bi bi-arrow-left"></i> Back to List
+            <i class="bi bi-arrow-left"></i> <?= t('Admin.reward_system.back_to_list') ?>
         </a>
     </div>
 
@@ -57,7 +57,7 @@
                         <!-- Current Media -->
                         <?php if ($ad['media_file'] || $ad['media_url']): ?>
                             <div class="mb-3">
-                                <label class="form-label text-light">Current Media</label>
+                                <label class="form-label text-light"><?= t('Admin.reward_system.current_media') ?></label>
                                 <div class="current-media bg-secondary p-3 rounded">
                                     <?php 
                                     $mediaUrl = $ad['media_file'] 
@@ -69,12 +69,12 @@
                                             <source src="<?= $mediaUrl ?>" type="video/mp4">
                                         </video>
                                     <?php else: ?>
-                                        <img src="<?= $mediaUrl ?>" alt="Current" style="max-width: 100%; max-height: 300px;">
+                                        <img src="<?= $mediaUrl ?>" alt="<?= t('Admin.reward_system.current_media') ?>" style="max-width: 100%; max-height: 300px;">
                                     <?php endif; ?>
                                     <div class="mt-2">
                                         <small class="text-info">
                                             <i class="bi bi-info-circle"></i> 
-                                            Upload new file or provide new URL to replace
+                                            <?= t('Admin.reward_system.replace_info') ?>
                                         </small>
                                     </div>
                                 </div>
@@ -86,7 +86,7 @@
                             <label class="form-label text-light"><?= t('Admin.reward_system.form.media_upload') ?></label>
                             <input type="file" name="media_file" class="form-control bg-secondary text-light border-0" 
                                    id="mediaFile" accept="image/*,video/*">
-                            <small class="text-muted">Max file size: 10MB. Supported formats: JPG, PNG, GIF, WebP, MP4</small>
+                            <small class="text-muted"><?= t('Admin.reward_system.max_file_info') ?></small>
                         </div>
 
                         <div class="mb-3">
@@ -94,14 +94,14 @@
                             <input type="url" name="media_url" class="form-control bg-secondary text-light border-0" 
                                    placeholder="<?= t('Admin.reward_system.form.media_url_placeholder') ?>"
                                    value="<?= old('media_url', $ad['media_url']) ?>">
-                            <small class="text-muted">Use this if you want to load media from external URL</small>
+                            <small class="text-muted"><?= t('Admin.reward_system.external_url_info') ?></small>
                         </div>
 
                         <!-- Preview Area -->
                         <div class="mb-3" id="previewArea" style="display: none;">
-                            <label class="form-label text-light">New Media Preview</label>
+                            <label class="form-label text-light"><?= t('Admin.reward_system.new_media_preview') ?></label>
                             <div class="preview-container bg-secondary p-3 rounded">
-                                <img id="imagePreview" src="" alt="Preview" style="max-width: 100%; max-height: 300px; display: none;">
+                                <img id="imagePreview" src="" alt="<?= t('Admin.reward_system.preview') ?>" style="max-width: 100%; max-height: 300px; display: none;">
                                 <video id="videoPreview" controls style="max-width: 100%; max-height: 300px; display: none;">
                                     <source src="" type="video/mp4">
                                 </video>
@@ -113,7 +113,7 @@
                             <input type="url" name="click_url" class="form-control bg-secondary text-light border-0" 
                                    placeholder="<?= t('Admin.reward_system.form.click_url_placeholder') ?>"
                                    value="<?= old('click_url', $ad['click_url']) ?>">
-                            <small class="text-muted">URL to open when user clicks the ad (optional)</small>
+                            <small class="text-muted"><?= t('Admin.reward_system.click_url_info') ?></small>
                         </div>
                     </div>
 
@@ -121,11 +121,10 @@
                         <!-- Settings -->
                         <div class="card bg-secondary">
                             <div class="card-header">
-                                <h5 class="mb-0">Settings</h5>
+                                <h5 class="mb-0"><?= t('Admin.reward_system.settings') ?></h5>
                             </div>
                             <div class="card-body">
                                 <div class="mb-3">
-                                    <label class="form-label"><?= t('Admin.reward_system.form.display_order') ?></label>
                                     <input type="number" name="display_order" class="form-control bg-dark text-light border-0" 
                                            value="<?= old('display_order', $ad['display_order']) ?>" min="0">
                                     <small class="text-muted"><?= t('Admin.reward_system.form.display_order_help') ?></small>
@@ -163,9 +162,9 @@
 
                                 <div class="mb-0">
                                     <small class="text-muted">
-                                        <i class="bi bi-info-circle"></i> Created: <?= date('M d, Y', strtotime($ad['created_at'])) ?>
+                                        <i class="bi bi-info-circle"></i> <?= t('Admin.reward_system.created_label') ?>: <?= date('M d, Y', strtotime($ad['created_at'])) ?>
                                         <br>
-                                        <i class="bi bi-clock-history"></i> Updated: <?= date('M d, Y', strtotime($ad['updated_at'])) ?>
+                                        <i class="bi bi-clock-history"></i> <?= t('Admin.reward_system.updated_label') ?>: <?= date('M d, Y', strtotime($ad['updated_at'])) ?>
                                     </small>
                                 </div>
                             </div>

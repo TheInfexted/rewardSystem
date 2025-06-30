@@ -25,7 +25,7 @@ class SettingsController extends BaseController
         $userId = session()->get('user_id');
     
         if (!$userId) {
-            return redirect()->to('/login')->with('error', 'Session expired. Please log in again.');
+            return redirect()->to('/login')->with('error', t('Admin.settings.session_expired', [], 'Session expired. Please log in again.'));
         }
     
         $user = $this->userModel->find($userId);
@@ -39,7 +39,7 @@ class SettingsController extends BaseController
         ]);
     
         $data = [
-            'title' => 'Settings',
+            'title' => t('Admin.settings.title'),
             'user' => $user,
             'customer_service_settings' => $customerServiceSettings
         ];
@@ -54,7 +54,7 @@ class SettingsController extends BaseController
     {
         $userId = session()->get('user_id');
         if (empty($userId)) {
-            return redirect()->to('/login')->with('error', 'Session expired. Please log in again.');
+            return redirect()->to('/login')->with('error', t('Admin.settings.session_expired', [], 'Session expired. Please log in again.'));
         }
         
         $rules = [
@@ -76,10 +76,10 @@ class SettingsController extends BaseController
             session()->set('user_name', $data['name']);
             session()->set('user_email', $data['email']);
             
-            return redirect()->back()->with('success', 'Profile updated successfully.');
+            return redirect()->back()->with('success', t('Admin.settings.profile.update_success', [], 'Profile updated successfully.'));
         }
         
-        return redirect()->back()->with('error', 'Failed to update profile.');
+        return redirect()->back()->with('error', t('Admin.settings.profile.update_failed', [], 'Failed to update profile.'));
     }
     
     /**
@@ -89,7 +89,7 @@ class SettingsController extends BaseController
     {
         $userId = session()->get('user_id');
         if (empty($userId)) {
-            return redirect()->to('/login')->with('error', 'Session expired. Please log in again.');
+            return redirect()->to('/login')->with('error', t('Admin.settings.session_expired', [], 'Session expired. Please log in again.'));
         }
         
         $user = $this->userModel->find($userId);
@@ -107,16 +107,16 @@ class SettingsController extends BaseController
         $currentPassword = $this->request->getPost('current_password');
         
         if (!password_verify($currentPassword, $user['password'])) {
-            return redirect()->back()->with('password_error', 'Current password is incorrect.');
+            return redirect()->back()->with('password_error', t('Admin.settings.password.current_incorrect', [], 'Current password is incorrect.'));
         }
         
         $newPassword = password_hash($this->request->getPost('new_password'), PASSWORD_DEFAULT);
         
         if ($this->userModel->update($userId, ['password' => $newPassword])) {
-            return redirect()->back()->with('password_success', 'Password updated successfully.');
+            return redirect()->back()->with('password_success', t('Admin.settings.password.update_success', [], 'Password updated successfully.'));
         }
         
-        return redirect()->back()->with('password_error', 'Failed to update password.');
+        return redirect()->back()->with('password_error', t('Admin.settings.password.update_failed', [], 'Failed to update password.'));
     }
 
     /**
@@ -125,7 +125,7 @@ class SettingsController extends BaseController
     public function updateCustomerService()
     {
         if (!$this->request->isAJAX()) {
-            return redirect()->back()->with('error', 'Invalid request method.');
+            return redirect()->back()->with('error', t('Admin.common.invalid_request', [], 'Invalid request method.'));
         }
 
         $validation = \Config\Services::validation();
@@ -139,7 +139,7 @@ class SettingsController extends BaseController
         if (!$validation->withRequest($this->request)->run()) {
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Validation failed.',
+                'message' => t('Admin.settings.validation_errors', [], 'Validation failed.'),
                 'errors' => $validation->getErrors()
             ]);
         }
@@ -159,7 +159,7 @@ class SettingsController extends BaseController
             if ($success) {
                 return $this->response->setJSON([
                     'success' => true,
-                    'message' => 'Customer service settings updated successfully!'
+                    'message' => t('Admin.settings.customer_service.update_success', [], 'Customer service settings updated successfully!')
                 ]);
             } else {
                 throw new \Exception('Failed to update settings in database');
@@ -169,7 +169,7 @@ class SettingsController extends BaseController
             log_message('error', 'Customer service settings update error: ' . $e->getMessage());
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Failed to update customer service settings. Please try again.'
+                'message' => t('Admin.settings.customer_service.update_failed', [], 'Failed to update customer service settings. Please try again.')
             ]);
         }
     }

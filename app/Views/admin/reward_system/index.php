@@ -64,7 +64,7 @@
                                                 <source src="<?= $mediaUrl ?>" type="video/mp4">
                                             </video>
                                         <?php else: ?>
-                                            <img src="<?= $mediaUrl ?>" alt="Preview" 
+                                            <img src="<?= $mediaUrl ?>" alt="<?= t('Admin.reward_system.preview') ?>" 
                                                  style="max-width: 100px; max-height: 60px;" 
                                                  class="img-thumbnail">
                                         <?php endif; ?>
@@ -78,7 +78,7 @@
                                     <td>
                                         <span class="badge bg-<?= $ad['ad_type'] === 'video' ? 'primary' : 'info' ?>">
                                             <i class="bi bi-<?= $ad['ad_type'] === 'video' ? 'play-circle' : 'image' ?>"></i>
-                                            <?= ucfirst($ad['ad_type']) ?>
+                                            <?= t('Admin.reward_system.form.type_' . $ad['ad_type']) ?>
                                         </span>
                                     </td>
                                     <td>
@@ -98,10 +98,10 @@
                                         <?php if ($ad['start_date'] || $ad['end_date']): ?>
                                             <small>
                                                 <?php if ($ad['start_date']): ?>
-                                                    From: <?= date('M d', strtotime($ad['start_date'])) ?><br>
+                                                    <?= t('Admin.reward_system.table.from') ?>: <?= date('M d', strtotime($ad['start_date'])) ?><br>
                                                 <?php endif; ?>
                                                 <?php if ($ad['end_date']): ?>
-                                                    To: <?= date('M d', strtotime($ad['end_date'])) ?>
+                                                    <?= t('Admin.reward_system.table.to') ?>: <?= date('M d', strtotime($ad['end_date'])) ?>
                                                 <?php endif; ?>
                                             </small>
                                         <?php else: ?>
@@ -111,13 +111,13 @@
                                     <td>
                                         <div class="btn-group btn-group-sm" role="group">
                                             <a href="<?= base_url('admin/reward-system/edit/' . $ad['id']) ?>" 
-                                               class="btn btn-outline-warning" title="Edit">
+                                               class="btn btn-outline-warning" title="<?= t('Admin.common.edit') ?>">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
                                             <a href="<?= base_url('admin/reward-system/delete/' . $ad['id']) ?>" 
                                                class="btn btn-outline-danger" 
-                                               onclick="return confirm('Are you sure you want to delete this ad?')"
-                                               title="Delete">
+                                               onclick="return confirm('<?= t('Admin.reward_system.confirm_delete') ?>')"
+                                               title="<?= t('Admin.common.delete') ?>">
                                                 <i class="bi bi-trash"></i>
                                             </a>
                                         </div>
@@ -145,10 +145,6 @@
 .order-input:focus {
     border-color: #FFD700;
     box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
-}
-
-#sortableAds tr {
-    cursor: move;
 }
 
 #sortableAds tr.ui-sortable-helper {
@@ -188,7 +184,7 @@ function updateOrder(id, order) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showToast('Order updated successfully', 'success');
+            showToast('<?= t('Admin.reward_system.order_updated') ?>', 'success');
         }
     })
     .catch(error => console.error('Error:', error));
