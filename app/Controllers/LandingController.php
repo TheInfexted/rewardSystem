@@ -140,15 +140,81 @@ class LandingController extends BaseController
                 $session->set('spins_today', $newSpinsCount);
                 $remainingTokens = max(0, $maxSpinsPerDay - $newSpinsCount);
             }
+
+            // *** ADD THIS MISSING LOGIC ***
+            // Get wheel items and select a winner
+            $wheelItems = $this->wheelItemsModel->getWheelItems();
+            
+            if (empty($wheelItems)) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'No wheel items available'
+                ]);
+            }
+
+            // Select winner based on probability
+            $winner = $this->selectWinner($wheelItems);
+            
+            // Log the spin result to database - THIS WAS MISSING!
+            $spinLogged = $this->logSpinResult($winner, $session, $customerId);
+            
+            if (!$spinLogged) {
+                log_message('warning', 'Spin completed but failed to log to database');
+            }
             
             return $this->response->setJSON([
                 'success' => true,
+                'winner' => $winner,  // Return the winner data
                 'spins_remaining' => $remainingTokens,
                 'predetermined' => false
             ]);
         }
         
         return redirect()->to('/');
+    }
+
+    /**
+     * Select winner based on item probability
+     */
+    private function selectWinner($items)
+    {
+        // Filter only active items
+        $activeItems = array_filter($items, function($item) {
+            return isset($item['is_active']) && $item['is_active'] == 1;
+        });
+        
+        if (empty($activeItems)) {
+            return $items[0] ?? null; // Fallback to first item
+        }
+        
+        // Calculate total probability/weight
+        $totalWeight = 0;
+        foreach ($activeItems as $item) {
+            // Use winning_rate if available, otherwise equal probability
+            $weight = isset($item['winning_rate']) && $item['winning_rate'] > 0 
+                    ? floatval($item['winning_rate']) 
+                    : 1;
+            $totalWeight += $weight;
+        }
+        
+        // Generate random number
+        $random = mt_rand(1, $totalWeight * 100) / 100; // Better precision
+        
+        // Find winner based on weighted probability
+        $cumulative = 0;
+        foreach ($activeItems as $item) {
+            $weight = isset($item['winning_rate']) && $item['winning_rate'] > 0 
+                    ? floatval($item['winning_rate']) 
+                    : 1;
+            $cumulative += $weight;
+            
+            if ($random <= $cumulative) {
+                return $item;
+            }
+        }
+        
+        // Fallback to last active item
+        return end($activeItems);
     }
 
     /**
@@ -378,7 +444,7 @@ class LandingController extends BaseController
     /**
      * Log spin result to database with proper IP tracking
      */
-    private function logSpinResult($winner, $session)
+    private function logSpinResult($winner, $session, $customerId = null)
     {
         try {
             $db = \Config\Database::connect();
@@ -409,6 +475,23 @@ class LandingController extends BaseController
                 'prize_type' => $winner['item_types'] ?? $winner['type'] ?? 'cash',
                 'claimed' => 0
             ];
+
+            // Add customer_id and additional fields
+            if ($customerId) {
+                $spinData['customer_id'] = $customerId;
+            }
+
+            $spinData['spin_date'] = date('Y-m-d H:i:s');
+            $spinData['external_redirect'] = 0;
+
+            // Add item-specific fields
+            if (isset($winner['item_id'])) {
+                $spinData['item_id'] = $winner['item_id'];
+            }
+
+            $spinData['item_name'] = $winner['item_name'] ?? $winner['name'] ?? 'Unknown';
+            $spinData['item_prize'] = floatval($winner['item_prize'] ?? $winner['prize'] ?? 0.00);
+            $spinData['item_type'] = $winner['item_types'] ?? $winner['type'] ?? 'cash';
             
             // Check which columns exist in the table to avoid errors
             $tableColumns = $db->getFieldNames('spin_history');
