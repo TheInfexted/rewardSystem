@@ -107,6 +107,9 @@ return [
         'details' => [
             'title' => 'Claim Details',
             'claim_id' => 'Claim ID',
+            'bonus_user' => 'User Information',
+            'bonus_technical' => 'Technical Details',
+            'bonus_info' => 'Bonus Information',
             'user_name' => 'User Name',
             'phone' => 'Phone',
             'email' => 'Email',

@@ -107,6 +107,9 @@ return [
         'details' => [
             'title' => '领取详情',
             'claim_id' => '领取ID',
+            'bonus_user' => '客户资料',
+            'bonus_technical' => '技术详情',
+            'bonus_info' => '奖金详情',
             'user_name' => '用户名',
             'phone' => '电话',
             'email' => '邮箱',
