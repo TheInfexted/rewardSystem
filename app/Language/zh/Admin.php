@@ -183,6 +183,15 @@ return [
             'dimensions' => '推荐尺寸：815px × 351px',
             'formats' => '支持格式：JPG、PNG、GIF、WebP',
         ],
+        'media' => [
+            'upload' => '上传{type}媒体',
+            'upload_new' => '上传新媒体以替换当前媒体',
+            'remove' => '移除',
+            'view_full' => '查看原图',
+            'requirements' => '媒体要求',
+            'image_formats' => '图片: JPEG, PNG, GIF, WebP (最大1MB)',
+            'video_formats' => '影片: MP4, WebM, OGG, MOV, AVI (最大5MB)',
+        ],
         'music' => [
             'current' => '当前音乐',
             'upload' => '上传音乐（MP3）',

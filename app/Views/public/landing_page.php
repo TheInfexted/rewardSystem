@@ -337,6 +337,52 @@
             transform: scale(1.1);
             box-shadow: 0 6px 20px rgba(255, 215, 0, 0.7);
         }
+
+        /* Media Upload Areas (Images and Videos) */
+        .media-upload-area {
+            border: 2px dashed var(--dark-gold);
+            border-radius: 0.375rem;
+            padding: 1rem;
+            background-color: rgba(255, 215, 0, 0.05);
+            text-align: center;
+        }
+
+        .preview-media {
+            max-width: 100%;
+            max-height: 200px;
+            border: 2px solid var(--primary-gold);
+        }
+
+        .current-media-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+        }
+
+        .media-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .media-filename {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .media-type-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+        }
+
+        .media-type-badge .badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
     </style>
 </head>
 <body class="casino-body">
@@ -383,13 +429,28 @@
                 <?php endif; ?>
                 
                 <div class="stacked-images">
-                    <?php if (!empty($page_data['header_image_1'])): ?>
-                        <img src="<?= base_url('uploads/landing/' . $page_data['header_image_1']) ?>" 
-                             alt="Header Image 1">
+                    <?php if (!empty($page_data['header_media_1'])): ?>
+                        <?php if (($page_data['header_media_1_type'] ?? 'image') === 'video'): ?>
+                            <video autoplay muted loop playsinline>
+                                <source src="<?= base_url('uploads/landing/' . $page_data['header_media_1']) ?>" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        <?php else: ?>
+                            <img src="<?= base_url('uploads/landing/' . $page_data['header_media_1']) ?>" 
+                                alt="Header Media 1">
+                        <?php endif; ?>
                     <?php endif; ?>
-                    <?php if (!empty($page_data['header_image_2'])): ?>
-                        <img src="<?= base_url('uploads/landing/' . $page_data['header_image_2']) ?>" 
-                             alt="Header Image 2">
+                    
+                    <?php if (!empty($page_data['header_media_2'])): ?>
+                        <?php if (($page_data['header_media_2_type'] ?? 'image') === 'video'): ?>
+                            <video autoplay muted loop playsinline>
+                                <source src="<?= base_url('uploads/landing/' . $page_data['header_media_2']) ?>" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        <?php else: ?>
+                            <img src="<?= base_url('uploads/landing/' . $page_data['header_media_2']) ?>" 
+                                alt="Header Media 2">
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
             </div>
@@ -435,13 +496,28 @@
         <footer class="casino-footer">
             <div class="container-fluid px-0">
                 <div class="stacked-images">
-                    <?php if (!empty($page_data['footer_image_1'])): ?>
-                        <img src="<?= base_url('uploads/landing/' . $page_data['footer_image_1']) ?>" 
-                             alt="Footer Image 1">
+                    <?php if (!empty($page_data['footer_media_1'])): ?>
+                        <?php if (($page_data['footer_media_1_type'] ?? 'image') === 'video'): ?>
+                            <video autoplay muted loop playsinline>
+                                <source src="<?= base_url('uploads/landing/' . $page_data['footer_media_1']) ?>" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        <?php else: ?>
+                            <img src="<?= base_url('uploads/landing/' . $page_data['footer_media_1']) ?>" 
+                                alt="Footer media 1">
+                        <?php endif; ?>
                     <?php endif; ?>
-                    <?php if (!empty($page_data['footer_image_2'])): ?>
-                        <img src="<?= base_url('uploads/landing/' . $page_data['footer_image_2']) ?>" 
-                             alt="Footer Image 2">
+                    
+                    <?php if (!empty($page_data['footer_media_2'])): ?>
+                        <?php if (($page_data['footer_media_2_type'] ?? 'image') === 'video'): ?>
+                            <video autoplay muted loop playsinline>
+                                <source src="<?= base_url('uploads/landing/' . $page_data['footer_media_2']) ?>" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        <?php else: ?>
+                            <img src="<?= base_url('uploads/landing/' . $page_data['footer_media_2']) ?>" 
+                                alt="Footer media 2">
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
                 
@@ -452,6 +528,7 @@
                 <?php endif; ?>
             </div>
         </footer>
+    </div>
         
         <!-- Background Music Player and Contact Button -->
         <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px;">

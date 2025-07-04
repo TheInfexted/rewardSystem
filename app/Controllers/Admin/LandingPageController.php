@@ -75,7 +75,7 @@ class LandingPageController extends BaseController
     {
         if ($this->request->getMethod() === 'POST') {
             try {
-                // Get current data to identify old images for deletion
+                // Get current data to identify old files for deletion
                 $currentData = $this->landingPageModel->getActiveData();
                 
                 $data = [
@@ -91,24 +91,34 @@ class LandingPageController extends BaseController
                     'updated_at' => date('Y-m-d H:i:s')
                 ];
 
-                // Debug: Log the data being saved
-                log_message('info', 'Landing page data being saved: ' . json_encode($data));
-
-                // Handle image uploads with auto-delete
-                $imageFields = ['header_image_1', 'header_image_2', 'footer_image_1', 'footer_image_2', 'welcome_image'];
+                // Handle media uploads (images and videos) for header/footer
+                $mediaFields = ['header_media_1', 'header_media_2', 'footer_media_1', 'footer_media_2'];
                 
-                foreach ($imageFields as $field) {
-                    $newImage = $this->uploadImage($field);
-                    if ($newImage !== null) {
-                        // Delete old image if it exists and is different
-                        if (!empty($currentData[$field]) && $currentData[$field] !== $newImage) {
-                            $this->deleteImage($currentData[$field]);
+                foreach ($mediaFields as $field) {
+                    $newMedia = $this->uploadMedia($field);
+                    if ($newMedia !== null) {
+                        // Delete old media if it exists and is different
+                        if (!empty($currentData[$field]) && $currentData[$field] !== $newMedia['filename']) {
+                            $this->deleteMedia($currentData[$field]);
                         }
-                        $data[$field] = $newImage;
+                        $data[$field] = $newMedia['filename'];
+                        $data[$field . '_type'] = $newMedia['type'];
                     } else {
-                        // Keep existing image if no new upload
+                        // Keep existing media if no new upload
                         $data[$field] = $currentData[$field] ?? null;
+                        $data[$field . '_type'] = $currentData[$field . '_type'] ?? 'image';
                     }
+                }
+
+                // Handle welcome image (still image only) - FIXED: Use uploadImage method
+                $newWelcomeImage = $this->uploadImage('welcome_image');
+                if ($newWelcomeImage !== null) {
+                    if (!empty($currentData['welcome_image']) && $currentData['welcome_image'] !== $newWelcomeImage) {
+                        $this->deleteImage($currentData['welcome_image']);
+                    }
+                    $data['welcome_image'] = $newWelcomeImage;
+                } else {
+                    $data['welcome_image'] = $currentData['welcome_image'] ?? null;
                 }
 
                 // Save to database
@@ -119,7 +129,6 @@ class LandingPageController extends BaseController
                     ]);
                 } else {
                     $errors = $this->landingPageModel->errors();
-                    log_message('error', 'Landing page validation errors: ' . json_encode($errors));
                     return $this->response->setJSON([
                         'success' => false,
                         'message' => 'Validation failed: ' . implode(', ', $errors)
@@ -148,12 +157,12 @@ class LandingPageController extends BaseController
     {
         if ($this->request->isAJAX()) {
             $field = $this->request->getPost('field');
-            $validFields = ['header_image_1', 'header_image_2', 'footer_image_1', 'footer_image_2', 'welcome_image'];
+            $validFields = ['header_media_1', 'header_media_2', 'footer_media_1', 'footer_media_2', 'welcome_image'];
             
             if (!in_array($field, $validFields)) {
                 return $this->response->setJSON([
                     'success' => false,
-                    'message' => 'Invalid image field'
+                    'message' => 'Invalid media field'
                 ]);
             }
 
@@ -163,15 +172,25 @@ class LandingPageController extends BaseController
                 
                 if (!empty($currentData[$field])) {
                     // Delete the physical file
-                    $this->deleteImage($currentData[$field]);
+                    if ($field === 'welcome_image') {
+                        $this->deleteMedia($currentData[$field]);
+                    } else {
+                        $this->deleteMedia($currentData[$field]);
+                    }
                     
                     // Update database - set field to null
                     $updateData = [$field => null, 'updated_at' => date('Y-m-d H:i:s')];
                     
+                    // Also reset media type for non-welcome fields
+                    if ($field !== 'welcome_image') {
+                        $updateData[$field . '_type'] = 'image';
+                    }
+                    
                     if ($this->landingPageModel->saveData($updateData)) {
                         return $this->response->setJSON([
                             'success' => true,
-                            'message' => 'Image removed successfully!'
+                            'message' => 'Media removed successfully!',
+                            'reload' => true  // ADD THIS FLAG
                         ]);
                     } else {
                         return $this->response->setJSON([
@@ -182,24 +201,25 @@ class LandingPageController extends BaseController
                 } else {
                     return $this->response->setJSON([
                         'success' => false,
-                        'message' => 'No image found to remove'
+                        'message' => 'No media found to remove'
                     ]);
                 }
 
             } catch (\Exception $e) {
-                log_message('error', 'Image removal error: ' . $e->getMessage());
+                log_message('error', 'Media removal error: ' . $e->getMessage());
                 return $this->response->setJSON([
                     'success' => false,
-                    'message' => 'Error removing image: ' . $e->getMessage()
+                    'message' => 'Error removing media: ' . $e->getMessage()
                 ]);
             }
         }
 
-        return redirect()->to('admin/landing-page');
+        // For non-AJAX requests, redirect back to landing page
+        return redirect()->to('admin/landing-page')->with('success', 'Media removed successfully!');
     }
 
     /**
-     * Enhanced image upload with better validation
+     * Enhanced image upload with better validation (for welcome_image only)
      */
     private function uploadImage($fieldName)
     {
@@ -212,8 +232,8 @@ class LandingPageController extends BaseController
                 throw new \Exception('Invalid image type. Only JPEG, PNG, GIF, and WebP are allowed.');
             }
 
-            // Validate file size (max 5MB)
-            if ($img->getSize() > 5 * 1024 * 1024) {
+            // Validate file size (max 1MB)
+            if ($img->getSize() > 1 * 1024 * 1024) {
                 throw new \Exception('Image file too large. Maximum size is 5MB.');
             }
 
@@ -229,6 +249,75 @@ class LandingPageController extends BaseController
             
             if ($img->move($uploadPath, $newName)) {
                 return $newName;
+            } else {
+                throw new \Exception('Failed to move uploaded file.');
+            }
+        }
+        
+        return null;
+    }
+
+    /**
+     * Enhanced media upload supporting both images and videos
+     */
+    private function uploadMedia($fieldName)
+    {
+        $file = $this->request->getFile($fieldName);
+        
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $mimeType = $file->getMimeType();
+            
+            // Determine if it's image or video
+            $isImage = strpos($mimeType, 'image/') === 0;
+            $isVideo = strpos($mimeType, 'video/') === 0;
+            
+            if ($isImage) {
+                // Validate image types
+                $allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                if (!in_array($mimeType, $allowedImageTypes)) {
+                    throw new \Exception('Invalid image type. Only JPEG, PNG, GIF, and WebP images are allowed.');
+                }
+                
+                // Validate image size (max 1MB)
+                if ($file->getSize() > 1 * 1024 * 1024) {
+                    throw new \Exception('Image file too large. Maximum size is 1MB.');
+                }
+                
+                $mediaType = 'image';
+                
+            } elseif ($isVideo) {
+                // Validate video types
+                $allowedVideoTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/mov', 'video/avi'];
+                if (!in_array($mimeType, $allowedVideoTypes)) {
+                    throw new \Exception('Invalid video type. Only MP4, WebM, OGG, MOV, and AVI videos are allowed.');
+                }
+                
+                // Validate video size (max 5MB)
+                if ($file->getSize() > 5 * 1024 * 1024) {
+                    throw new \Exception('Video file too large. Maximum size is 5MB.');
+                }
+                
+                $mediaType = 'video';
+                
+            } else {
+                throw new \Exception('Invalid file type. Only images and videos are allowed.');
+            }
+
+            // Create directory if it doesn't exist
+            $uploadPath = FCPATH . 'uploads/landing/';
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+            
+            // Generate unique filename with timestamp
+            $extension = $file->getClientExtension();
+            $newName = $fieldName . '_' . time() . '_' . uniqid() . '.' . $extension;
+            
+            if ($file->move($uploadPath, $newName)) {
+                return [
+                    'filename' => $newName,
+                    'type' => $mediaType
+                ];
             } else {
                 throw new \Exception('Failed to move uploaded file.');
             }
@@ -259,6 +348,30 @@ class LandingPageController extends BaseController
         }
 
         return false;
+    }
+
+    /**
+     * Delete media file (image or video) from filesystem
+     */
+    private function deleteMedia($filename)
+    {
+        if (empty($filename)) {
+            return false;
+        }
+
+        $filePath = FCPATH . 'uploads/landing/' . $filename;
+        
+        if (file_exists($filePath)) {
+            $deleted = unlink($filePath);
+            if ($deleted) {
+                log_message('info', 'Deleted old media file: ' . $filename);
+            } else {
+                log_message('error', 'Failed to delete media file: ' . $filename);
+            }
+            return $deleted;
+        }
+
+        return redirect()->to('admin/landing-page');
     }
 
     /**

@@ -47,90 +47,118 @@
                             <small class="text-muted"><?= t('Admin.landing.fields.header_text_help') ?></small>
                         </div>
 
-                        <!-- Header Image 1 -->
+                        <!-- Header Media 1 (Image/Video) -->
                         <div class="mb-3">
-                            <label class="form-label text-light"><?= t('Admin.landing.fields.header_image_1') ?></label>
-                            <div class="image-upload-container" data-field="header_image_1">
-                                <?php if (!empty($landing_data['header_image_1'])): ?>
-                                    <div class="current-image mb-2">
-                                        <div class="current-image-card">
-                                            <img src="<?= base_url('uploads/landing/' . $landing_data['header_image_1']) ?>" 
-                                                 class="img-thumbnail preview-image" alt="Header Image 1">
-                                            <div class="image-actions mt-2">
+                            <label class="form-label text-light"><?= t('Admin.landing.fields.header_media_1') ?></label>
+                            <div class="media-upload-container" data-field="header_media_1">
+                                <?php if (!empty($landing_data['header_media_1'])): ?>
+                                    <div class="current-media mb-2">
+                                        <div class="current-media-card">
+                                            <?php if (($landing_data['header_media_1_type'] ?? 'image') === 'video'): ?>
+                                                <!-- Video Display -->
+                                                <video class="preview-media" controls>
+                                                    <source src="<?= base_url('uploads/landing/' . $landing_data['header_media_1']) ?>" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                </video>
+                                                <div class="media-type-badge">
+                                                    <span class="badge bg-primary"><i class="bi bi-play-fill"></i> Video</span>
+                                                </div>
+                                            <?php else: ?>
+                                                <!-- Image Display -->
+                                                <img src="<?= base_url('uploads/landing/' . $landing_data['header_media_1']) ?>" 
+                                                    class="img-thumbnail preview-media" alt="Header Media 1">
+                                                <div class="media-type-badge">
+                                                    <span class="badge bg-success"><i class="bi bi-image"></i> Image</span>
+                                                </div>
+                                            <?php endif; ?>
+                                            <div class="media-actions mt-2">
                                                 <button type="button" class="btn btn-sm btn-danger" 
-                                                        onclick="removeImage('header_image_1')">
-                                                    <i class="bi bi-trash"></i> <?= t('Admin.landing.image.remove') ?>
+                                                        onclick="removeImage('header_media_1')">
+                                                    <i class="bi bi-trash"></i> <?= t('Admin.landing.media.remove') ?>
                                                 </button>
-                                                <a href="<?= base_url('uploads/landing/' . $landing_data['header_image_1']) ?>" 
-                                                   target="_blank" class="btn btn-sm btn-outline-info">
-                                                    <i class="bi bi-zoom-in"></i> <?= t('Admin.landing.image.view_full') ?>
+                                                <a href="<?= base_url('uploads/landing/' . $landing_data['header_media_1']) ?>" 
+                                                target="_blank" class="btn btn-sm btn-outline-info">
+                                                    <i class="bi bi-eye"></i> <?= t('Admin.landing.media.view_full') ?>
                                                 </a>
                                             </div>
-                                            <div class="image-filename">
+                                            <div class="media-filename">
                                                 <small class="text-success">
-                                                    <i class="bi bi-file-image"></i> <?= $landing_data['header_image_1'] ?>
+                                                    <i class="bi bi-file-earmark"></i> <?= $landing_data['header_media_1'] ?>
                                                 </small>
                                             </div>
                                         </div>
                                     </div>
                                 <?php endif; ?>
-                                <div class="image-upload-area">
-                                    <input type="file" name="header_image_1" class="form-control bg-secondary text-light border-0" 
-                                           accept="image/*" onchange="previewImage(this, 'header_image_1')">
+                                <div class="media-upload-area">
+                                    <input type="file" name="header_media_1" class="form-control bg-secondary text-light border-0" 
+                                        accept="image/*,video/*" onchange="previewMedia(this, 'header_media_1')">
                                     <small class="text-muted">
-                                        <?= !empty($landing_data['header_image_1']) ? t('Admin.landing.image.upload_new') : t('Admin.landing.image.upload', ['type' => t('Admin.landing.fields.header', [], 'header')]) ?>
+                                        <?= !empty($landing_data['header_media_1']) ? t('Admin.landing.media.upload_new') : t('Admin.landing.media.upload', ['type' => 'header']) ?>
                                     </small>
                                     <small class="text-info d-block mt-1">
-                                        <i class="bi bi-info-circle"></i> <?= t('Admin.landing.image.requirements') ?>:
+                                        <i class="bi bi-info-circle"></i> <?= t('Admin.landing.media.requirements') ?>:
                                         <ul class="mb-0 ps-4">
-                                            <li><?= t('Admin.landing.image.max_size') ?></li>
-                                            <li><?= t('Admin.landing.image.dimensions') ?></li>
-                                            <li><?= t('Admin.landing.image.formats') ?></li>
+                                            <li><?= t('Admin.landing.media.image_formats') ?></li>
+                                            <li><?= t('Admin.landing.media.video_formats') ?></li>
                                         </ul>
                                     </small>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Header Image 2 -->
+                        <!-- Header Media 2 (Image/Video) -->
                         <div class="mb-3">
-                            <label class="form-label text-light"><?= t('Admin.landing.fields.header_image_2') ?></label>
-                            <div class="image-upload-container" data-field="header_image_2">
-                                <?php if (!empty($landing_data['header_image_2'])): ?>
-                                    <div class="current-image mb-2">
-                                        <div class="current-image-card">
-                                            <img src="<?= base_url('uploads/landing/' . $landing_data['header_image_2']) ?>" 
-                                                 class="img-thumbnail preview-image" alt="Header Image 2">
-                                            <div class="image-actions mt-2">
+                            <label class="form-label text-light"><?= t('Admin.landing.fields.header_media_2') ?></label>
+                            <div class="media-upload-container" data-field="header_media_2">
+                                <?php if (!empty($landing_data['header_media_2'])): ?>
+                                    <div class="current-media mb-2">
+                                        <div class="current-media-card">
+                                            <?php if (($landing_data['header_media_2_type'] ?? 'image') === 'video'): ?>
+                                                <!-- Video Display -->
+                                                <video class="preview-media" controls>
+                                                    <source src="<?= base_url('uploads/landing/' . $landing_data['header_media_2']) ?>" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                </video>
+                                                <div class="media-type-badge">
+                                                    <span class="badge bg-primary"><i class="bi bi-play-fill"></i> Video</span>
+                                                </div>
+                                            <?php else: ?>
+                                                <!-- Image Display -->
+                                                <img src="<?= base_url('uploads/landing/' . $landing_data['header_media_2']) ?>" 
+                                                    class="img-thumbnail preview-media" alt="Header Media 2">
+                                                <div class="media-type-badge">
+                                                    <span class="badge bg-success"><i class="bi bi-image"></i> Image</span>
+                                                </div>
+                                            <?php endif; ?>
+                                            <div class="media-actions mt-2">
                                                 <button type="button" class="btn btn-sm btn-danger" 
-                                                        onclick="removeImage('header_image_2')">
-                                                    <i class="bi bi-trash"></i> <?= t('Admin.landing.image.remove') ?>
+                                                        onclick="removeImage('header_media_2')">
+                                                    <i class="bi bi-trash"></i> <?= t('Admin.landing.media.remove') ?>
                                                 </button>
-                                                <a href="<?= base_url('uploads/landing/' . $landing_data['header_image_2']) ?>" 
-                                                   target="_blank" class="btn btn-sm btn-outline-info">
-                                                    <i class="bi bi-zoom-in"></i> <?= t('Admin.landing.image.view_full') ?>
+                                                <a href="<?= base_url('uploads/landing/' . $landing_data['header_media_2']) ?>" 
+                                                target="_blank" class="btn btn-sm btn-outline-info">
+                                                    <i class="bi bi-eye"></i> <?= t('Admin.landing.media.view_full') ?>
                                                 </a>
                                             </div>
-                                            <div class="image-filename">
+                                            <div class="media-filename">
                                                 <small class="text-success">
-                                                    <i class="bi bi-file-image"></i> <?= $landing_data['header_image_2'] ?>
+                                                    <i class="bi bi-file-earmark"></i> <?= $landing_data['header_media_2'] ?>
                                                 </small>
                                             </div>
                                         </div>
                                     </div>
                                 <?php endif; ?>
-                                <div class="image-upload-area">
-                                    <input type="file" name="header_image_2" class="form-control bg-secondary text-light border-0" 
-                                           accept="image/*" onchange="previewImage(this, 'header_image_2')">
+                                <div class="media-upload-area">
+                                    <input type="file" name="header_media_2" class="form-control bg-secondary text-light border-0" 
+                                        accept="image/*,video/*" onchange="previewMedia(this, 'header_media_2')">
                                     <small class="text-muted">
-                                        <?= !empty($landing_data['header_image_2']) ? t('Admin.landing.image.upload_new') : t('Admin.landing.image.upload', ['type' => t('Admin.landing.fields.header', [], 'header')]) ?>
+                                        <?= !empty($landing_data['header_media_2']) ? t('Admin.landing.media.upload_new') : t('Admin.landing.media.upload', ['type' => 'header']) ?>
                                     </small>
                                     <small class="text-info d-block mt-1">
-                                        <i class="bi bi-info-circle"></i> <?= t('Admin.landing.image.requirements') ?>:
+                                        <i class="bi bi-info-circle"></i> <?= t('Admin.landing.media.requirements') ?>:
                                         <ul class="mb-0 ps-4">
-                                            <li><?= t('Admin.landing.image.max_size') ?></li>
-                                            <li><?= t('Admin.landing.image.dimensions') ?></li>
-                                            <li><?= t('Admin.landing.image.formats') ?></li>
+                                            <li><?= t('Admin.landing.media.image_formats') ?></li>
+                                            <li><?= t('Admin.landing.media.video_formats') ?></li>
                                         </ul>
                                     </small>
                                 </div>
@@ -151,49 +179,122 @@
                         <div class="mb-3">
                             <label class="form-label text-light"><?= t('Admin.landing.fields.footer_text') ?></label>
                             <textarea name="footer_text" class="form-control bg-secondary text-light border-0" 
-                                      rows="3" placeholder="<?= t('Admin.landing.fields.footer_text_placeholder', [], 'Enter footer text...') ?>"><?= esc($landing_data['footer_text'] ?? '') ?></textarea>
+                                    rows="3" placeholder="<?= t('Admin.landing.fields.footer_text_placeholder', [], 'Enter footer text...') ?>"><?= esc($landing_data['footer_text'] ?? '') ?></textarea>
                             <small class="text-muted"><?= t('Admin.landing.fields.footer_text_help') ?></small>
                         </div>
 
-                        <!-- Footer Image 1 -->
+                        <!-- Footer Media 1 (Image/Video) -->
                         <div class="mb-3">
-                            <label class="form-label text-light"><?= t('Admin.landing.fields.footer_image_1') ?></label>
-                            <div class="image-upload-container" data-field="footer_image_1">
-                                <?php if (!empty($landing_data['footer_image_1'])): ?>
-                                    <div class="current-image mb-2">
-                                        <div class="current-image-card">
-                                            <img src="<?= base_url('uploads/landing/' . $landing_data['footer_image_1']) ?>" 
-                                                 class="img-thumbnail preview-image" alt="Footer Image 1">
-                                            <div class="image-actions mt-2">
+                            <label class="form-label text-light"><?= t('Admin.landing.fields.footer_media_1') ?></label>
+                            <div class="media-upload-container" data-field="footer_media_1">
+                                <?php if (!empty($landing_data['footer_media_1'])): ?>
+                                    <div class="current-media mb-2">
+                                        <div class="current-media-card">
+                                            <?php if (($landing_data['footer_media_1_type'] ?? 'image') === 'video'): ?>
+                                                <!-- Video Display -->
+                                                <video class="preview-media" controls>
+                                                    <source src="<?= base_url('uploads/landing/' . $landing_data['footer_media_1']) ?>" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                </video>
+                                                <div class="media-type-badge">
+                                                    <span class="badge bg-primary"><i class="bi bi-play-fill"></i> Video</span>
+                                                </div>
+                                            <?php else: ?>
+                                                <!-- Image Display -->
+                                                <img src="<?= base_url('uploads/landing/' . $landing_data['footer_media_1']) ?>" 
+                                                    class="img-thumbnail preview-media" alt="Footer Media 1">
+                                                <div class="media-type-badge">
+                                                    <span class="badge bg-success"><i class="bi bi-image"></i> Image</span>
+                                                </div>
+                                            <?php endif; ?>
+                                            <div class="media-actions mt-2">
                                                 <button type="button" class="btn btn-sm btn-danger" 
-                                                        onclick="removeImage('footer_image_1')">
-                                                    <i class="bi bi-trash"></i> <?= t('Admin.landing.image.remove') ?>
+                                                        onclick="removeImage('footer_media_1')">
+                                                    <i class="bi bi-trash"></i> <?= t('Admin.landing.media.remove') ?>
                                                 </button>
-                                                <a href="<?= base_url('uploads/landing/' . $landing_data['footer_image_1']) ?>" 
-                                                   target="_blank" class="btn btn-sm btn-outline-info">
-                                                    <i class="bi bi-zoom-in"></i> <?= t('Admin.landing.image.view_full') ?>
+                                                <a href="<?= base_url('uploads/landing/' . $landing_data['footer_media_1']) ?>" 
+                                                target="_blank" class="btn btn-sm btn-outline-info">
+                                                    <i class="bi bi-eye"></i> <?= t('Admin.landing.media.view_full') ?>
                                                 </a>
                                             </div>
-                                            <div class="image-filename">
+                                            <div class="media-filename">
                                                 <small class="text-success">
-                                                    <i class="bi bi-file-image"></i> <?= $landing_data['footer_image_1'] ?>
+                                                    <i class="bi bi-file-earmark"></i> <?= $landing_data['footer_media_1'] ?>
                                                 </small>
                                             </div>
                                         </div>
                                     </div>
                                 <?php endif; ?>
-                                <div class="image-upload-area">
-                                    <input type="file" name="footer_image_1" class="form-control bg-secondary text-light border-0" 
-                                           accept="image/*" onchange="previewImage(this, 'footer_image_1')">
+                                <div class="media-upload-area">
+                                    <input type="file" name="footer_media_1" class="form-control bg-secondary text-light border-0" 
+                                        accept="image/*,video/*" onchange="previewMedia(this, 'footer_media_1')">
                                     <small class="text-muted">
-                                        <?= !empty($landing_data['footer_image_1']) ? t('Admin.landing.image.upload_new') : t('Admin.landing.image.upload', ['type' => t('Admin.landing.fields.footer', [], 'footer')]) ?>
+                                        <?= !empty($landing_data['footer_media_1']) ? t('Admin.landing.media.upload_new') : t('Admin.landing.media.upload', ['type' => 'footer']) ?>
                                     </small>
                                     <small class="text-info d-block mt-1">
-                                        <i class="bi bi-info-circle"></i> <?= t('Admin.landing.image.requirements') ?>:
+                                        <i class="bi bi-info-circle"></i> <?= t('Admin.landing.media.requirements') ?>:
                                         <ul class="mb-0 ps-4">
-                                            <li><?= t('Admin.landing.image.max_size') ?></li>
-                                            <li><?= t('Admin.landing.image.dimensions') ?></li>
-                                            <li><?= t('Admin.landing.image.formats') ?></li>
+                                            <li><?= t('Admin.landing.media.image_formats') ?></li>
+                                            <li><?= t('Admin.landing.media.video_formats') ?></li>
+                                        </ul>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Media 2 (Image/Video) -->
+                        <div class="mb-3">
+                            <label class="form-label text-light"><?= t('Admin.landing.fields.footer_media_2') ?></label>
+                            <div class="media-upload-container" data-field="footer_media_2">
+                                <?php if (!empty($landing_data['footer_media_2'])): ?>
+                                    <div class="current-media mb-2">
+                                        <div class="current-media-card">
+                                            <?php if (($landing_data['footer_media_2_type'] ?? 'image') === 'video'): ?>
+                                                <!-- Video Display -->
+                                                <video class="preview-media" controls>
+                                                    <source src="<?= base_url('uploads/landing/' . $landing_data['footer_media_2']) ?>" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                </video>
+                                                <div class="media-type-badge">
+                                                    <span class="badge bg-primary"><i class="bi bi-play-fill"></i> Video</span>
+                                                </div>
+                                            <?php else: ?>
+                                                <!-- Image Display -->
+                                                <img src="<?= base_url('uploads/landing/' . $landing_data['footer_media_2']) ?>" 
+                                                    class="img-thumbnail preview-media" alt="Footer Media 2">
+                                                <div class="media-type-badge">
+                                                    <span class="badge bg-success"><i class="bi bi-image"></i> Image</span>
+                                                </div>
+                                            <?php endif; ?>
+                                            <div class="media-actions mt-2">
+                                                <button type="button" class="btn btn-sm btn-danger" 
+                                                        onclick="removeImage('footer_media_2')">
+                                                    <i class="bi bi-trash"></i> <?= t('Admin.landing.media.remove') ?>
+                                                </button>
+                                                <a href="<?= base_url('uploads/landing/' . $landing_data['footer_media_2']) ?>" 
+                                                target="_blank" class="btn btn-sm btn-outline-info">
+                                                    <i class="bi bi-eye"></i> <?= t('Admin.landing.media.view_full') ?>
+                                                </a>
+                                            </div>
+                                            <div class="media-filename">
+                                                <small class="text-success">
+                                                    <i class="bi bi-file-earmark"></i> <?= $landing_data['footer_media_2'] ?>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                                <div class="media-upload-area">
+                                    <input type="file" name="footer_media_2" class="form-control bg-secondary text-light border-0" 
+                                        accept="image/*,video/*" onchange="previewMedia(this, 'footer_media_2')">
+                                    <small class="text-muted">
+                                        <?= !empty($landing_data['footer_media_2']) ? t('Admin.landing.media.upload_new') : t('Admin.landing.media.upload', ['type' => 'footer']) ?>
+                                    </small>
+                                    <small class="text-info d-block mt-1">
+                                        <i class="bi bi-info-circle"></i> <?= t('Admin.landing.media.requirements') ?>:
+                                        <ul class="mb-0 ps-4">
+                                            <li><?= t('Admin.landing.media.image_formats') ?></li>
+                                            <li><?= t('Admin.landing.media.video_formats') ?></li>
                                         </ul>
                                     </small>
                                 </div>
@@ -791,6 +892,78 @@
         const overlay = document.getElementById('loadingOverlay');
         overlay.style.display = show ? 'flex' : 'none';
     }
+
+    // Media preview functionality for both images and videos
+    function previewMedia(input, fieldName) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const isImage = file.type.startsWith('image/');
+            const isVideo = file.type.startsWith('video/');
+            
+            // Validate file type
+            if (!isImage && !isVideo) {
+                showAlert('error', 'Please select a valid image or video file.');
+                input.value = '';
+                return;
+            }
+            
+            // Validate file size
+            const maxImageSize = 5 * 1024 * 1024; // 5MB for images
+            const maxVideoSize = 50 * 1024 * 1024; // 50MB for videos
+            
+            if (isImage && file.size > maxImageSize) {
+                showAlert('error', 'Image file too large. Maximum size is 5MB.');
+                input.value = '';
+                return;
+            }
+            
+            if (isVideo && file.size > maxVideoSize) {
+                showAlert('error', 'Video file too large. Maximum size is 50MB.');
+                input.value = '';
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const container = input.closest('.media-upload-container');
+                let previewContainer = container.querySelector('.new-media-preview');
+                
+                if (!previewContainer) {
+                    previewContainer = document.createElement('div');
+                    previewContainer.className = 'new-media-preview mt-2';
+                    container.appendChild(previewContainer);
+                }
+                
+                let mediaElement = '';
+                let mediaTypeLabel = '';
+                let sizeLabel = '';
+                
+                if (isImage) {
+                    mediaElement = `<img src="${e.target.result}" class="preview-media mt-2" style="max-height: 150px;" alt="Preview">`;
+                    mediaTypeLabel = '<span class="badge bg-success"><i class="bi bi-image"></i> Image</span>';
+                    sizeLabel = `(${(file.size / 1024).toFixed(1)} KB)`;
+                } else {
+                    mediaElement = `<video class="preview-media mt-2" controls style="max-height: 150px;">
+                        <source src="${e.target.result}" type="${file.type}">
+                    </video>`;
+                    mediaTypeLabel = '<span class="badge bg-primary"><i class="bi bi-play-fill"></i> Video</span>';
+                    sizeLabel = `(${(file.size / 1024 / 1024).toFixed(1)} MB)`;
+                }
+                
+                previewContainer.innerHTML = `
+                    <div class="alert alert-info">
+                        <strong>New media selected:</strong> ${mediaTypeLabel}<br>
+                        ${mediaElement}
+                        <div class="mt-2">
+                            <small class="text-muted">${file.name} ${sizeLabel}</small><br>
+                            <small class="text-warning">This will replace the current media when saved.</small>
+                        </div>
+                    </div>
+                `;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
     
     // Image preview functionality
     function previewImage(input, fieldName) {
@@ -854,7 +1027,7 @@
         
         // Show loading for this specific image
         const container = document.querySelector(`[data-field="${fieldName}"]`);
-        const currentImage = container.querySelector('.current-image');
+        const currentImage = container.querySelector('.current-image, .current-media');
         
         if (currentImage) {
             currentImage.style.opacity = '0.5';
@@ -872,9 +1045,17 @@
         .then(data => {
             if (data.success) {
                 showAlert('success', data.message);
-                // Remove the image from display
-                if (currentImage) {
-                    currentImage.remove();
+                
+                // Check if reload flag is set, then reload the page
+                if (data.reload) {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000); // Wait 1 second to show the success message
+                } else {
+                    // Fallback: remove the image from display if no reload
+                    if (currentImage) {
+                        currentImage.remove();
+                    }
                 }
             } else {
                 showAlert('error', data.message);
