@@ -453,9 +453,18 @@
             </div>
         </footer>
         
-        <!-- Background Music Player -->
-        <?php if (isset($music_data) && !empty($music_data['music_file'])): ?>
-        <div id="bgMusicContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+        <!-- Background Music Player and Contact Button -->
+        <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px;">
+            
+            <!-- Contact Button (only show if there are enabled contact links) -->
+            <?php if (!empty($contact_links)): ?>
+            <button id="contactToggle" class="btn btn-gold btn-sm rounded-circle" style="width: 50px; height: 50px;" data-bs-toggle="modal" data-bs-target="#contactModal">
+                <i class="bi bi-telephone" id="contactIcon"></i>
+            </button>
+            <?php endif; ?>
+            
+            <!-- Music Button -->
+            <?php if (isset($music_data) && !empty($music_data['music_file'])): ?>
             <button id="musicToggle" class="btn btn-gold btn-sm rounded-circle" style="width: 50px; height: 50px;">
                 <i class="bi bi-music-note-beamed" id="musicIcon"></i>
             </button>
@@ -465,6 +474,54 @@
                    preload="auto">
                 <source src="<?= base_url('uploads/music/' . $music_data['music_file']) ?>" type="audio/mpeg">
             </audio>
+            <?php endif; ?>
+        </div>
+
+        <!-- Contact Modal -->
+        <?php if (!empty($contact_links)): ?>
+        <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content bg-dark border-gold">
+                    <div class="modal-header border-gold">
+                        <h5 class="modal-title text-gold" id="contactModalLabel">
+                            <i class="bi bi-headset"></i> Contact Us
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <p class="text-light mb-4">Choose your preferred way to contact us:</p>
+                        
+                        <div class="contact-links d-grid gap-3">
+                            <?php foreach ($contact_links as $link): ?>
+                            <a href="<?= esc($link['url']) ?>" 
+                               target="_blank" 
+                               class="btn btn-outline-gold btn-lg contact-link-btn">
+                                <?php 
+                                // Add appropriate icon based on the link name or URL
+                                $icon = 'bi-link-45deg'; // default icon
+                                $linkName = strtolower($link['name']);
+                                $linkUrl = strtolower($link['url']);
+                                
+                                if (strpos($linkName, 'whatsapp') !== false || strpos($linkUrl, 'wa.me') !== false) {
+                                    $icon = 'bi-whatsapp';
+                                } elseif (strpos($linkName, 'telegram') !== false || strpos($linkUrl, 't.me') !== false) {
+                                    $icon = 'bi-telegram';
+                                } elseif (strpos($linkName, 'email') !== false || strpos($linkUrl, 'mailto:') !== false) {
+                                    $icon = 'bi-envelope';
+                                } elseif (strpos($linkName, 'phone') !== false || strpos($linkUrl, 'tel:') !== false) {
+                                    $icon = 'bi-telephone';
+                                } elseif (strpos($linkName, 'support') !== false) {
+                                    $icon = 'bi-headset';
+                                }
+                                ?>
+                                <i class="bi <?= $icon ?> me-2"></i>
+                                <?= esc($link['name']) ?>
+                            </a>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <?php endif; ?>
         
@@ -778,7 +835,7 @@
                 'responsive': true,
                 'drawMode': 'segmentImage',
                 'drawText': true,
-                'textFontSize': 16,
+                'textFontSize': 20,
                 'textFontWeight': 'bold',
                 'textOrientation': 'horizontal',
                 'textAlignment': 'center',

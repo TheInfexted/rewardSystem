@@ -72,6 +72,9 @@ class LandingController extends BaseController
         // Get bonus settings
         $bonusSettings = $this->adminSettingsModel->getBonusSettings();
         
+        // Get enabled contact links for the contact modal
+        $contactLinks = $this->adminSettingsModel->getEnabledContactLinks();
+        
         $data = [
             'page_data' => $this->landingPageModel->getActiveData(),
             'wheel_items' => $this->wheelItemsModel->getWheelItems(),
@@ -81,6 +84,7 @@ class LandingController extends BaseController
             'music_data' => $this->landingPageMusicModel->getActiveMusic(),
             'spin_sound' => $this->wheelSoundModel->getActiveSound('spin'),
             'win_sound' => $this->wheelSoundModel->getActiveSound('win'),
+            'contact_links' => $contactLinks, // ADD THIS LINE
         ];
     
         return view('public/landing_page', $data);

@@ -341,3 +341,136 @@ input[type="file"]::-webkit-file-upload-button {
 input[type="file"]::-webkit-file-upload-button:hover {
     background-color: var(--primary-gold);
 }
+
+/* Contact Button */
+#contactToggle {
+    background-color: var(--primary-gold);
+    border-color: var(--primary-gold);
+    color: var(--primary-black);
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0; /* Remove default padding to center icon */
+}
+
+#contactToggle:hover {
+    background-color: var(--secondary-gold);
+    border-color: var(--secondary-gold);
+    color: var(--primary-black);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+}
+
+#contactToggle:active {
+    transform: translateY(0);
+}
+
+/* Ensure contact icon is centered */
+#contactToggle i {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+/* Contact Modal Styles */
+#contactModal .modal-content {
+    background: linear-gradient(135deg, var(--secondary-black) 0%, var(--primary-black) 100%);
+    border: 2px solid var(--primary-gold);
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+#contactModal .modal-header {
+    border-bottom: 1px solid var(--primary-gold);
+    background: rgba(255, 215, 0, 0.1);
+}
+
+#contactModal .modal-title {
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Contact Link Buttons */
+.contact-link-btn {
+    border: 2px solid var(--primary-gold);
+    color: var(--primary-gold);
+    background: transparent;
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-link-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.contact-link-btn:hover {
+    background-color: var(--primary-gold);
+    color: var(--primary-black);
+    border-color: var(--primary-gold);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+}
+
+.contact-link-btn:hover::before {
+    left: 100%;
+}
+
+.contact-link-btn:active {
+    transform: translateY(0);
+}
+
+/* Gold outline button style */
+.btn-outline-gold {
+    border-color: var(--primary-gold);
+    color: var(--primary-gold);
+    background: transparent;
+}
+
+.btn-outline-gold:hover {
+    background-color: var(--primary-gold);
+    border-color: var(--primary-gold);
+    color: var(--primary-black);
+}
+
+.btn-outline-gold:focus,
+.btn-outline-gold:active {
+    background-color: var(--primary-gold);
+    border-color: var(--primary-gold);
+    color: var(--primary-black);
+    box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25);
+}
+
+/* Contact links container */
+.contact-links {
+    max-width: 350px;
+    margin: 0 auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #contactToggle,
+    #musicToggle {
+        width: 45px;
+        height: 45px;
+        font-size: 0.9rem;
+    }
+    
+    .contact-link-btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+    }
+}

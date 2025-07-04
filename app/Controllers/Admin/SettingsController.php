@@ -25,7 +25,7 @@ class SettingsController extends BaseController
         $userId = session()->get('user_id');
     
         if (!$userId) {
-            return redirect()->to('/login')->with('error', t('Admin.settings.session_expired', [], 'Session expired. Please log in again.'));
+            return redirect()->to('/login')->with('error', 'Session expired. Please log in again.');
         }
     
         $user = $this->userModel->find($userId);
@@ -37,11 +37,15 @@ class SettingsController extends BaseController
             'customer_service_hours',
             'customer_service_enabled'
         ]);
+
+        // Get contact settings for landing page
+        $contactSettings = $this->adminSettingsModel->getContactSettings();
     
         $data = [
-            'title' => t('Admin.settings.title'),
+            'title' => 'Settings',
             'user' => $user,
-            'customer_service_settings' => $customerServiceSettings
+            'customer_service_settings' => $customerServiceSettings,
+            'contact_settings' => $contactSettings
         ];
     
         return view('admin/settings/index', $data);
@@ -54,7 +58,7 @@ class SettingsController extends BaseController
     {
         $userId = session()->get('user_id');
         if (empty($userId)) {
-            return redirect()->to('/login')->with('error', t('Admin.settings.session_expired', [], 'Session expired. Please log in again.'));
+            return redirect()->to('/login')->with('error', 'Session expired. Please log in again.');
         }
         
         $rules = [
@@ -76,10 +80,10 @@ class SettingsController extends BaseController
             session()->set('user_name', $data['name']);
             session()->set('user_email', $data['email']);
             
-            return redirect()->back()->with('success', t('Admin.settings.profile.update_success', [], 'Profile updated successfully.'));
+            return redirect()->back()->with('success', 'Profile updated successfully.');
         }
         
-        return redirect()->back()->with('error', t('Admin.settings.profile.update_failed', [], 'Failed to update profile.'));
+        return redirect()->back()->with('error', 'Failed to update profile.');
     }
     
     /**
@@ -89,7 +93,7 @@ class SettingsController extends BaseController
     {
         $userId = session()->get('user_id');
         if (empty($userId)) {
-            return redirect()->to('/login')->with('error', t('Admin.settings.session_expired', [], 'Session expired. Please log in again.'));
+            return redirect()->to('/login')->with('error', 'Session expired. Please log in again.');
         }
         
         $user = $this->userModel->find($userId);
@@ -107,16 +111,16 @@ class SettingsController extends BaseController
         $currentPassword = $this->request->getPost('current_password');
         
         if (!password_verify($currentPassword, $user['password'])) {
-            return redirect()->back()->with('password_error', t('Admin.settings.password.current_incorrect', [], 'Current password is incorrect.'));
+            return redirect()->back()->with('password_error', 'Current password is incorrect.');
         }
         
         $newPassword = password_hash($this->request->getPost('new_password'), PASSWORD_DEFAULT);
         
         if ($this->userModel->update($userId, ['password' => $newPassword])) {
-            return redirect()->back()->with('password_success', t('Admin.settings.password.update_success', [], 'Password updated successfully.'));
+            return redirect()->back()->with('password_success', 'Password updated successfully.');
         }
         
-        return redirect()->back()->with('password_error', t('Admin.settings.password.update_failed', [], 'Failed to update password.'));
+        return redirect()->back()->with('password_error', 'Failed to update password.');
     }
 
     /**
@@ -125,7 +129,7 @@ class SettingsController extends BaseController
     public function updateCustomerService()
     {
         if (!$this->request->isAJAX()) {
-            return redirect()->back()->with('error', t('Admin.common.invalid_request', [], 'Invalid request method.'));
+            return redirect()->back()->with('error', 'Invalid request method.');
         }
 
         $validation = \Config\Services::validation();
@@ -139,7 +143,7 @@ class SettingsController extends BaseController
         if (!$validation->withRequest($this->request)->run()) {
             return $this->response->setJSON([
                 'success' => false,
-                'message' => t('Admin.settings.validation_errors', [], 'Validation failed.'),
+                'message' => 'Validation failed.',
                 'errors' => $validation->getErrors()
             ]);
         }
@@ -150,26 +154,86 @@ class SettingsController extends BaseController
                 'reward_whatsapp_number' => $this->request->getPost('reward_whatsapp_number'),
                 'reward_telegram_username' => $this->request->getPost('reward_telegram_username'),
                 'customer_service_hours' => $this->request->getPost('customer_service_hours') ?: '9:00 AM - 6:00 PM (GMT+8)',
-                'customer_service_enabled' => $this->request->getPost('customer_service_enabled') ?: '1'
+                'customer_service_enabled' => $this->request->getPost('customer_service_enabled') ? '1' : '0'
             ];
 
             // Update all settings
-            $success = $this->adminSettingsModel->updateSettings($settings);
-
-            if ($success) {
-                return $this->response->setJSON([
-                    'success' => true,
-                    'message' => t('Admin.settings.customer_service.update_success', [], 'Customer service settings updated successfully!')
-                ]);
-            } else {
-                throw new \Exception('Failed to update settings in database');
+            foreach ($settings as $key => $value) {
+                $this->adminSettingsModel->setSetting($key, $value);
             }
 
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Customer service settings updated successfully!'
+            ]);
+
         } catch (\Exception $e) {
-            log_message('error', 'Customer service settings update error: ' . $e->getMessage());
+            log_message('error', 'Failed to update customer service settings: ' . $e->getMessage());
+            
             return $this->response->setJSON([
                 'success' => false,
-                'message' => t('Admin.settings.customer_service.update_failed', [], 'Failed to update customer service settings. Please try again.')
+                'message' => 'Failed to update settings. Please try again.'
+            ]);
+        }
+    }
+
+    /**
+     * Update landing page contact settings
+     */
+    public function updateLandingPageContact()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back()->with('error', 'Invalid request method.');
+        }
+
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'contact_link_1_name' => 'permit_empty|max_length[50]',
+            'contact_link_1_url' => 'permit_empty|valid_url',
+            'contact_link_2_name' => 'permit_empty|max_length[50]',
+            'contact_link_2_url' => 'permit_empty|valid_url',
+            'contact_link_3_name' => 'permit_empty|max_length[50]',
+            'contact_link_3_url' => 'permit_empty|valid_url'
+        ]);
+
+        if (!$validation->withRequest($this->request)->run()) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors' => $validation->getErrors()
+            ]);
+        }
+
+        try {
+            // Save contact settings
+            $contactSettings = [
+                'contact_link_1_name' => $this->request->getPost('contact_link_1_name') ?: 'WhatsApp Support',
+                'contact_link_1_url' => $this->request->getPost('contact_link_1_url') ?: 'https://wa.me/601159599022',
+                'contact_link_1_enabled' => $this->request->getPost('contact_link_1_enabled') ? '1' : '0',
+                'contact_link_2_name' => $this->request->getPost('contact_link_2_name') ?: 'Telegram Support',
+                'contact_link_2_url' => $this->request->getPost('contact_link_2_url') ?: 'https://t.me/harryford19',
+                'contact_link_2_enabled' => $this->request->getPost('contact_link_2_enabled') ? '1' : '0',
+                'contact_link_3_name' => $this->request->getPost('contact_link_3_name') ?: 'Email Support',
+                'contact_link_3_url' => $this->request->getPost('contact_link_3_url') ?: 'mailto:support@yourcompany.com',
+                'contact_link_3_enabled' => $this->request->getPost('contact_link_3_enabled') ? '1' : '0'
+            ];
+
+            // Update contact settings in admin_settings table
+            foreach ($contactSettings as $key => $value) {
+                $this->adminSettingsModel->setSetting($key, $value);
+            }
+
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Landing page contact settings updated successfully!'
+            ]);
+
+        } catch (\Exception $e) {
+            log_message('error', 'Failed to update landing page contact settings: ' . $e->getMessage());
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to update contact settings. Please try again.'
             ]);
         }
     }

@@ -141,4 +141,42 @@ class AdminSettingsModel extends Model
             'bonus_terms_text'
         ]);
     }
+
+    /**
+     * Get contact settings for landing page
+     */
+    public function getContactSettings()
+    {
+        return $this->getSettings([
+            'contact_link_1_name',
+            'contact_link_1_url', 
+            'contact_link_1_enabled',
+            'contact_link_2_name',
+            'contact_link_2_url',
+            'contact_link_2_enabled', 
+            'contact_link_3_name',
+            'contact_link_3_url',
+            'contact_link_3_enabled'
+        ]);
+    }
+
+    /**
+     * Get enabled contact links for public display
+     */
+    public function getEnabledContactLinks()
+    {
+        $contactSettings = $this->getContactSettings();
+        $enabledLinks = [];
+
+        for ($i = 1; $i <= 3; $i++) {
+            if (($contactSettings["contact_link_{$i}_enabled"] ?? '0') === '1') {
+                $enabledLinks[] = [
+                    'name' => $contactSettings["contact_link_{$i}_name"] ?? "Contact {$i}",
+                    'url' => $contactSettings["contact_link_{$i}_url"] ?? '#'
+                ];
+            }
+        }
+
+        return $enabledLinks;
+    }
 }

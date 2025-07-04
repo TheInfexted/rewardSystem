@@ -166,6 +166,7 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
         $routes->post('general', 'Admin\SettingsController::updateGeneral');
         $routes->post('customer-service', 'Admin\SettingsController::updateCustomerService');
         $routes->post('swiper', 'Admin\SettingsController::updateSwiperSettings');
+        $routes->post('update-landing-contact', 'Admin\SettingsController::updateLandingPageContact'); // NEW ROUTE ADDED
     });
     
     // Language management

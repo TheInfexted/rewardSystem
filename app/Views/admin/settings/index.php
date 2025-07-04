@@ -133,6 +133,168 @@
             </div>
         </div>
 
+        <!-- Landing Page Contact Settings -->
+        <div class="col-md-6">
+            <div class="card bg-dark border-gold mb-4">
+                <div class="card-header bg-black border-gold">
+                    <h5 class="text-gold mb-0">
+                        <i class="bi bi-telephone-outbound"></i> 
+                        <?= t('Admin.settings.landing_contact.title') ?>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="landingContactAlert"></div>
+                    
+                    <p class="text-muted small mb-3">
+                        <?= t('Admin.settings.landing_contact.description') ?>
+                    </p>
+                    
+                    <form id="landingContactForm">
+                        <?= csrf_field() ?>
+                        
+                        <!-- Contact Link 1 -->
+                        <div class="card bg-secondary border-gold mb-3">
+                            <div class="card-header py-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="text-gold mb-0">
+                                        <?= t('Admin.settings.landing_contact.contact_link') ?> 1
+                                    </h6>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="contact_link_1_enabled" 
+                                               id="contact_link_1_enabled" value="1" 
+                                               <?= ($contact_settings['contact_link_1_enabled'] ?? '1') === '1' ? 'checked' : '' ?>>
+                                        <label class="form-check-label text-light" for="contact_link_1_enabled">
+                                            <?= t('Admin.settings.landing_contact.enable') ?>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body py-2">
+                                <div class="mb-2">
+                                    <label class="form-label text-light small">
+                                        <?= t('Admin.settings.landing_contact.display_name') ?>
+                                    </label>
+                                    <input type="text" name="contact_link_1_name" 
+                                           class="form-control form-control-sm bg-dark text-light border-gold" 
+                                           value="<?= esc($contact_settings['contact_link_1_name'] ?? 'WhatsApp Support') ?>"
+                                           placeholder="<?= t('Admin.settings.landing_contact.display_name_help') ?>" 
+                                           maxlength="50">
+                                </div>
+                                <div class="mb-0">
+                                    <label class="form-label text-light small">
+                                        <?= t('Admin.settings.landing_contact.url') ?>
+                                    </label>
+                                    <input type="url" name="contact_link_1_url" 
+                                           class="form-control form-control-sm bg-dark text-light border-gold" 
+                                           value="<?= esc($contact_settings['contact_link_1_url'] ?? 'https://wa.me/601159599022') ?>"
+                                           placeholder="<?= t('Admin.settings.landing_contact.url_placeholder_whatsapp') ?>">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Link 2 -->
+                        <div class="card bg-secondary border-gold mb-3">
+                            <div class="card-header py-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="text-gold mb-0">
+                                        <?= t('Admin.settings.landing_contact.contact_link') ?> 2
+                                    </h6>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="contact_link_2_enabled" 
+                                               id="contact_link_2_enabled" value="1" 
+                                               <?= ($contact_settings['contact_link_2_enabled'] ?? '1') === '1' ? 'checked' : '' ?>>
+                                        <label class="form-check-label text-light" for="contact_link_2_enabled">
+                                            <?= t('Admin.settings.landing_contact.enable') ?>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body py-2">
+                                <div class="mb-2">
+                                    <label class="form-label text-light small">
+                                        <?= t('Admin.settings.landing_contact.display_name') ?>
+                                    </label>
+                                    <input type="text" name="contact_link_2_name" 
+                                           class="form-control form-control-sm bg-dark text-light border-gold" 
+                                           value="<?= esc($contact_settings['contact_link_2_name'] ?? 'Telegram Support') ?>"
+                                           placeholder="<?= t('Admin.settings.landing_contact.display_name_help') ?>" 
+                                           maxlength="50">
+                                </div>
+                                <div class="mb-0">
+                                    <label class="form-label text-light small">
+                                        <?= t('Admin.settings.landing_contact.url') ?>
+                                    </label>
+                                    <input type="url" name="contact_link_2_url" 
+                                           class="form-control form-control-sm bg-dark text-light border-gold" 
+                                           value="<?= esc($contact_settings['contact_link_2_url'] ?? 'https://t.me/harryford19') ?>"
+                                           placeholder="<?= t('Admin.settings.landing_contact.url_placeholder_telegram') ?>">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Link 3 -->
+                        <div class="card bg-secondary border-gold mb-3">
+                            <div class="card-header py-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="text-gold mb-0">
+                                        <?= t('Admin.settings.landing_contact.contact_link') ?> 3
+                                    </h6>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="contact_link_3_enabled" 
+                                               id="contact_link_3_enabled" value="1" 
+                                               <?= ($contact_settings['contact_link_3_enabled'] ?? '0') === '1' ? 'checked' : '' ?>>
+                                        <label class="form-check-label text-light" for="contact_link_3_enabled">
+                                            <?= t('Admin.settings.landing_contact.enable') ?>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body py-2">
+                                <div class="mb-2">
+                                    <label class="form-label text-light small">
+                                        <?= t('Admin.settings.landing_contact.display_name') ?>
+                                    </label>
+                                    <input type="text" name="contact_link_3_name" 
+                                           class="form-control form-control-sm bg-dark text-light border-gold" 
+                                           value="<?= esc($contact_settings['contact_link_3_name'] ?? 'Email Support') ?>"
+                                           placeholder="<?= t('Admin.settings.landing_contact.display_name_help') ?>" 
+                                           maxlength="50">
+                                </div>
+                                <div class="mb-0">
+                                    <label class="form-label text-light small">
+                                        <?= t('Admin.settings.landing_contact.url') ?>
+                                    </label>
+                                    <input type="url" name="contact_link_3_url" 
+                                           class="form-control form-control-sm bg-dark text-light border-gold" 
+                                           value="<?= esc($contact_settings['contact_link_3_url'] ?? 'mailto:support@yourcompany.com') ?>"
+                                           placeholder="<?= t('Admin.settings.landing_contact.url_placeholder_email') ?>">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <small>
+                                <i class="bi bi-info-circle"></i>
+                                <strong><?= t('Admin.settings.landing_contact.icon_tip_title') ?></strong> 
+                                <?= t('Admin.settings.landing_contact.icon_tip_description') ?>
+                                <ul class="mb-0 mt-1">
+                                    <li><?= t('Admin.settings.landing_contact.icon_tip_whatsapp') ?></li>
+                                    <li><?= t('Admin.settings.landing_contact.icon_tip_telegram') ?></li>
+                                    <li><?= t('Admin.settings.landing_contact.icon_tip_email') ?></li>
+                                    <li><?= t('Admin.settings.landing_contact.icon_tip_phone') ?></li>
+                                </ul>
+                            </small>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-gold" id="updateLandingContactBtn">
+                            <i class="bi bi-save"></i> 
+                            <?= t('Admin.settings.landing_contact.update') ?>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <!-- Customer Service Settings -->
         <div class="col-md-6">
             <div class="card bg-dark border-gold mb-4">
@@ -334,5 +496,102 @@ function showToast(type, message) {
     });
     toast.show();
 }
+</script>
+
+<script>
+    // Landing Page Contact Settings Form Handler
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // Handle landing page contact form submission
+        const landingContactForm = document.getElementById('landingContactForm');
+        if (landingContactForm) {
+            landingContactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                updateLandingPageContactSettings();
+            });
+        }
+    });
+
+    function updateLandingPageContactSettings() {
+        const form = document.getElementById('landingContactForm');
+        const alertContainer = document.getElementById('landingContactAlert');
+        const submitButton = document.getElementById('updateLandingContactBtn');
+        
+        if (!form || !submitButton) return;
+        
+        // Show loading state
+        const originalText = submitButton.innerHTML;
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="bi bi-spinner bi-spin"></i> <?= t('Admin.settings.updating', [], 'Updating...') ?>';
+        
+        // Clear previous alerts
+        alertContainer.innerHTML = '';
+        
+        const formData = new FormData(form);
+        
+        fetch('<?= base_url('admin/settings/update-landing-contact') ?>', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alertContainer.innerHTML = `
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle"></i> ${data.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+            } else {
+                let errorMessage = data.message || '<?= t('Admin.settings.landing_contact.update_failed') ?>';
+                
+                if (data.errors) {
+                    errorMessage += '<br><ul class="mb-0 mt-2">';
+                    for (const [field, error] of Object.entries(data.errors)) {
+                        errorMessage += `<li>${error}</li>`;
+                    }
+                    errorMessage += '</ul>';
+                }
+                
+                alertContainer.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i> ${errorMessage}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alertContainer.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i> <?= t('Admin.settings.landing_contact.network_error') ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+        })
+        .finally(() => {
+            // Restore button state
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalText;
+            
+            // Auto-hide success alerts after 3 seconds
+            setTimeout(() => {
+                const successAlert = alertContainer.querySelector('.alert-success');
+                if (successAlert) {
+                    const bsAlert = new bootstrap.Alert(successAlert);
+                    bsAlert.close();
+                }
+            }, 3000);
+        });
+    }
 </script>
 <?= $this->endSection() ?>
