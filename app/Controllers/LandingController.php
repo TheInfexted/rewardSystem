@@ -39,6 +39,10 @@ class LandingController extends BaseController
     {
         // Get session to track spins
         $session = session();
+
+        if (!$session->get('session_id')) {
+            $session->set('session_id', session_id());
+        }
         
         $customerId = $session->get('customer_id');
         
@@ -141,7 +145,6 @@ class LandingController extends BaseController
                 $remainingTokens = max(0, $maxSpinsPerDay - $newSpinsCount);
             }
 
-            // *** ADD THIS MISSING LOGIC ***
             // Get wheel items and select a winner
             $wheelItems = $this->wheelItemsModel->getWheelItems();
             
@@ -155,7 +158,7 @@ class LandingController extends BaseController
             // Select winner based on probability
             $winner = $this->selectWinner($wheelItems);
             
-            // Log the spin result to database - THIS WAS MISSING!
+            // Log the spin result to database
             $spinLogged = $this->logSpinResult($winner, $session, $customerId);
             
             if (!$spinLogged) {
