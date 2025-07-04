@@ -408,7 +408,7 @@
                 <section class="wrap-fortuneWheel pb-5">
                     <section class="wrap-text-frame text-center">
                         <p class="m-0 glow">Free <span id="freeSpinsText">3</span> Spins!</p>
-                        <p class="m-0">Try your luck now and win up to 120% BONUS!</p>
+                        <p class="m-0"><?= esc($page_data['free_spins_subtitle'] ?? 'Try your luck now and win up to 120% BONUS!') ?></p>
                     </section>
                 
                     <figure class="d-block m-0 pt-1 p-4 innerWheel position-relative">

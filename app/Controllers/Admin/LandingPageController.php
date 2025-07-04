@@ -86,9 +86,13 @@ class LandingPageController extends BaseController
                     'welcome_text' => $this->request->getPost('welcome_text'),
                     'welcome_button_text' => $this->request->getPost('welcome_button_text'),
                     'welcome_footer_text' => $this->request->getPost('welcome_footer_text'),
+                    'free_spins_subtitle' => $this->request->getPost('free_spins_subtitle'),
                     'is_active' => 1,
                     'updated_at' => date('Y-m-d H:i:s')
                 ];
+
+                // Debug: Log the data being saved
+                log_message('info', 'Landing page data being saved: ' . json_encode($data));
 
                 // Handle image uploads with auto-delete
                 $imageFields = ['header_image_1', 'header_image_2', 'footer_image_1', 'footer_image_2', 'welcome_image'];
@@ -115,6 +119,7 @@ class LandingPageController extends BaseController
                     ]);
                 } else {
                     $errors = $this->landingPageModel->errors();
+                    log_message('error', 'Landing page validation errors: ' . json_encode($errors));
                     return $this->response->setJSON([
                         'success' => false,
                         'message' => 'Validation failed: ' . implode(', ', $errors)

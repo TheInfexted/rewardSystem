@@ -21,6 +21,7 @@ class LandingPageModel extends Model
         'welcome_text', 
         'welcome_button_text', 
         'welcome_footer_text',
+        'free_spins_subtitle',
         'is_active',
         'created_at',
         'updated_at'
@@ -125,6 +126,7 @@ class LandingPageModel extends Model
             'welcome_text'  => 'permit_empty|max_length[1000]', 
             'welcome_button_text'   => 'permit_empty|max_length[1000]', 
             'welcome_footer_text'   => 'permit_empty|max_length[1000]',
+            'free_spins_subtitle' => 'permit_empty|max_length[1000]',
             'is_active' => 'permit_empty|in_list[0,1]',
         ];
         

@@ -370,7 +370,7 @@ input[type="file"]::-webkit-file-upload-button:hover {
 
 /* Ensure contact icon is centered */
 #contactToggle i {
-    font-size: 1.2rem;
+    font-size: 1rem;
     line-height: 1;
 }
 

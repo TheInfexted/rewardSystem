@@ -203,6 +203,26 @@
                 </div>
             </div>
         </div>
+
+        <!-- Free Spins Section -->
+        <div class="col-md-6">
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header">
+                    <h5 class="text-gold mb-0"><i class="bi bi-dice-3"></i> <?= t('Admin.landing.sections.free_spins') ?></h5>
+                </div>
+                <div class="card-body">
+                    <!-- Free Spins Subtitle -->
+                    <div class="mb-3">
+                        <label class="form-label text-light"><?= t('Admin.landing.fields.free_spins_subtitle') ?></label>
+                        <textarea name="free_spins_subtitle" 
+                                  class="form-control bg-secondary text-light border-0" 
+                                  rows="2"
+                                  placeholder="<?= t('Admin.landing.fields.free_spins_subtitle_placeholder', [], 'Try your luck now and win up to 120% BONUS!') ?>"><?= esc($landing_data['free_spins_subtitle'] ?? 'Try your luck now and win up to 120% BONUS!') ?></textarea>
+                        <small class="text-muted"><?= t('Admin.landing.fields.free_spins_subtitle_help') ?></small>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <!-- Welcome Screen Section -->
         <div class="col-md-6">

@@ -1,0 +1,14 @@
+CRITICAL - 2025-07-04 13:57:34 --> ErrorException: Undefined variable $landing_data
+[Method: GET, Route: /]
+in APPPATH\Views\public\landing_page.php on line 411.
+ 1 APPPATH\Views\public\landing_page.php(411): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined variable $landing_data', 'C:\\xampp\\htdocs\\rewardSystem\\app\\Views\\public\\landing_page.php', 411)
+ 2 SYSTEMPATH\View\View.php(224): include('C:\\xampp\\htdocs\\rewardSystem\\app\\Views\\public\\landing_page.php')
+ 3 SYSTEMPATH\View\View.php(227): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1173): CodeIgniter\View\View->render('public/landing_page', [], true)
+ 5 APPPATH\Controllers\LandingController.php(90): view('public/landing_page', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\LandingController->index()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\LandingController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(334): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(67): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
