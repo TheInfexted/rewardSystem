@@ -224,6 +224,27 @@ return [
             'note' => '注意',
             'note_text' => '上传新图片将自动删除之前的图片以节省存储空间。',
         ],
+        'trace_code' => [
+            'title' => '像素追踪代码',
+            'button' => '追踪代码',
+            'label' => '输入您的像素追踪代码（Google AdWords、Facebook Pixel 等）',
+            'placeholder' => '在此粘贴您的 JavaScript 追踪代码...
+    示例:
+    <script>
+    gtag(\'event\', \'conversion\', {
+        \'send_to\': \'AW-CONVERSION_ID/CONVERSION_LABEL\',
+        \'value\': 1.0,
+        \'currency\': \'USD\'
+    });
+    </script>',
+            'note' => '此代码将被放置在落地页 <body> 标签之后。请确保这是有效的 JavaScript 代码。',
+            'save' => '保存追踪代码',
+            'cancel' => '取消',
+            'success' => '追踪代码保存成功！',
+            'error' => '保存追踪代码失败',
+            'network_error' => '保存追踪代码时发生网络错误。',
+            'validation_error' => '请输入有效的 JavaScript 追踪代码。',
+        ],
         'save_settings' => '保存设置',
         'audio_not_supported' => '您的浏览器不支持音频元素。',
         'file_error' => '请选择有效的图片文件。',

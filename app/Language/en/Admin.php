@@ -225,6 +225,27 @@ return [
             'note' => 'Note',
             'note_text' => 'Uploading a new image will automatically delete the previous image to save storage space.',
         ],
+        'trace_code' => [
+            'title' => 'Pixel Trace Code',
+            'button' => 'Trace Code',
+            'label' => 'Enter your pixel tracking code (Google AdWords, Facebook Pixel, etc.)',
+            'placeholder' => 'Paste your JavaScript tracking code here...
+    Example:
+    <script>
+    gtag(\'event\', \'conversion\', {
+        \'send_to\': \'AW-CONVERSION_ID/CONVERSION_LABEL\',
+        \'value\': 1.0,
+        \'currency\': \'USD\'
+    });
+    </script>',
+            'note' => 'This code will be placed right after the <body> tag on your landing page. Make sure it\'s valid JavaScript code.',
+            'save' => 'Save Trace Code',
+            'cancel' => 'Cancel',
+            'success' => 'Trace code saved successfully!',
+            'error' => 'Failed to save trace code',
+            'network_error' => 'Network error occurred while saving trace code.',
+            'validation_error' => 'Please enter valid JavaScript tracking code.',
+        ],
         'save_settings' => 'Save Settings',
         'audio_not_supported' => 'Your browser does not support the audio element.',
         'file_error' => 'Please select a valid image file.',

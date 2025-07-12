@@ -13,7 +13,7 @@
                 <i class="bi bi-trash"></i> <?= t('Admin.landing.cleanup') ?>
             </button>
             <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#traceCodeModal">
-                <i class="bi bi-code-square"></i> Trace Code
+                <i class="bi bi-code-square"></i> <?= t('Admin.landing.trace_code.button') ?>
             </button>
             <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#bonusSettingsModal">
                 <i class="bi bi-gear"></i> <?= t('Admin.bonus.modal.title') ?>
@@ -678,7 +678,7 @@
         <div class="modal-content bg-dark border-secondary">
             <div class="modal-header border-secondary">
                 <h5 class="modal-title text-gold" id="traceCodeModalLabel">
-                    <i class="bi bi-code-square"></i> Pixel Trace Code
+                    <i class="bi bi-code-square"></i> <?= t('Admin.landing.trace_code.title') ?>
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -688,35 +688,26 @@
                     
                     <div class="mb-3">
                         <label for="trace_code_input" class="form-label text-light">
-                            <i class="bi bi-info-circle"></i> Enter your pixel tracking code (Google AdWords, Facebook Pixel, etc.)
+                            <i class="bi bi-info-circle"></i> <?= t('Admin.landing.trace_code.label') ?>
                         </label>
                         <textarea 
                             name="trace_code" 
                             id="trace_code_input" 
                             class="form-control bg-secondary text-light border-0" 
-                            rows="20" 
-                            placeholder="Paste your JavaScript tracking code here...
-Example:
-<script>
-gtag('event', 'conversion', {
-    'send_to': 'AW-CONVERSION_ID/CONVERSION_LABEL',
-    'value': 1.0,
-    'currency': 'USD'
-});
-</script>"><?= esc($landing_data['trace_code'] ?? '') ?></textarea>
+                            rows="15" 
+                            placeholder="<?= t('Admin.landing.trace_code.placeholder') ?>"><?= esc($landing_data['trace_code'] ?? '') ?></textarea>
                         <div class="form-text text-warning">
                             <i class="bi bi-exclamation-triangle"></i>
-                            <strong>Note:</strong> This code will be placed right after the &lt;body&gt; tag on your landing page.
-                            Make sure it's valid JavaScript code.
+                            <strong><?= t('Admin.common.note', [], 'Note') ?>:</strong> <?= t('Admin.landing.trace_code.note') ?>
                         </div>
                     </div>
                     
                     <div class="d-flex justify-content-between">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            <i class="bi bi-x"></i> Cancel
+                            <i class="bi bi-x"></i> <?= t('Admin.landing.trace_code.cancel') ?>
                         </button>
                         <button type="submit" class="btn btn-gold">
-                            <i class="bi bi-save"></i> Save Trace Code
+                            <i class="bi bi-save"></i> <?= t('Admin.landing.trace_code.save') ?>
                         </button>
                     </div>
                 </form>
@@ -1455,16 +1446,16 @@ gtag('event', 'conversion', {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showAlert('success', data.message);
+                showAlert('success', data.message || '<?= t('Admin.landing.trace_code.success') ?>');
                 // Close modal
                 bootstrap.Modal.getInstance(document.getElementById('traceCodeModal')).hide();
             } else {
-                showAlert('error', data.message || 'Failed to save trace code');
+                showAlert('error', data.message || '<?= t('Admin.landing.trace_code.error') ?>');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showAlert('error', 'Network error occurred while saving trace code.');
+            showAlert('error', '<?= t('Admin.landing.trace_code.network_error') ?>');
         });
     });
 </script>

@@ -166,7 +166,7 @@ class LandingPageController extends BaseController
                     if (!preg_match('/<script/i', $traceCode) && !preg_match('/function|var|let|const/i', $traceCode)) {
                         return $this->response->setJSON([
                             'success' => false,
-                            'message' => 'Please enter valid JavaScript tracking code.'
+                            'message' => t('Admin.landing.trace_code.validation_error')
                         ]);
                     }
                 }
@@ -179,12 +179,12 @@ class LandingPageController extends BaseController
                 if ($this->landingPageModel->saveData($data)) {
                     return $this->response->setJSON([
                         'success' => true,
-                        'message' => 'Trace code saved successfully!'
+                        'message' => t('Admin.landing.trace_code.success')
                     ]);
                 } else {
                     return $this->response->setJSON([
                         'success' => false,
-                        'message' => 'Failed to save trace code.'
+                        'message' => t('Admin.landing.trace_code.error')
                     ]);
                 }
 
@@ -192,14 +192,14 @@ class LandingPageController extends BaseController
                 log_message('error', 'Trace code save error: ' . $e->getMessage());
                 return $this->response->setJSON([
                     'success' => false,
-                    'message' => 'An error occurred while saving trace code: ' . $e->getMessage()
+                    'message' => t('Admin.landing.trace_code.error') . ': ' . $e->getMessage()
                 ]);
             }
         }
 
         return $this->response->setJSON([
             'success' => false,
-            'message' => 'Invalid request'
+            'message' => t('Admin.common.invalid_request')
         ]);
     }
 
