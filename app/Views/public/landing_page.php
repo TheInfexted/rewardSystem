@@ -387,6 +387,13 @@
 </head>
 <body class="casino-body">
     
+    <!-- Trace Code -->
+    <?php if (!empty($page_data['trace_code'])): ?>
+        <!-- Pixel Tracking Code -->
+        <?= $page_data['trace_code'] ?>
+        <!-- End Pixel Tracking Code -->
+    <?php endif; ?>
+
     <!-- Welcome Overlay -->
     <div id="welcomeOverlay" class="welcome-overlay">
         <div class="welcome-content">

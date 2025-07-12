@@ -87,6 +87,7 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
         $routes->get('edit/(:num)', 'Admin\LandingPageController::edit/$1');
         $routes->post('remove-image', 'Admin\LandingPageController::removeImage');
         $routes->post('cleanup-images', 'Admin\LandingPageController::cleanupImages');
+        $routes->post('save-trace-code', 'Admin\LandingPageController::saveTraceCode');
         
         // Upload routes
         $routes->group('upload', function($routes) {

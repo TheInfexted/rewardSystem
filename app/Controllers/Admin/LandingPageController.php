@@ -87,6 +87,7 @@ class LandingPageController extends BaseController
                     'welcome_button_text' => $this->request->getPost('welcome_button_text'),
                     'welcome_footer_text' => $this->request->getPost('welcome_footer_text'),
                     'free_spins_subtitle' => $this->request->getPost('free_spins_subtitle'),
+                    'trace_code' => $this->request->getPost('trace_code'),
                     'is_active' => 1,
                     'updated_at' => date('Y-m-d H:i:s')
                 ];
@@ -147,6 +148,58 @@ class LandingPageController extends BaseController
         return $this->response->setJSON([
             'success' => false,
             'message' => 'Invalid request method'
+        ]);
+    }
+
+    /**
+     * Save trace code specifically (AJAX endpoint)
+     */
+    public function saveTraceCode()
+    {
+        if ($this->request->isAJAX() && $this->request->getMethod() === 'POST') {
+            try {
+                $traceCode = $this->request->getPost('trace_code');
+                
+                // Basic validation for JavaScript code
+                if (!empty($traceCode)) {
+                    // Check if it contains basic script patterns
+                    if (!preg_match('/<script/i', $traceCode) && !preg_match('/function|var|let|const/i', $traceCode)) {
+                        return $this->response->setJSON([
+                            'success' => false,
+                            'message' => 'Please enter valid JavaScript tracking code.'
+                        ]);
+                    }
+                }
+                
+                $data = [
+                    'trace_code' => $traceCode,
+                    'updated_at' => date('Y-m-d H:i:s')
+                ];
+
+                if ($this->landingPageModel->saveData($data)) {
+                    return $this->response->setJSON([
+                        'success' => true,
+                        'message' => 'Trace code saved successfully!'
+                    ]);
+                } else {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'Failed to save trace code.'
+                    ]);
+                }
+
+            } catch (\Exception $e) {
+                log_message('error', 'Trace code save error: ' . $e->getMessage());
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'An error occurred while saving trace code: ' . $e->getMessage()
+                ]);
+            }
+        }
+
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => 'Invalid request'
         ]);
     }
 

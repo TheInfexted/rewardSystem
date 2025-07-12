@@ -12,6 +12,9 @@
             <button type="button" class="btn btn-warning" onclick="cleanupImages()">
                 <i class="bi bi-trash"></i> <?= t('Admin.landing.cleanup') ?>
             </button>
+            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#traceCodeModal">
+                <i class="bi bi-code-square"></i> Trace Code
+            </button>
             <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#bonusSettingsModal">
                 <i class="bi bi-gear"></i> <?= t('Admin.bonus.modal.title') ?>
             </button>
@@ -30,7 +33,9 @@
 
     <form id="landingPageForm" enctype="multipart/form-data">
         <?= csrf_field() ?>
-        
+
+        <input type="hidden" name="trace_code" id="trace_code_hidden" value="<?= esc($landing_data['trace_code'] ?? '') ?>">
+
         <div class="row">
             <!-- Header Section -->
             <div class="col-md-6">
@@ -665,6 +670,59 @@
             </button>
         </div>
     </form>
+</div>
+
+<!-- Trace Code Modal -->
+<div class="modal fade" id="traceCodeModal" tabindex="-1" aria-labelledby="traceCodeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-gold" id="traceCodeModalLabel">
+                    <i class="bi bi-code-square"></i> Pixel Trace Code
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="traceCodeForm">
+                    <?= csrf_field() ?>
+                    
+                    <div class="mb-3">
+                        <label for="trace_code_input" class="form-label text-light">
+                            <i class="bi bi-info-circle"></i> Enter your pixel tracking code (Google AdWords, Facebook Pixel, etc.)
+                        </label>
+                        <textarea 
+                            name="trace_code" 
+                            id="trace_code_input" 
+                            class="form-control bg-secondary text-light border-0" 
+                            rows="20" 
+                            placeholder="Paste your JavaScript tracking code here...
+Example:
+<script>
+gtag('event', 'conversion', {
+    'send_to': 'AW-CONVERSION_ID/CONVERSION_LABEL',
+    'value': 1.0,
+    'currency': 'USD'
+});
+</script>"><?= esc($landing_data['trace_code'] ?? '') ?></textarea>
+                        <div class="form-text text-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Note:</strong> This code will be placed right after the &lt;body&gt; tag on your landing page.
+                            Make sure it's valid JavaScript code.
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x"></i> Cancel
+                        </button>
+                        <button type="submit" class="btn btn-gold">
+                            <i class="bi bi-save"></i> Save Trace Code
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Bonus Settings Modal -->
@@ -1375,6 +1433,40 @@
             });
         }
     }
+
+    // Handle trace code modal form submission
+    document.getElementById('traceCodeForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const traceCode = formData.get('trace_code');
+        
+        // Update the hidden field in main form
+        document.getElementById('trace_code_hidden').value = traceCode;
+        
+        // Save trace code via AJAX
+        fetch('<?= base_url('admin/landing-page/save-trace-code') ?>', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('success', data.message);
+                // Close modal
+                bootstrap.Modal.getInstance(document.getElementById('traceCodeModal')).hide();
+            } else {
+                showAlert('error', data.message || 'Failed to save trace code');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('error', 'Network error occurred while saving trace code.');
+        });
+    });
 </script>
 
 <style>

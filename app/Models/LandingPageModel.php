@@ -26,6 +26,7 @@ class LandingPageModel extends Model
         'welcome_button_text', 
         'welcome_footer_text',
         'free_spins_subtitle',
+        'trace_code',
         'is_active',
         'created_at',
         'updated_at'
