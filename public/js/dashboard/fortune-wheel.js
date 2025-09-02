@@ -416,13 +416,14 @@ class FortuneWheel {
                                                 width="460" 
                                                 height="460"
                                                 data-responsiveMinWidth="180" 
-                                                data-responsiveScaleHeight="false" 
+                                                data-responsiveScaleHeight="true" 
                                                 data-responsiveMargin="50"
                                                 style="
+                                                    padding: auto;
                                                     max-width: 100%;
                                                     width: 100%;
                                                     height: 100%;
-                                                    display: block;
+                                                    display: inline-block;
                                                     background: url('${DashboardConfig.baseUrl}img/fortune_wheel/bg_wheel_frame.png') no-repeat top center;
                                                     background-size: 100%;
                                                     position: relative;
@@ -583,26 +584,27 @@ class FortuneWheel {
         console.log('Creating modal wheel with segments:', segments);
 
         try {
+            // Create the wheel with ORIGINAL properties from landing page
             this.wheel = new Winwheel({
                 'canvasId': 'fortuneWheelModal',
                 'numSegments': segments.length,
-                'outerRadius': 200, 
+                'outerRadius': 200,  // ORIGINAL value
                 'responsive': true,
                 'drawMode': 'segmentImage',
                 'drawText': true,
-                'textFontSize': 16,  
+                'textFontSize': 16,  // ORIGINAL value
                 'textFontWeight': 'bold',
                 'textOrientation': 'horizontal',
                 'textAlignment': 'center',
                 'textDirection': 'reversed',
-                'textMargin': 15,  
+                'textMargin': 15,  // ORIGINAL value
                 'textFontFamily': 'Arial, sans-serif',
                 'segments': segments,
                 'pins': {
                     'number': segments.length * 2,
-                    'outerRadius': 5, 
+                    'outerRadius': 5,  // ORIGINAL value
                     'responsive': true,
-                    'margin': 5,  
+                    'margin': 5,  // ORIGINAL value
                     'fillStyle': '#f8b500',
                     'strokeStyle': '#f8b500'
                 },

@@ -37,7 +37,7 @@ class Filters extends BaseFilters
         'auth'          => \App\Filters\AuthFilter::class,
         'language'      => \App\Filters\LanguageFilter::class,
         'domainCheck'   => \App\Filters\DomainFilter::class,
-        'customerAuth' => \App\Filters\CustomerAuth::class,
+        'customerAuth'  => \App\Filters\CustomerAuth::class,
     ];
 
     /**

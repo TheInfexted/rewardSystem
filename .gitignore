@@ -1,2 +1,5 @@
 /public/uploads/profile_backgrounds/*
 !/public/uploads/profile_backgrounds/.htaccess
+/public/uploads/sounds
+/public/uploads/reward_ads
+/public/uploads/landing

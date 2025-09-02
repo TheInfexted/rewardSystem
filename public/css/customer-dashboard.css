@@ -11,7 +11,7 @@ body {
     max-width: 414px;
     margin: 0 auto;
     background: white;
-    min-height: 100vh;
+    min-height: auto;
     box-shadow: 0 0 20px rgba(0,0,0,0.1);
     position: relative;
     overflow-x: hidden;
@@ -1124,7 +1124,7 @@ body.modal-open {
 .dashboard-container {
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
-    min-height: 100vh; /* Full height since no nav */
+    min-height: auto; /* Full height since no nav */
 }
 
 /* Make content section extend to the very bottom */
@@ -1633,7 +1633,7 @@ body {
 .dashboard-container {
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
-    min-height: 100vh; /* Full height since no nav */
+    min-height: auto; /* Full height since no nav */
 }
 
 /* Override any global spacing on dashboard */

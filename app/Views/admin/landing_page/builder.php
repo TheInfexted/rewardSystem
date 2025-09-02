@@ -15,6 +15,9 @@
             <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#traceCodeModal">
                 <i class="bi bi-code-square"></i> <?= t('Admin.landing.trace_code.button') ?>
             </button>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#metaSeoModal">
+                <i class="bi bi-search"></i> Meta SEO
+            </button>
             <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#bonusSettingsModal">
                 <i class="bi bi-gear"></i> <?= t('Admin.bonus.modal.title') ?>
             </button>
@@ -716,6 +719,108 @@
     </div>
 </div>
 
+<!-- Meta SEO Modal -->
+<div class="modal fade" id="metaSeoModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-gold">
+                    <i class="bi bi-search"></i> Meta SEO Configuration
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="metaSeoForm">
+                <div class="modal-body">
+                    <?= csrf_field() ?>
+                    
+                    <!-- Meta Title -->
+                    <div class="mb-3">
+                        <label class="form-label text-light">
+                            <i class="bi bi-type"></i> Meta Title
+                        </label>
+                        <input type="text" name="meta_title" id="meta_title" 
+                               class="form-control bg-secondary text-light border-0" 
+                               placeholder="Enter meta title..."
+                               value="<?= esc($seo_data['meta_title'] ?? '') ?>">
+                        <div class="form-text text-muted">
+                            Recommended: 50-60 characters
+                        </div>
+                    </div>
+
+                    <!-- Meta Keywords -->
+                    <div class="mb-3">
+                        <label class="form-label text-light">
+                            <i class="bi bi-tags"></i> Meta Keywords
+                        </label>
+                        <textarea name="meta_keywords" id="meta_keywords" 
+                                  class="form-control bg-secondary text-light border-0" 
+                                  rows="3" 
+                                  placeholder="Enter keywords separated by commas..."><?= esc($seo_data['meta_keywords'] ?? '') ?></textarea>
+                        <div class="form-text text-muted">
+                            Separate keywords with commas (e.g., keyword1, keyword2, keyword3)
+                        </div>
+                    </div>
+
+                    <!-- Meta Description -->
+                    <div class="mb-3">
+                        <label class="form-label text-light">
+                            <i class="bi bi-file-text"></i> Meta Description
+                        </label>
+                        <textarea name="meta_description" id="meta_description" 
+                                  class="form-control bg-secondary text-light border-0" 
+                                  rows="4" 
+                                  placeholder="Enter meta description..."><?= esc($seo_data['meta_description'] ?? '') ?></textarea>
+                        <div class="form-text text-muted">
+                            Recommended: 150-160 characters
+                        </div>
+                    </div>
+
+                    <!-- Meta Content -->
+                    <div class="mb-3">
+                        <label class="form-label text-light">
+                            <i class="bi bi-code-slash"></i> Meta Content
+                        </label>
+                        <div class="border border-secondary rounded p-2 bg-secondary">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="text-muted">Rich Text Editor</small>
+                                <div class="btn-group btn-group-sm">
+                                    <button type="button" class="btn btn-outline-light btn-sm" onclick="formatText('bold')">
+                                        <i class="bi bi-type-bold"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-light btn-sm" onclick="formatText('italic')">
+                                        <i class="bi bi-type-italic"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-light btn-sm" onclick="formatText('underline')">
+                                        <i class="bi bi-type-underline"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="meta_content_editor" 
+                                 contenteditable="true" 
+                                 class="form-control bg-dark text-light border-0" 
+                                 style="min-height: 200px;"
+                                 placeholder="Type or paste your content here..."><?= $seo_data['meta_content'] ?? '' ?></div>
+                        </div>
+                        <textarea name="meta_content" id="meta_content" style="display: none;"><?= esc($seo_data['meta_content'] ?? '') ?></textarea>
+                        <div class="form-text text-muted">
+                            HTML content that will be displayed at the bottom of the landing page
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-gold">
+                        <i class="bi bi-save"></i> Save SEO Data
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Bonus Settings Modal -->
 <div class="modal fade" id="bonusSettingsModal" tabindex="-1">
     <div class="modal-dialog">
@@ -767,6 +872,66 @@
 </div>
 
 <script>
+    // Load SEO data when modal opens
+    document.getElementById('metaSeoModal').addEventListener('show.bs.modal', function() {
+        fetch('<?= base_url('admin/landing-page/get-seo-data') ?>')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    document.getElementById('meta_title').value = data.data.meta_title || '';
+                    document.getElementById('meta_keywords').value = data.data.meta_keywords || '';
+                    document.getElementById('meta_description').value = data.data.meta_description || '';
+                    document.getElementById('meta_content_editor').innerHTML = data.data.meta_content || '';
+                    document.getElementById('meta_content').value = data.data.meta_content || '';
+                }
+            })
+            .catch(error => console.error('Error loading SEO data:', error));
+    });
+
+    // Handle Meta SEO form submission
+    document.getElementById('metaSeoForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Sync editor content with hidden textarea
+        const editorContent = document.getElementById('meta_content_editor').innerHTML;
+        document.getElementById('meta_content').value = editorContent;
+        
+        const formData = new FormData(this);
+        
+        fetch('<?= base_url('admin/landing-page/save-seo-data') ?>', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('success', data.message);
+                const modal = bootstrap.Modal.getInstance(document.getElementById('metaSeoModal'));
+                modal.hide();
+            } else {
+                showAlert('error', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('error', 'Network error occurred. Please try again.');
+        });
+    });
+
+    // Rich text editor functions
+    function formatText(command) {
+        document.execCommand(command, false, null);
+        document.getElementById('meta_content_editor').focus();
+    }
+
+    // Sync editor content when typing
+    document.getElementById('meta_content_editor').addEventListener('input', function() {
+        document.getElementById('meta_content').value = this.innerHTML;
+    });
+
     document.addEventListener('DOMContentLoaded', function() {
         // Load bonus settings when modal opens
         document.getElementById('bonusSettingsModal').addEventListener('show.bs.modal', function() {

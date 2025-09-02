@@ -88,6 +88,8 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
         $routes->post('remove-image', 'Admin\LandingPageController::removeImage');
         $routes->post('cleanup-images', 'Admin\LandingPageController::cleanupImages');
         $routes->post('save-trace-code', 'Admin\LandingPageController::saveTraceCode');
+        $routes->get('get-seo-data', 'Admin\LandingPageController::getSeoData');
+        $routes->post('save-seo-data', 'Admin\LandingPageController::saveSeoData');
         
         // Upload routes
         $routes->group('upload', function($routes) {

@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\LandingPageModel;
 use App\Models\WheelItemsModel;
 use App\Models\LandingPageMusicModel;
+use App\Models\LandingPageSeoModel;
 use App\Models\AdminSettingsModel;
 use \App\Models\WheelSoundModel;
 
@@ -15,6 +16,7 @@ class LandingPageController extends BaseController
     protected $landingPageModel;
     protected $wheelSoundModel;
     protected $adminSettingsModel;
+    protected $seoModel;
 
     public function __construct()
     {
@@ -24,6 +26,7 @@ class LandingPageController extends BaseController
         $this->landingPageMusicModel = new LandingPageMusicModel();
         $this->wheelSoundModel = new WheelSoundModel();
         $this->adminSettingsModel = new AdminSettingsModel();
+        $this->seoModel = new LandingPageSeoModel();
         
         // Ensure upload directory exists
         $uploadPath = FCPATH . 'uploads/landing/';
@@ -52,13 +55,17 @@ class LandingPageController extends BaseController
             // Get landing page data
             $landingData = $this->landingPageModel->getActiveData();
             
+            // Get SEO data
+            $seoData = $this->seoModel->getSeoData();
+            
             // Get bonus settings for the modal
             $bonusSettings = $this->adminSettingsModel->getBonusSettings();
 
             $data = [
                 'title' => 'Landing Page Builder',
-                'landing_data' => $landingData,
-                'bonus_settings' => $bonusSettings
+                'landing_data' => $landingData ?: [],
+                'seo_data' => $seoData ?: [],
+                'bonus_settings' => $bonusSettings,
             ];
 
             return view('admin/landing_page/builder', $data);
@@ -848,6 +855,75 @@ class LandingPageController extends BaseController
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+        /**
+     * Get SEO data for the builder
+     */
+    public function getSeoData()
+    {
+        try {
+            $seoData = $this->seoModel->getSeoData();
+            
+            return $this->response->setJSON([
+                'success' => true,
+                'data' => $seoData ?: [
+                    'meta_title' => '',
+                    'meta_keywords' => '',
+                    'meta_description' => '',
+                    'meta_content' => ''
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to fetch SEO data: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Save SEO data
+     */
+    public function saveSeoData()
+    {
+        $validation = \Config\Services::validation();
+        
+        $validation->setRules([
+            'meta_title' => 'permit_empty|max_length[255]',
+            'meta_keywords' => 'permit_empty',
+            'meta_description' => 'permit_empty',
+            'meta_content' => 'permit_empty'
+        ]);
+
+        if (!$validation->withRequest($this->request)->run()) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validation->getErrors()
+            ]);
+        }
+
+        try {
+            $data = [
+                'meta_title' => $this->request->getPost('meta_title'),
+                'meta_keywords' => $this->request->getPost('meta_keywords'),
+                'meta_description' => $this->request->getPost('meta_description'),
+                'meta_content' => $this->request->getPost('meta_content')
+            ];
+
+            $this->seoModel->saveSeoData($data);
+
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'SEO data saved successfully!'
+            ]);
+        } catch (\Exception $e) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to save SEO data: ' . $e->getMessage()
             ]);
         }
     }

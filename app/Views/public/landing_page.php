@@ -3,7 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Wheel of Fortune</title>
+
+    <!-- Dynamic SEO Meta Tags -->
+    <title><?= !empty($seo_data['meta_title']) ? esc($seo_data['meta_title']) : 'Fortune Wheel - With Reward System!' ?></title>
+    
+    <?php if (!empty($seo_data['meta_description'])): ?>
+    <meta name="description" content="<?= esc($seo_data['meta_description']) ?>">
+    <?php endif; ?>
+    
+    <?php if (!empty($seo_data['meta_keywords'])): ?>
+    <meta name="keywords" content="<?= esc($seo_data['meta_keywords']) ?>">
+    <?php endif; ?>
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="<?= !empty($seo_data['meta_title']) ? esc($seo_data['meta_title']) : 'Wheel of Fortune - Your Chance to Win Big!' ?>">
+    <?php if (!empty($seo_data['meta_description'])): ?>
+    <meta property="og:description" content="<?= esc($seo_data['meta_description']) ?>">
+    <?php endif; ?>
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<?= current_url() ?>">
+    
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= !empty($seo_data['meta_title']) ? esc($seo_data['meta_title']) : 'Wheel of Fortune - Your Chance to Win Big!' ?>">
+    <?php if (!empty($seo_data['meta_description'])): ?>
+    <meta name="twitter:description" content="<?= esc($seo_data['meta_description']) ?>">
+    <?php endif; ?>
+    
+    <!-- Other meta tags -->
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Fortune Wheel">
+    <link rel="canonical" href="<?= current_url() ?>">
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons CSS-->
@@ -383,6 +414,52 @@
             font-size: 0.75rem;
             padding: 0.25rem 0.5rem;
         }
+
+        /* SEO Meta Content Styling */
+        .seo-meta-content {
+            background-color: #1a1a1a;
+            color: #ccc;
+        }
+
+        .seo-content-wrapper {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #ccc;
+        }
+
+        .seo-content-wrapper h1,
+        .seo-content-wrapper h2,
+        .seo-content-wrapper h3,
+        .seo-content-wrapper h4,
+        .seo-content-wrapper h5,
+        .seo-content-wrapper h6 {
+            color: #ffd700;
+            margin-bottom: 0.5rem;
+        }
+
+        .seo-content-wrapper p {
+            margin-bottom: 1rem;
+            color: #ccc;
+        }
+
+        .seo-content-wrapper a {
+            color: #ffd700;
+            text-decoration: none;
+        }
+
+        .seo-content-wrapper a:hover {
+            text-decoration: underline;
+        }
+
+        .seo-content-wrapper ul,
+        .seo-content-wrapper ol {
+            color: #ccc;
+            padding-left: 1.5rem;
+        }
+
+        .seo-content-wrapper li {
+            margin-bottom: 0.25rem;
+        }
     </style>
 </head>
 <body class="casino-body">
@@ -535,7 +612,21 @@
                 <?php endif; ?>
             </div>
         </footer>
-    </div>
+
+         <!-- SEO Meta Content Section -->
+        <?php if (!empty($seo_data['meta_content'])): ?>
+        <section id="seo-content" class="seo-meta-content py-4" style="background-color: #000000ff;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="seo-content-wrapper">
+                            <?= $seo_data['meta_content'] ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <?php endif; ?>
         
         <!-- Background Music Player and Contact Button -->
         <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px;">

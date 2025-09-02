@@ -1,20 +1,20 @@
 # Prevent directory listing
 Options -Indexes
 
-# Set default handler
+# Set default index
 DirectoryIndex index.html index.php
 
-# Deny access to all files by default
-<FilesMatch ".*">
-    Require all denied
-</FilesMatch>
-
-# Allow access to image and video files
+# Allow only images and videos
 <FilesMatch "\.(jpg|jpeg|png|gif|webp|mp4|webm|ogg|avi|mov)$">
     Require all granted
 </FilesMatch>
 
-# Extra security: Deny access to PHP files
+# Deny all other file types except the above
+<FilesMatch "\.(?!jpg|jpeg|png|gif|webp|mp4|webm|ogg|avi|mov$)[a-zA-Z0-9]+$">
+    Require all denied
+</FilesMatch>
+
+# Deny PHP execution
 <FilesMatch "\.php$">
     Require all denied
 </FilesMatch>

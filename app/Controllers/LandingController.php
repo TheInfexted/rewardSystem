@@ -8,6 +8,7 @@ use App\Models\WheelItemsModel;
 use App\Models\BonusClaimModel;
 use App\Models\AdminSettingsModel;
 use App\Models\LandingPageMusicModel;
+use App\Models\LandingPageSeoModel;
 use App\Models\WheelSoundModel;
 use App\Models\CustomerModel;
 
@@ -20,6 +21,7 @@ class LandingController extends BaseController
     protected $landingPageMusicModel;
     protected $wheelSoundModel;
     protected $customerModel;
+    protected $seoModel;
 
     public function __construct()
     {
@@ -28,6 +30,7 @@ class LandingController extends BaseController
         $this->bonusClaimModel = new BonusClaimModel();
         $this->adminSettingsModel = new AdminSettingsModel();
         $this->landingPageMusicModel = new LandingPageMusicModel();
+        $this->seoModel = new LandingPageSeoModel();
         $this->wheelSoundModel = new WheelSoundModel();
         $this->customerModel = new CustomerModel();
         
@@ -82,9 +85,10 @@ class LandingController extends BaseController
             'recent_wins' => [],
             'bonus_settings' => $bonusSettings,
             'music_data' => $this->landingPageMusicModel->getActiveMusic(),
+            'seo_data' => $this->seoModel->getSeoData(),
             'spin_sound' => $this->wheelSoundModel->getActiveSound('spin'),
             'win_sound' => $this->wheelSoundModel->getActiveSound('win'),
-            'contact_links' => $contactLinks, // ADD THIS LINE
+            'contact_links' => $contactLinks, 
         ];
     
         return view('public/landing_page', $data);

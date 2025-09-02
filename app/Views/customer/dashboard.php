@@ -378,6 +378,7 @@ const dashboardPhpConfig = {
     todayCheckin: <?= $today_checkin ? 'true' : 'false' ?>,
     dashboardBgColor: '<?= $dashboard_bg_color ?? '#ffffff' ?>',
     profileBackground: '<?= $profile_background ?? 'default' ?>', 
+    // Dynamic customer service settings from admin_settings
     whatsappNumber: '<?= esc($whatsapp_number ?? '601159599022') ?>',  
     telegramUsername: '<?= esc($telegram_username ?? 'harryford19') ?>',
     spinTokens: <?= $spin_tokens ?? 0 ?>,
