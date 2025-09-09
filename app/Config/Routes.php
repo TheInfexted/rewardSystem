@@ -23,6 +23,20 @@ $routes->post('api/reset-spins', 'LandingController::resetSpins');
 $routes->post('api/track-ad', 'CustomerController::trackAd');
 $routes->match(['get', 'post', 'options'], 'api/winner-data', 'LandingController::getWinnerData');
 
+// Live Chat Integration API - NEW Generic System
+$routes->post('api/livechat/give_tokens', 'Api\LiveChatController::give_tokens');
+$routes->options('api/livechat/give_tokens', 'Api\LiveChatController::give_tokens');
+$routes->post('api/livechat/check_balance', 'Api\LiveChatController::check_balance');
+$routes->options('api/livechat/check_balance', 'Api\LiveChatController::check_balance');
+$routes->post('api/livechat/add_bonus', 'Api\LiveChatController::add_bonus');
+$routes->options('api/livechat/add_bonus', 'Api\LiveChatController::add_bonus');
+
+// Live Chat Integration API - Legacy (backward compatibility)
+$routes->post('api/livechat/give-tokens', 'Api\LiveChatController::giveTokens');
+$routes->options('api/livechat/give-tokens', 'Api\LiveChatController::giveTokens');
+$routes->get('api/livechat/customer', 'Api\LiveChatController::getCustomer');
+$routes->options('api/livechat/customer', 'Api\LiveChatController::getCustomer');
+
 //Reward System routes
 $routes->group('reward', function($routes) {
     $routes->match(['get', 'post'], '/', 'RewardController::index');
