@@ -362,6 +362,25 @@
 <script src="<?= base_url('js/dashboard/dashboard-copy.js') ?>?v=<?= time() ?>" onerror="console.log('dashboard-copy.js not found')"></script>
 <script src="<?= base_url('js/dashboard/dashboard-swiper.js') ?>?v=<?= time() ?>" onerror="console.log('dashboard-swiper.js not found')"></script>
 
+<!-- LiveChat Widget -->
+<script>
+window.LiveChatConfig = {
+    baseUrl: 'https://livechat.kopisugar.cc',
+    apiKey: 'lc_98b277c9f9c4f2f5b9f0dcb46748ab1a3f6360c6b6490edc',
+    theme: 'blue',
+    position: 'bottom-right'
+};
+
+var script = document.createElement('script');
+script.src = `https://livechat.kopisugar.cc/assets/js/widget.js?v=${Date.now()}`;
+
+script.setAttribute('data-user-id', '<?php echo $customer["id"] ?? ""; ?>');
+script.setAttribute('data-user-name', '<?php echo $customer["username"] ?? ""; ?>');
+script.setAttribute('data-user-email', '<?php echo $customer["email"] ?? ""; ?>');
+
+document.head.appendChild(script);
+</script>
+
 <!-- Dashboard Configuration from PHP -->
 <script>
 // Debug: Check if we're on the right page

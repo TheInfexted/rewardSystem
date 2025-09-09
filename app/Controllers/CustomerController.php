@@ -76,7 +76,7 @@ class CustomerController extends BaseController
             
             $data = [
                 'title' => 'Customer Dashboard',
-                'customer' => $customer, // Add full customer data for LiveChat widget
+                'customer' => $customer,
                 'username' => $customer['username'],
                 'profile_background' => $customer['profile_background'] ?? 'default',
                 'profile_background_image' => $customer['profile_background_image'] ?? null,
