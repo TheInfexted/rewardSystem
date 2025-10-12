@@ -13,8 +13,6 @@ class DashboardCopy {
      * Initialize copy functionality
      */
     initializeCopyFeatures() {
-        console.log('Dashboard Copy: Initializing copy features...');
-        
         // Add copy icon to username if not already present
         this.enhanceUsernameDisplay();
         
@@ -88,7 +86,6 @@ class DashboardCopy {
         const username = this.getUsername();
         
         if (!username) {
-            console.error('Dashboard Copy: Username not found');
             return;
         }
 
@@ -123,7 +120,6 @@ class DashboardCopy {
                 this.showCopySuccess(successMessage);
                 this.animateCopyIcon();
             }).catch(err => {
-                console.error('Dashboard Copy: Modern clipboard failed:', err);
                 this.fallbackCopyTextToClipboard(text, successMessage);
             });
         } else {
@@ -162,7 +158,6 @@ class DashboardCopy {
                 this.showCopyError('Failed to copy');
             }
         } catch (err) {
-            console.error('Dashboard Copy: Fallback copy failed:', err);
             this.showCopyError('Copy not supported');
         }
         
@@ -312,7 +307,6 @@ function animateCopyIcon() {
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     window.dashboardCopy = new DashboardCopy();
-    console.log('Dashboard Copy: Initialized successfully');
 });
 
 // Export for use in other modules

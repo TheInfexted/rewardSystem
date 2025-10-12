@@ -36,13 +36,11 @@ class DashboardSwiper {
         const swiperContainer = document.querySelector('.ads-swiper');
         
         if (!swiperContainer) {
-            console.warn('Swiper container not found');
             return;
         }
 
         // Check if Swiper is available
         if (typeof Swiper === 'undefined') {
-            console.error('Swiper library not loaded');
             return;
         }
 
@@ -156,7 +154,6 @@ class DashboardSwiper {
             // Event handlers
             on: {
                 init: () => {
-                    console.log('Dashboard Swiper initialized');
                     this.isInitialized = true;
                     this.attachClickHandlers();
                     this.handleVideoPlayback();
@@ -178,21 +175,11 @@ class DashboardSwiper {
                 touchEnd: () => {
                     this.resumeActiveVideo();
                 },
-                
-                autoplayStop: () => {
-                    console.log('Autoplay stopped');
-                },
-                
-                autoplayStart: () => {
-                    console.log('Autoplay started');
-                },
             },
         });
 
         // Add custom controls
         this.addCustomControls();
-        
-        console.log('Dashboard Swiper initialized with', this.ads.length, 'ads');
     }
 
     /**
@@ -210,7 +197,7 @@ class DashboardSwiper {
             const video = activeSlide.querySelector('video');
             if (video) {
                 video.play().catch(e => {
-                    console.log('Video autoplay prevented:', e);
+                    // Video autoplay prevented
                 });
             }
         }
@@ -240,7 +227,7 @@ class DashboardSwiper {
                 const video = activeSlide.querySelector('video');
                 if (video) {
                     video.play().catch(e => {
-                        console.log('Video resume prevented:', e);
+                        // Video resume prevented
                     });
                 }
             }
@@ -303,9 +290,6 @@ class DashboardSwiper {
                 slide.addEventListener('click', (e) => {
                     // Prevent click during swipe
                     if (this.swiperInstance.animating) return;
-                    
-                    const adId = slide.dataset.id;
-                    console.log(`Ad ${adId} clicked`);
                     
                     // Open URL
                     window.open(url, '_blank');
@@ -493,13 +477,9 @@ class DashboardSwiper {
 document.addEventListener('DOMContentLoaded', function() {
     // Wait for dashboard config to be ready
     if (typeof dashboardPhpConfig !== 'undefined' && dashboardPhpConfig.ads) {
-        console.log('Initializing Dashboard Swiper with ads:', dashboardPhpConfig.ads);
-        
         // Create global instance
         window.dashboardSwiper = new DashboardSwiper();
         window.dashboardSwiper.init(dashboardPhpConfig.ads);
-    } else {
-        console.log('No ads data available for swiper');
     }
 });
 

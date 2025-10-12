@@ -37,8 +37,6 @@ function openWheelModal() {
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Dashboard initialization started...');
-    
     // Initialize configuration with PHP values (these will be set in the view)
     if (typeof dashboardPhpConfig !== 'undefined') {
         DashboardConfig.init(
@@ -62,9 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Set up event listeners
     setupEventListeners();
-    
-    console.log('Dashboard loaded successfully');
-    logDashboardInfo();
 });
 
 // Initialize UI state based on data
@@ -79,11 +74,6 @@ function initializeUIState() {
 
 // Set up all event listeners
 function setupEventListeners() {
-    // Enhanced error handling
-    window.addEventListener('error', function(e) {
-        console.error('Dashboard error:', e.error);
-    });
-
     // Ripple effect for buttons
     document.addEventListener('click', function(e) {
         if (e.target.matches('.action-item, .btn-checkin, .bg-option')) {
@@ -100,10 +90,5 @@ function setupEventListeners() {
 
 // Log dashboard information for debugging
 function logDashboardInfo() {
-    if (typeof dashboardPhpConfig !== 'undefined') {
-        console.log('Username:', dashboardPhpConfig.username);
-        console.log('Points:', dashboardPhpConfig.totalPoints);
-        console.log('Monthly checkins:', dashboardPhpConfig.monthlyCheckins);
-        console.log('Today checkin status:', dashboardPhpConfig.todayCheckin);
-    }
+    // Dashboard info logging disabled for production
 }

@@ -19,8 +19,7 @@ class FortuneWheel {
     // Load required scripts for fortune wheel
     loadWheelScripts() {
         if (window.Winwheel && window.TweenMax) {
-            console.log('Wheel scripts already loaded');
-            return Promise.resolve();
+                return Promise.resolve();
         }
         
         return new Promise((resolve, reject) => {
@@ -28,13 +27,10 @@ class FortuneWheel {
             const tweenScript = document.createElement('script');
             tweenScript.src = DashboardConfig.baseUrl + 'js/TweenMax.min.js';
             tweenScript.onload = () => {
-                console.log('TweenMax loaded');
-                
                 // Then load Winwheel
                 const winwheelScript = document.createElement('script');
                 winwheelScript.src = DashboardConfig.baseUrl + 'js/Winwheel.min.js';
                 winwheelScript.onload = () => {
-                    console.log('Winwheel loaded');
                     resolve();
                 };
                 winwheelScript.onerror = reject;
@@ -47,8 +43,6 @@ class FortuneWheel {
 
     // Add this to your Fortune Wheel class - Aggressive backdrop prevention
     startBackdropMonitor() {
-        console.log('Starting backdrop monitor...');
-        
         // Clear any existing monitor
         if (this.backdropMonitor) {
             clearInterval(this.backdropMonitor);
@@ -58,9 +52,7 @@ class FortuneWheel {
         this.backdropMonitor = setInterval(() => {
             const backdrops = document.querySelectorAll('.modal-backdrop');
             if (backdrops.length > 0) {
-                console.log(`Found ${backdrops.length} backdrop(s), removing...`);
                 backdrops.forEach((backdrop, index) => {
-                    console.log(`Removing backdrop ${index}:`, backdrop.className);
                     backdrop.remove();
                 });
                 
@@ -76,7 +68,6 @@ class FortuneWheel {
             if (this.backdropMonitor) {
                 clearInterval(this.backdropMonitor);
                 this.backdropMonitor = null;
-                console.log('Stopped backdrop monitor');
             }
         }, 10000);
     }
@@ -85,13 +76,10 @@ class FortuneWheel {
         if (this.backdropMonitor) {
             clearInterval(this.backdropMonitor);
             this.backdropMonitor = null;
-            console.log('Backdrop monitor stopped');
         }
     }
 
     fetchDataAndShow() {
-        console.log('Fetching wheel data from:', DashboardConfig.endpoints.wheelData);
-        
         // Start monitoring for backdrops immediately
         this.startBackdropMonitor();
         
@@ -102,20 +90,14 @@ class FortuneWheel {
             }
         })
         .then(response => {
-            console.log('Wheel data response status:', response.status);
             return response.json();
         })
         .then(data => {
-            console.log('Wheel data received:', data);
-            
             if (data.success) {
                 this.spinsRemaining = data.spins_remaining || 0;
                 this.wheelItems = data.wheel_items || [];
                 this.tickSoundEnabled = data.spin_sound?.enabled || false;
                 this.winSoundEnabled = data.win_sound?.enabled || false;
-                
-                console.log(`Spins remaining: ${this.spinsRemaining}`);
-                console.log(`Wheel items count: ${this.wheelItems.length}`);
                 
                 // Force cleanup before creating modal
                 this.forceCleanupBackdrops();
@@ -126,7 +108,6 @@ class FortuneWheel {
                 setTimeout(() => {
                     const wheelModalElement = document.getElementById('wheelModal');
                     if (!wheelModalElement) {
-                        console.error('Wheel modal element not found after creation!');
                         return;
                     }
                     
@@ -139,7 +120,6 @@ class FortuneWheel {
                     
                     // Add event listeners
                     wheelModalElement.addEventListener('shown.bs.modal', () => {
-                        console.log('Modal shown, initializing wheel...');
                         // Continue backdrop monitoring while modal is open
                         setTimeout(() => {
                             this.initialize();
@@ -147,7 +127,6 @@ class FortuneWheel {
                     });
                     
                     wheelModalElement.addEventListener('hidden.bs.modal', () => {
-                        console.log('Modal hidden, cleaning up...');
                         this.stopBackdropMonitor();
                         this.cleanupWheel();
                         this.forceCleanupBackdrops();
@@ -159,25 +138,20 @@ class FortuneWheel {
                 
             } else {
                 this.stopBackdropMonitor();
-                console.error('Wheel data fetch failed:', data.message);
                 DashboardUtils.showToast(data.message || 'Failed to load wheel data', 'error');
             }
         })
         .catch(error => {
             this.stopBackdropMonitor();
-            console.error('Error fetching wheel data:', error);
             DashboardUtils.showToast('Failed to load wheel data', 'error');
         });
     }
 
     // Force cleanup method
     forceCleanupBackdrops() {
-        console.log('Force cleaning backdrops...');
-        
         // Remove all backdrops
         const backdrops = document.querySelectorAll('.modal-backdrop');
         backdrops.forEach((backdrop, index) => {
-            console.log(`Force removing backdrop ${index}`);
             backdrop.remove();
         });
         
@@ -189,19 +163,14 @@ class FortuneWheel {
         
         // Remove any other modal-related classes
         document.documentElement.classList.remove('modal-open');
-        
-        console.log('Force cleanup completed');
     }
     
     openModal() {
-        console.log('Opening wheel modal...');
-        
         // Force cleanup any existing backdrops first
         this.forceCleanupBackdrops();
         
         // Check if libraries are already loaded (from CDN)
         if (window.Winwheel && window.TweenMax) {
-            console.log('Libraries already loaded from CDN, proceeding directly...');
             this.scriptsLoaded = true;
             this.fetchDataAndShow();
             return;
@@ -214,7 +183,6 @@ class FortuneWheel {
             this.loadWheelScripts()
                 .then(() => {
                     this.scriptsLoaded = true;
-                    console.log('All wheel scripts loaded successfully');
                     DashboardUtils.dismissAllToasts();
                     
                     setTimeout(() => {
@@ -222,7 +190,6 @@ class FortuneWheel {
                     }, 100);
                 })
                 .catch((error) => {
-                    console.error('Failed to load wheel scripts:', error);
                     DashboardUtils.dismissAllToasts();
                     DashboardUtils.showToast('Failed to load game. Please try again.', 'error', 5000, true);
                 });
@@ -233,8 +200,6 @@ class FortuneWheel {
 
     // Enhanced modal cleanup with better timing
     cleanupAllModals() {
-        console.log('Cleaning up all modals...');
-        
         return new Promise((resolve) => {
             // 1. Hide and dispose all existing modals
             const existingModals = document.querySelectorAll('#wheelModal');
@@ -249,9 +214,8 @@ class FortuneWheel {
                             modal.addEventListener('hidden.bs.modal', () => {
                                 try {
                                     instance.dispose();
-                                    console.log('Disposed modal instance');
                                 } catch (e) {
-                                    console.log('Modal instance disposal error:', e);
+                                    // Disposal error
                                 }
                                 resolveDisposal();
                             }, { once: true });
@@ -262,11 +226,10 @@ class FortuneWheel {
                         
                         disposalPromises.push(disposalPromise);
                     } catch (e) {
-                        console.log('Modal hide error:', e);
+                        // Modal hide error
                     }
                 }
                 modal.remove();
-                console.log('Removed modal element');
             });
             
             // 2. Wait for all disposals to complete, then clean up
@@ -277,7 +240,6 @@ class FortuneWheel {
                     const backdrops = document.querySelectorAll('.modal-backdrop');
                     backdrops.forEach(backdrop => {
                         backdrop.remove();
-                        console.log('Removed backdrop');
                     });
                     
                     // Reset body styles
@@ -291,7 +253,6 @@ class FortuneWheel {
                         element.classList.remove('modal-open');
                     });
                     
-                    console.log('Modal cleanup completed');
                     resolve();
                 }, 100); // Small delay to ensure Bootstrap cleanup is done
             });
@@ -306,7 +267,6 @@ class FortuneWheel {
                     document.body.style.overflow = '';
                     document.body.style.paddingRight = '';
                     
-                    console.log('Modal cleanup completed (no existing modals)');
                     resolve();
                 }, 50);
             }
@@ -322,9 +282,8 @@ class FortuneWheel {
                     this.wheel.destroy();
                 }
                 this.wheel = null;
-                console.log('Wheel instance cleaned up');
             } catch (e) {
-                console.log('Wheel cleanup error:', e);
+                // Wheel cleanup error
             }
         }
     }
@@ -541,21 +500,15 @@ class FortuneWheel {
 
     // Initialize wheel after modal is shown
     initialize() {
-        console.log('Initializing wheel...');
-        
         const canvas = document.getElementById('fortuneWheelModal');
         if (!canvas) {
-            console.error('Modal wheel canvas not found!');
             return;
         }
         
         if (!this.wheelItems || this.wheelItems.length === 0) {
-            console.error('No wheel items available!');
             DashboardUtils.showToast('Wheel data not available', 'error');
             return;
         }
-        
-        console.log('Initializing modal wheel with items:', this.wheelItems);
 
         // Sort items by order first to ensure correct positioning
         const sortedItems = [...this.wheelItems].sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -580,8 +533,6 @@ class FortuneWheel {
                 }
             });
         });
-
-        console.log('Creating modal wheel with segments:', segments);
 
         try {
             // Create the wheel with ORIGINAL properties from landing page
@@ -619,12 +570,10 @@ class FortuneWheel {
                 }
             });
 
-            console.log('✅ Modal wheel created successfully:', this.wheel);
             this.updateSpinsCounter();
             this.addModalStyles();
             
         } catch (error) {
-            console.error('❌ Failed to create wheel:', error);
             DashboardUtils.showToast('Failed to initialize wheel', 'error');
         }
     }
@@ -632,18 +581,15 @@ class FortuneWheel {
     // Start spinning the wheel
     startSpin() {
         if (this.wheelSpinning === true) {
-            console.log('Modal wheel already spinning');
             return;
         }
         
         if (this.spinsRemaining <= 0) {
-            console.log('No spin tokens remaining');
             DashboardUtils.showToast('No spin tokens remaining! Contact customer service to get more.', 'warning');
             return;
         }
 
         if (!this.wheel) {
-            console.error('Modal wheel not initialized!');
             return;
         }
         
@@ -687,19 +633,14 @@ class FortuneWheel {
 
     // Determine winner based on winning rates
     determineWinner() {
-        console.log('Determining winner with wheel items:', this.wheelItems);
-        
         // Calculate total winning rate to normalize if needed
         let totalRate = 0;
         this.wheelItems.forEach(item => {
             totalRate += parseFloat(item.winning_rate || 0);
         });
         
-        console.log('Total winning rate:', totalRate);
-        
         // Generate random number between 0 and total rate (or 100 if total is 100)
         const rand = Math.random() * (totalRate > 0 ? totalRate : 100);
-        console.log('Random number generated:', rand);
         
         let cumulativeRate = 0;
         
@@ -712,15 +653,11 @@ class FortuneWheel {
             const itemRate = parseFloat(item.winning_rate || 0);
             cumulativeRate += itemRate;
             
-            console.log(`Item ${item.item_name}: rate=${itemRate}, cumulative=${cumulativeRate}, rand=${rand}`);
-            
             if (rand <= cumulativeRate && itemRate > 0) {
                 // Find the original index in unsorted array for wheel positioning
                 const originalIndex = this.wheelItems.findIndex(originalItem => 
                     originalItem.item_id === item.item_id
                 );
-                
-                console.log(`Winner selected: ${item.item_name} (original index: ${originalIndex})`);
                 return {
                     winnerIndex: originalIndex >= 0 ? originalIndex : i,
                     winnerItem: {
@@ -739,7 +676,6 @@ class FortuneWheel {
         for (let i = 0; i < this.wheelItems.length; i++) {
             const item = this.wheelItems[i];
             if (parseFloat(item.winning_rate || 0) > 0) {
-                console.log(`Fallback winner: ${item.item_name}`);
                 return {
                     winnerIndex: i,
                     winnerItem: {
@@ -756,7 +692,6 @@ class FortuneWheel {
         
         // Final fallback to first item
         const firstItem = this.wheelItems[0];
-        console.log(`Final fallback winner: ${firstItem.item_name}`);
         return {
             winnerIndex: 0,
             winnerItem: {
@@ -790,7 +725,6 @@ class FortuneWheel {
         const winner = this.wheel.winnerData || indicatedSegment.itemData;
         
         if (!winner) {
-            console.error('No winner data found!');
             this.resetSpinButton();
             return;
         }
@@ -902,7 +836,6 @@ class FortuneWheel {
             }
         })
         .catch(error => {
-            console.error('Store winner error:', error);
             DashboardUtils.showToast('Failed to store prize. Please try again.', 'error');
         });
     }
@@ -954,10 +887,10 @@ class FortuneWheel {
         })
         .then(response => response.json())
         .then(data => {
-            console.log('Spin recorded:', data);
+            // Spin recorded
         })
         .catch(error => {
-            console.error('Error recording spin:', error);
+            // Error recording spin
         });
     }
 
@@ -974,7 +907,9 @@ class FortuneWheel {
         const tickAudio = document.getElementById('modalTickAudio');
         if (tickAudio && this.tickSoundEnabled) {
             tickAudio.currentTime = 0;
-            tickAudio.play().catch(e => console.log('Tick sound play failed:', e));
+            tickAudio.play().catch(e => {
+                // Tick sound play failed
+            });
         }
     }
 
@@ -990,7 +925,9 @@ class FortuneWheel {
         const winAudio = document.getElementById('modalWinAudio');
         if (winAudio && this.winSoundEnabled) {
             winAudio.currentTime = 0;
-            winAudio.play().catch(e => console.log('Win sound play failed:', e));
+            winAudio.play().catch(e => {
+                // Win sound play failed
+            });
         }
     }
 }

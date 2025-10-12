@@ -354,38 +354,16 @@
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 <!-- Dashboard JavaScript Modules - Load in correct order -->
-<script src="<?= base_url('js/dashboard/dashboard-config.js') ?>?v=<?= time() ?>" onerror="console.log('dashboard-config.js not found')"></script>
-<script src="<?= base_url('js/dashboard/dashboard-utils.js') ?>?v=<?= time() ?>" onerror="console.log('dashboard-utils.js not found')"></script>
-<script src="<?= base_url('js/dashboard/dashboard-core.js') ?>?v=<?= time() ?>" onerror="console.log('dashboard-core.js not found')"></script>
-<script src="<?= base_url('js/dashboard/fortune-wheel.js') ?>?v=<?= time() ?>" onerror="console.log('fortune-wheel.js not found')"></script>
-<script src="<?= base_url('js/dashboard/dashboard-init.js') ?>?v=<?= time() ?>" onerror="console.log('dashboard-init.js not found')"></script>
-<script src="<?= base_url('js/dashboard/dashboard-copy.js') ?>?v=<?= time() ?>" onerror="console.log('dashboard-copy.js not found')"></script>
-<script src="<?= base_url('js/dashboard/dashboard-swiper.js') ?>?v=<?= time() ?>" onerror="console.log('dashboard-swiper.js not found')"></script>
-
-<!-- LiveChat Widget -->
-<script>
-window.LiveChatConfig = {
-    baseUrl: 'https://livechat.kopisugar.cc',
-    apiKey: 'lc_98b277c9f9c4f2f5b9f0dcb46748ab1a3f6360c6b6490edc',
-    theme: 'blue',
-    position: 'bottom-right'
-};
-
-var script = document.createElement('script');
-script.src = `https://livechat.kopisugar.cc/assets/js/widget.js?v=${Date.now()}`;
-
-script.setAttribute('data-user-id', '<?php echo $customer["id"] ?? ""; ?>');
-script.setAttribute('data-user-name', '<?php echo $customer["username"] ?? ""; ?>');
-script.setAttribute('data-user-email', '<?php echo $customer["email"] ?? ""; ?>');
-
-document.head.appendChild(script);
-</script>
+<script src="<?= base_url('js/dashboard/dashboard-config.js') ?>?v=<?= time() ?>"></script>
+<script src="<?= base_url('js/dashboard/dashboard-utils.js') ?>?v=<?= time() ?>"></script>
+<script src="<?= base_url('js/dashboard/dashboard-core.js') ?>?v=<?= time() ?>"></script>
+<script src="<?= base_url('js/dashboard/fortune-wheel.js') ?>?v=<?= time() ?>"></script>
+<script src="<?= base_url('js/dashboard/dashboard-init.js') ?>?v=<?= time() ?>"></script>
+<script src="<?= base_url('js/dashboard/dashboard-copy.js') ?>?v=<?= time() ?>"></script>
+<script src="<?= base_url('js/dashboard/dashboard-swiper.js') ?>?v=<?= time() ?>"></script>
 
 <!-- Dashboard Configuration from PHP -->
 <script>
-// Debug: Check if we're on the right page
-console.log('Loading customer dashboard with Swiper');
-
 // Pass PHP data to JavaScript
 const dashboardPhpConfig = {
     csrfToken: '<?= csrf_hash() ?>',
@@ -414,11 +392,8 @@ const dashboardPhpConfig = {
     ads: <?= json_encode($ads ?? []) ?>,
 };
 
-console.log('Dashboard config loaded:', dashboardPhpConfig);
-
 // FIXED: Apply dashboard background color and theme
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Dashboard DOM loaded, initializing theme...');
     
     // Initialize dashboard theme first
     initializeDashboardTheme();
@@ -472,15 +447,12 @@ function applyCheckinThemeFromProfile() {
     const checkinSection = document.querySelector('.compact-checkin');
     
     if (!profileHeader || !checkinSection) {
-        console.log('Profile header or checkin section not found');
         return;
     }
     
     // Get the current theme from the profile header classes
     const themeClass = Array.from(profileHeader.classList).find(cls => cls.endsWith('-bg'));
     const theme = themeClass ? themeClass.replace('-bg', '') : 'default';
-    
-    console.log('Detected profile theme:', theme);
     
     // Apply the appropriate gradient to the check-in section
     applyCheckinGradient(checkinSection, theme);
@@ -528,14 +500,10 @@ function applyCheckinGradient(checkinSection, theme) {
         // Add theme class for CSS targeting
         checkinSection.classList.remove(...Array.from(checkinSection.classList).filter(cls => cls.startsWith('theme-')));
         checkinSection.classList.add(`theme-${theme}`);
-        
-        console.log(`Applied ${theme} gradient theme to check-in section`);
     } else {
         // Fallback to default gradient
         checkinSection.style.background = themeGradients['default'];
         checkinSection.classList.add('theme-default');
-        
-        console.log(`Applied default gradient theme to check-in section (${theme} not found)`);
     }
 }
 
@@ -543,14 +511,6 @@ function initializeWalletModals() {
     // Ensure modals are properly initialized
     const walletModal = document.getElementById('walletModal');
     const platformModal = document.getElementById('platformModal');
-    
-    if (walletModal) {
-        console.log('Wallet modal found and ready');
-    }
-    
-    if (platformModal) {
-        console.log('Platform modal found and ready');
-    }
 }
 
 // Helper function to calculate color luminance
@@ -589,7 +549,7 @@ function copyUsername() {
             }, 2000);
         }
     }).catch(function(err) {
-        console.error('Could not copy text: ', err);
+        // Copy failed
     });
 }
 
@@ -675,7 +635,6 @@ function changePassword() {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         alert('An error occurred. Please try again.');
     })
     .finally(() => {
@@ -710,7 +669,6 @@ function performCheckin() {
         }
     })
     .catch(error => {
-        console.error('Error:', error);
         alert('Check-in failed. Please try again.');
     })
     .finally(() => {
@@ -721,11 +679,8 @@ function performCheckin() {
 
 // Open wheel modal function - Updated to work with your fortune wheel system
 function openWheelModal() {
-    console.log('Opening wheel modal...');
-    
     // Check if we have fortune wheel scripts available
     if (typeof FortuneWheel === 'undefined') {
-        console.error('FortuneWheel class not available');
         // Fallback: try to initialize if we have the scripts
         if (typeof fortuneWheelInstance === 'undefined') {
             alert('Wheel system is loading. Please try again in a moment.');
@@ -735,11 +690,9 @@ function openWheelModal() {
     
     // Use existing fortune wheel instance if available
     if (typeof fortuneWheelInstance !== 'undefined' && fortuneWheelInstance) {
-        console.log('Using existing fortune wheel instance');
         fortuneWheelInstance.openModal();
     } else {
         // Create new instance if needed
-        console.log('Creating new fortune wheel instance');
         try {
             if (typeof FortuneWheel !== 'undefined') {
                 window.fortuneWheelInstance = new FortuneWheel();
@@ -749,7 +702,6 @@ function openWheelModal() {
                 loadWheelScriptsAndOpen();
             }
         } catch (error) {
-            console.error('Error creating fortune wheel:', error);
             alert('Unable to load fortune wheel. Please refresh the page and try again.');
         }
     }
@@ -757,8 +709,6 @@ function openWheelModal() {
 
 // Helper function to load wheel scripts if they're not available
 function loadWheelScriptsAndOpen() {
-    console.log('Loading wheel scripts...');
-    
     // Show loading message
     const loadingModal = `
         <div class="modal fade" id="wheelLoadingModal" tabindex="-1" aria-hidden="true">
@@ -796,7 +746,6 @@ function loadWheelScriptsAndOpen() {
         script.src = src;
         script.onload = () => {
             loadedCount++;
-            console.log(`Loaded ${src}`);
             
             if (loadedCount === scripts.length) {
                 // All scripts loaded
@@ -820,7 +769,6 @@ function loadWheelScriptsAndOpen() {
                             alert('Fortune wheel failed to load. Please refresh the page.');
                         }
                     } catch (error) {
-                        console.error('Error after loading scripts:', error);
                         alert('Error initializing fortune wheel. Please try again.');
                     }
                 }, 500);
@@ -828,7 +776,6 @@ function loadWheelScriptsAndOpen() {
         };
         
         script.onerror = () => {
-            console.error(`Failed to load ${src}`);
             loadingModalEl.hide();
             alert('Failed to load fortune wheel. Please check your connection and try again.');
         };
@@ -897,9 +844,6 @@ function contactCustomerService(platform) {
     } else {
         redirectUrl = `https://t.me/${telegramUsername}?text=${encodedMessage}`;
     }
-    
-    // Show loading/success message
-    console.log(`Redirecting to ${platform === 'whatsapp' ? 'WhatsApp' : 'Telegram'}...`);
     
     // Close modal
     const modal = bootstrap.Modal.getInstance(document.getElementById('platformModal'));
