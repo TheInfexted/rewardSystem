@@ -26,6 +26,104 @@ class CustomerController extends BaseController
     }
 
     /**
+     * Update winner storage with user ID after login
+     */
+    private function updateWinnerStorageWithUserId($storageId, $userId)
+    {
+        try {
+            $db = \Config\Database::connect();
+            $db->table('winner_storage')
+               ->where('id', $storageId)
+               ->update(['user_id' => $userId]);
+            
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Auto-claim reward for user after login
+     */
+    private function autoClaimRewardForUser($userId)
+    {
+        try {
+            $db = \Config\Database::connect();
+            
+            // Get the most recent unclaimed winner data for this user
+            $winnerRecord = $db->table('winner_storage')
+                             ->where('user_id', $userId)
+                             ->where('claimed', 0)
+                             ->where('expires_at >', date('Y-m-d H:i:s'))
+                             ->orderBy('created_at', 'DESC')
+                             ->get()
+                             ->getRowArray();
+            
+            if (!$winnerRecord) {
+                return ['success' => false, 'error' => 'No unclaimed rewards found'];
+            }
+            
+            $winnerData = json_decode($winnerRecord['winner_data'], true);
+            if (!$winnerData || !isset($winnerData['name'])) {
+                return ['success' => false, 'error' => 'Invalid winner data'];
+            }
+            
+            // Get customer data
+            $customer = $this->customerModel->find($userId);
+            if (!$customer) {
+                return ['success' => false, 'error' => 'Customer not found'];
+            }
+            
+            // Create bonus claim record (default to Telegram)
+            $claimData = [
+                'session_id' => session_id(),
+                'user_ip' => $this->request->getIPAddress(),
+                'user_name' => $customer['username'],
+                'customer_id' => $customer['id'],
+                'phone_number' => $customer['phone'] ?? $customer['username'],
+                'email' => null,
+                'bonus_type' => $winnerData['name'],
+                'bonus_amount' => isset($winnerData['prize']) ? floatval($winnerData['prize']) : 0.00,
+                'claim_time' => date('Y-m-d H:i:s'),
+                'user_agent' => $this->request->getUserAgent()->getAgentString(),
+                'status' => 'pending',
+                'platform_selected' => 'telegram', // Default to Telegram
+                'account_type' => 'manual'
+            ];
+            
+            $claimId = $this->bonusClaimModel->insert($claimData);
+            
+            if ($claimId) {
+                // Mark winner storage as claimed
+                $db->table('winner_storage')
+                   ->where('id', $winnerRecord['id'])
+                   ->update([
+                       'claimed' => 1,
+                       'claim_id' => $claimId,
+                       'claimed_at' => date('Y-m-d H:i:s')
+                   ]);
+                
+                // Clear winner data from session
+                session()->remove(['winner_data', 'winner_storage_id']);
+                
+                return [
+                    'success' => true,
+                    'reward_data' => [
+                        'bonus_type' => $winnerData['name'],
+                        'claim_id' => $claimId,
+                        'platform' => 'telegram'
+                    ]
+                ];
+            } else {
+                return ['success' => false, 'error' => 'Failed to create bonus claim'];
+            }
+            
+        } catch (\Exception $e) {
+            return ['success' => false, 'error' => 'Auto-claim failed: ' . $e->getMessage()];
+        }
+    }
+
+    /**
      * Display customer login page
      */
     public function login()
@@ -47,7 +145,8 @@ class CustomerController extends BaseController
         }
 
         $data = [
-            'title' => 'Customer Login'
+            'title' => 'Customer Login',
+            'redirect_url' => $this->request->getGet('redirect') ?: null
         ];
 
         return view('customer/login', $data);
@@ -79,16 +178,12 @@ class CustomerController extends BaseController
         $username = $this->request->getPost('username');
         $password = $this->request->getPost('password');
         
-        // Debug logging
-        log_message('info', 'Customer login attempt for username: ' . $username);
-        log_message('info', 'Password provided length: ' . strlen($password));
         
         try {
             // Find customer by username
             $customer = $this->customerModel->where('username', $username)->first();
             
             if (!$customer) {
-                log_message('info', 'Customer not found for username: ' . $username);
                 return $this->response->setJSON([
                     'success' => false,
                     'message' => 'Invalid username or password.'
@@ -97,7 +192,6 @@ class CustomerController extends BaseController
             
             // Verify password
             $passwordValid = password_verify($password, $customer['password']);
-            log_message('info', 'Password verification result: ' . ($passwordValid ? 'valid' : 'invalid'));
             
             if ($passwordValid) {
                 // Update last login
@@ -118,16 +212,37 @@ class CustomerController extends BaseController
                     ]
                 ]);
 
-                log_message('info', 'Login successful for customer ID: ' . $customer['id']);
+                // Update winner storage with customer ID if winner_storage_id exists
+                $winnerStorageId = session()->get('winner_storage_id');
+                if ($winnerStorageId) {
+                    $this->updateWinnerStorageWithUserId($winnerStorageId, $customer['id']);
+                }
 
-                return $this->response->setJSON([
+                // Auto-claim reward if user has unclaimed winner data
+                $autoClaimResult = $this->autoClaimRewardForUser($customer['id']);
+                
+                // Get redirect URL from request or default to dashboard
+                $redirectUrl = $this->request->getPost('redirect_url') ?: base_url('customer/dashboard');
+                
+                $responseData = [
                     'success' => true,
-                    'message' => 'Login successful!',
-                    'redirect' => base_url('customer/dashboard'),
-                ]);
+                    'redirect' => $redirectUrl,
+                ];
+                
+                if ($autoClaimResult['success']) {
+                    $responseData['message'] = 'Reward Claim Successfully!';
+                    $responseData['reward_claimed'] = true;
+                    $responseData['reward_data'] = $autoClaimResult['reward_data'];
+                } else {
+                    $responseData['message'] = 'Login successful!';
+                    if ($autoClaimResult['error']) {
+                        $responseData['warning'] = $autoClaimResult['error'];
+                    }
+                }
+                
+                return $this->response->setJSON($responseData);
             }
             
-            log_message('info', 'Password verification failed for username: ' . $username);
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Invalid username or password.'

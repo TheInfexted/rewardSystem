@@ -133,6 +133,11 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                                         <span>Telegram</span>
                                     </div>
                                 </div>
+                                <div class="text-center mt-3">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="debugSession()">
+                                        <i class="bi bi-bug"></i> Debug Session
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     <?php endif; ?>
@@ -152,14 +157,14 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                     </div>
 
                     <div class="no-prize-message">                        
-                        <div class="d-grid gap-2 mt-2">
-                            <a href="<?= base_url('customer/dashboard') ?>" class="btn btn-platform">
-                                <i class="bi bi-speedometer2"></i> View Dashboard
-                            </a>
-                            <button type="button" class="btn btn-platform" onclick="logout()">
-                                <i class="bi bi-box-arrow-right"></i> Logout
-                            </button>
-                        </div>
+                            <div class="d-grid gap-2 mt-2">
+                                <a href="<?= base_url('customer/dashboard') ?>" class="btn btn-platform">
+                                    <i class="bi bi-speedometer2"></i> View Dashboard
+                                </a>
+                                <button type="button" class="btn btn-platform" onclick="logout()">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </button>
+                            </div>
                     </div>
 
                 <?php else: ?>
@@ -170,9 +175,9 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                             <p>Login to access your dashboard or create a new account.</p>
                             
                             <div class="d-grid gap-2 mt-4">
-                                <a href="<?= base_url('customer') ?>" class="btn btn-claim">
+                                <button type="button" class="btn btn-claim" onclick="loginWithWinnerData()">
                                     <i class="bi bi-box-arrow-in-right"></i> Login to Account
-                                </a>
+                                </button>
                                 <button type="button" class="btn btn-platform" onclick="autoRegister()">
                                     <i class="bi bi-person-plus-fill"></i> Create New Account
                                 </button>
@@ -328,6 +333,24 @@ $isLoggedIn = isset($logged_in) && $logged_in;
             });
         }
 
+        // Login function with winner data preservation
+        function loginWithWinnerData() {
+            <?php if (isset($winner_data) && !empty($winner_data)): ?>
+            const winnerStorageId = <?= session()->get('winner_storage_id') ?? 'null' ?>;
+            if (winnerStorageId) {
+                const redirectUrl = '<?= base_url('customer') ?>?redirect=' + encodeURIComponent('<?= base_url('reward') ?>?winner_storage_id=' + winnerStorageId);
+                window.location.href = redirectUrl;
+            } else {
+                // Fallback to URL encoding if no storage ID
+                const winnerData = <?= json_encode($winner_data) ?>;
+                const redirectUrl = '<?= base_url('customer') ?>?redirect=' + encodeURIComponent('<?= base_url('reward') ?>?winner_data=' + encodeURIComponent(JSON.stringify(winnerData)));
+                window.location.href = redirectUrl;
+            }
+            <?php else: ?>
+            window.location.href = '<?= base_url('customer') ?>?redirect=' + encodeURIComponent('<?= base_url('reward') ?>');
+            <?php endif; ?>
+        }
+
         // Logout function
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
@@ -386,16 +409,7 @@ $isLoggedIn = isset($logged_in) && $logged_in;
         });
 
 
-        // Debug: Log session data on page load
-        console.log('Reward page loaded');
-        console.log('Has valid prize:', <?= json_encode($hasValidPrize) ?>);
-        console.log('Logged in:', <?= json_encode($logged_in) ?>);
-        <?php if (isset($winner_data)): ?>
-        console.log('Winner data:', <?= json_encode($winner_data) ?>);
-        <?php endif; ?>
-        <?php if (isset($customer_data)): ?>
-        console.log('Customer data:', <?= json_encode($customer_data) ?>);
-        <?php endif; ?>
+        
     </script>
 </body>
 </html>

@@ -21,13 +21,107 @@ class RewardController extends BaseController
     }
 
     /**
+     * Store winner data persistently in database
+     */
+    private function storeWinnerDataPersistently($winnerData, $session)
+    {
+        try {
+            $db = \Config\Database::connect();
+            
+            $data = [
+                'user_id' => 0, // Will be updated after login (0 means not logged in yet)
+                'session_id' => session_id(),
+                'user_ip' => $this->request->getIPAddress(),
+                'winner_data' => json_encode($winnerData),
+                'claimed' => 0,
+                'created_at' => date('Y-m-d H:i:s'),
+                'expires_at' => date('Y-m-d H:i:s', strtotime('+24 hours')) // 24 hours expiration
+            ];
+            
+            
+            // Check if winner data already exists for this session/IP
+            $existing = $db->table('winner_storage')
+                          ->where('session_id', session_id())
+                          ->orWhere('user_ip', $this->request->getIPAddress())
+                          ->where('claimed', 0)
+                          ->get()
+                          ->getRowArray();
+            
+            if ($existing) {
+                // Update existing record
+                $result = $db->table('winner_storage')->update($data, ['id' => $existing['id']]);
+                $winnerStorageId = $existing['id'];
+            } else {
+                // Insert new record
+                $result = $db->table('winner_storage')->insert($data);
+                $winnerStorageId = $db->insertID();
+            }
+            
+            // Store winner storage ID in session for easy retrieval
+            $session->set('winner_storage_id', $winnerStorageId);
+            
+            return $winnerStorageId;
+            
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+    
+    /**
+     * Retrieve winner data by storage ID
+     */
+    private function retrieveWinnerDataByStorageId($storageId, $session)
+    {
+        try {
+            $db = \Config\Database::connect();
+            $result = $db->table('winner_storage')
+                        ->where('id', $storageId)
+                        ->where('expires_at >', date('Y-m-d H:i:s'))
+                        ->where('claimed', 0)
+                        ->get()
+                        ->getRowArray();
+            
+            if ($result) {
+                $winnerData = json_decode($result['winner_data'], true);
+                if ($winnerData && isset($winnerData['name'])) {
+                    $session->set('winner_data', $winnerData);
+                    return $winnerData;
+                }
+            }
+            
+        } catch (\Exception $e) {
+            // Silent fail
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Update winner storage with user ID after login
+     */
+    private function updateWinnerStorageWithUserId($storageId, $userId)
+    {
+        try {
+            $db = \Config\Database::connect();
+            $db->table('winner_storage')
+               ->where('id', $storageId)
+               ->update(['user_id' => $userId]);
+            
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+
+    /**
      * Display reward system page
      */
     public function index()
     {
         $session = session();
 
-        // Check if user won a prize (from session OR from POST data)
+        // Check if user won a prize (from session OR from POST data OR from storage ID)
         $winnerData = $session->get('winner_data');
         
         // Check if winner data was passed directly via POST (PRIORITY)
@@ -36,10 +130,16 @@ class RewardController extends BaseController
             $decodedData = json_decode($postedWinnerData, true);
             if ($decodedData && isset($decodedData['name'])) {
                 $winnerData = $decodedData;
-                // Store in session for consistency
+                // Store in session AND database for persistence
                 $session->set('winner_data', $winnerData);
-                log_message('info', 'Winner data received via POST redirect');
+                $this->storeWinnerDataPersistently($winnerData, $session);
             }
+        }
+        
+        // Check for winner storage ID (for post-login recovery)
+        $winnerStorageId = $this->request->getGet('winner_storage_id');
+        if (!$winnerData && $winnerStorageId) {
+            $winnerData = $this->retrieveWinnerDataByStorageId($winnerStorageId, $session);
         }
         
         // Only try API if we don't have winner data from POST
@@ -49,10 +149,16 @@ class RewardController extends BaseController
         if (!$winnerData && $apiToken && $apiUrl) {
             $winnerData = $this->fetchWinnerDataFromApi($apiUrl, $apiToken);
             
-            // Store fetched data in session for consistency
+            // Store fetched data in session AND database for persistence
             if ($winnerData) {
                 $session->set('winner_data', $winnerData);
+                $this->storeWinnerDataPersistently($winnerData, $session);
             }
+        }
+        
+        // If we have winner data but no storage ID, store it persistently
+        if ($winnerData && !$session->get('winner_storage_id')) {
+            $this->storeWinnerDataPersistently($winnerData, $session);
         }
         
         // Check for customer login
@@ -87,9 +193,6 @@ class RewardController extends BaseController
     private function fetchWinnerDataFromApi($apiUrl, $apiToken)
     {
         try {
-            log_message('error', '=== CURL REQUEST DEBUG ===');
-            log_message('error', 'Making cURL request to: ' . $apiUrl);
-            log_message('error', 'With token: ' . substr($apiToken, 0, 10) . '...');
             
             $ch = curl_init();
             curl_setopt_array($ch, [
@@ -116,19 +219,11 @@ class RewardController extends BaseController
             $curlError = curl_error($ch);
             curl_close($ch);
             
-            log_message('error', 'cURL response code: ' . $httpCode);
-            log_message('error', 'cURL response: ' . substr($response, 0, 500));
-            log_message('error', 'cURL error: ' . ($curlError ?: 'none'));
-            log_message('error', '=== END CURL DEBUG ===');
-            log_message('info', 'API Response: ' . $response);
-            
             if ($curlError) {
-                log_message('error', 'API cURL Error: ' . $curlError);
                 return null;
             }
             
             if ($httpCode !== 200) {
-                log_message('error', 'API HTTP Error: ' . $httpCode);
                 return null;
             }
             
@@ -145,15 +240,12 @@ class RewardController extends BaseController
                     'user_ip' => $apiData['data']['user_ip']
                 ];
                 
-                log_message('info', 'Successfully fetched winner data: ' . json_encode($winnerData));
                 return $winnerData;
             } else {
-                log_message('error', 'API returned error: ' . ($apiData['message'] ?? 'Unknown error'));
                 return null;
             }
             
         } catch (\Exception $e) {
-            log_message('error', 'Exception fetching winner data: ' . $e->getMessage());
             return null;
         }
     }
@@ -276,8 +368,21 @@ class RewardController extends BaseController
             $claimId = $this->bonusClaimModel->insert($claimData);
 
             if ($claimId) {
+                // Mark winner storage as claimed
+                $winnerStorageId = $session->get('winner_storage_id');
+                if ($winnerStorageId) {
+                    $db = \Config\Database::connect();
+                    $db->table('winner_storage')
+                       ->where('id', $winnerStorageId)
+                       ->update([
+                           'claimed' => 1,
+                           'claim_id' => $claimId,
+                           'claimed_at' => date('Y-m-d H:i:s')
+                       ]);
+                }
+                
                 // Clear winner data from session after successful claim
-                $session->remove('winner_data');
+                $session->remove(['winner_data', 'winner_storage_id']);
 
                 // Get platform settings dynamically from admin settings
                 $whatsappNumber = $this->adminSettingsModel->getSetting('reward_whatsapp_number', '601159599022');

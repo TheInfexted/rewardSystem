@@ -67,6 +67,9 @@ $title = $title ?? 'Customer Login';
                         <input type="password" class="form-control" id="loginPassword" name="password" 
                                placeholder="Enter your password" required>
                     </div>
+                    <?php if (isset($redirect_url) && $redirect_url): ?>
+                    <input type="hidden" name="redirect_url" value="<?= esc($redirect_url) ?>">
+                    <?php endif; ?>
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-claim">
                             <i class="bi bi-box-arrow-in-right"></i> Login to Account
@@ -134,7 +137,22 @@ $title = $title ?? 'Customer Login';
                 showLoading(false);
                 
                 if (data.success) {
+                    // Show success message
                     showAlert(data.message, 'success');
+                    
+                    // Show reward claimed notification if applicable
+                    if (data.reward_claimed && data.reward_data) {
+                        setTimeout(() => {
+                            showAlert(`🎉 ${data.reward_data.bonus_type} claimed successfully! Your claim ID is: ${data.reward_data.claim_id}`, 'info');
+                        }, 1500);
+                    }
+                    
+                    // Show warning if auto-claim failed
+                    if (data.warning) {
+                        setTimeout(() => {
+                            showAlert(`Warning: ${data.warning}`, 'warning');
+                        }, 2000);
+                    }
                     
                     if (data.redirect) {
                         // Redirect to dashboard
@@ -158,8 +176,6 @@ $title = $title ?? 'Customer Login';
             });
         });
 
-        // Debug: Log page load
-        console.log('Customer login page loaded');
     </script>
 </body>
 </html>
