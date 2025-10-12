@@ -75,7 +75,6 @@ class RewardController extends BaseController
             'logged_in' => $customerLoggedIn && !empty($customerData),
             'customer_data' => $customerData,
             'has_prize_data' => !empty($winnerData) && is_array($winnerData) && isset($winnerData['name']),
-            'show_dashboard_access' => true,
             'api_redirect' => !empty($apiToken)
         ];
 
@@ -216,99 +215,6 @@ class RewardController extends BaseController
         }
     }
 
-    /**
-     * Customer login for existing users
-     */
-    public function login()
-    {
-        if (!$this->request->isAJAX()) {
-            return redirect()->to('/reward');
-        }
-
-        $validation = \Config\Services::validation();
-        $validation->setRules([
-            'username' => 'required|min_length[3]|max_length[50]',
-            'password' => 'required|min_length[4]'
-        ]);
-
-        if (!$validation->withRequest($this->request)->run()) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Please fill in all required fields correctly.',
-                'errors' => $validation->getErrors()
-            ]);
-        }
-
-        $username = $this->request->getPost('username');
-        $password = $this->request->getPost('password');
-        
-        // Debug logging
-        log_message('info', 'Login attempt for username: ' . $username);
-        log_message('info', 'Password provided length: ' . strlen($password));
-        
-        try {
-            // Find customer by username
-            $customer = $this->customerModel->where('username', $username)
-                                        ->where('is_active', 1)
-                                        ->first();
-            
-            if (!$customer) {
-                log_message('info', 'Customer not found: ' . $username);
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Invalid username or password.'
-                ]);
-            }
-            
-            log_message('info', 'Customer found, stored password hash: ' . substr($customer['password'], 0, 20) . '...');
-            
-            // Verify password
-            $passwordValid = password_verify($password, $customer['password']);
-            log_message('info', 'Password verification result: ' . ($passwordValid ? 'VALID' : 'INVALID'));
-            
-            if ($passwordValid) {
-                // Update last login
-                $this->customerModel->update($customer['id'], [
-                    'last_login' => date('Y-m-d H:i:s')
-                ]);
-                
-                // Set session data
-                session()->set([
-                    'customer_id' => $customer['id'],
-                    'customer_logged_in' => true,
-                    'customer_data' => [
-                        'id' => $customer['id'],
-                        'username' => $customer['username'],
-                        'name' => $customer['name'] ?? $customer['username'],
-                        'phone' => $customer['phone'] ?? $customer['username'],
-                        'points' => $customer['points'] ?? 0,
-                    ]
-                ]);
-
-                log_message('info', 'Login successful for customer ID: ' . $customer['id']);
-
-                return $this->response->setJSON([
-                    'success' => true,
-                    'message' => 'Login successful!',
-                    'redirect' => base_url('customer/dashboard'),
-                ]);
-            }
-            
-            log_message('info', 'Password verification failed for username: ' . $username);
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Invalid username or password.'
-            ]);
-            
-        } catch (\Exception $e) {
-            log_message('error', 'Login error: ' . $e->getMessage());
-            log_message('error', 'Stack trace: ' . $e->getTraceAsString());
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Login failed. Please try again.'
-            ]);
-        }
-    }
 
     /**
      * Claim reward after authentication
@@ -427,7 +333,7 @@ class RewardController extends BaseController
             ]);
         }
         
-        return redirect()->to('/reward')->with('success', 'Logged out successfully.');
+        return redirect()->to('/customer')->with('success', 'Logged out successfully.');
     }
 
     /**

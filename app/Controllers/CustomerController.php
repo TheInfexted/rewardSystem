@@ -25,17 +25,135 @@ class CustomerController extends BaseController
         $this->adminSettingsModel = new AdminSettingsModel();
     }
 
+    /**
+     * Display customer login page
+     */
+    public function login()
+    {
+        $session = session();
+        
+        // Check if customer is already logged in
+        $customerId = $session->get('customer_id');
+        $customerLoggedIn = $session->get('customer_logged_in');
+        
+        if ($customerId && $customerLoggedIn) {
+            $customerData = $this->customerModel->find($customerId);
+            if ($customerData) {
+                return redirect()->to('/customer/dashboard');
+            } else {
+                // Customer not found, clear session
+                $session->remove(['customer_id', 'customer_logged_in', 'customer_data']);
+            }
+        }
+
+        $data = [
+            'title' => 'Customer Login'
+        ];
+
+        return view('customer/login', $data);
+    }
+
+    /**
+     * Handle customer login attempt
+     */
+    public function attemptLogin()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->to('/customer');
+        }
+
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'username' => 'required|min_length[3]|max_length[50]',
+            'password' => 'required|min_length[4]'
+        ]);
+
+        if (!$validation->withRequest($this->request)->run()) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Please fill in all required fields correctly.',
+                'errors' => $validation->getErrors()
+            ]);
+        }
+
+        $username = $this->request->getPost('username');
+        $password = $this->request->getPost('password');
+        
+        // Debug logging
+        log_message('info', 'Customer login attempt for username: ' . $username);
+        log_message('info', 'Password provided length: ' . strlen($password));
+        
+        try {
+            // Find customer by username
+            $customer = $this->customerModel->where('username', $username)->first();
+            
+            if (!$customer) {
+                log_message('info', 'Customer not found for username: ' . $username);
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Invalid username or password.'
+                ]);
+            }
+            
+            // Verify password
+            $passwordValid = password_verify($password, $customer['password']);
+            log_message('info', 'Password verification result: ' . ($passwordValid ? 'valid' : 'invalid'));
+            
+            if ($passwordValid) {
+                // Update last login
+                $this->customerModel->update($customer['id'], [
+                    'last_login' => date('Y-m-d H:i:s')
+                ]);
+                
+                // Set session data
+                session()->set([
+                    'customer_id' => $customer['id'],
+                    'customer_logged_in' => true,
+                    'customer_data' => [
+                        'id' => $customer['id'],
+                        'username' => $customer['username'],
+                        'name' => $customer['name'] ?? $customer['username'],
+                        'phone' => $customer['phone'] ?? $customer['username'],
+                        'points' => $customer['points'] ?? 0,
+                    ]
+                ]);
+
+                log_message('info', 'Login successful for customer ID: ' . $customer['id']);
+
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Login successful!',
+                    'redirect' => base_url('customer/dashboard'),
+                ]);
+            }
+            
+            log_message('info', 'Password verification failed for username: ' . $username);
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Invalid username or password.'
+            ]);
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Login error: ' . $e->getMessage());
+            log_message('error', 'Stack trace: ' . $e->getTraceAsString());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Login failed. Please try again.'
+            ]);
+        }
+    }
+
     public function dashboard()
     {
         $customerId = session()->get('customer_id');
         if (!$customerId) {
-            return redirect()->to('/reward')->with('error', 'Please log in to access dashboard');
+            return redirect()->to('/customer')->with('error', 'Please log in to access dashboard');
         }
 
         try {
             $customer = $this->customerModel->find($customerId);
             if (!$customer) {
-                return redirect()->to('/reward')->with('error', 'Customer not found');
+                return redirect()->to('/customer')->with('error', 'Customer not found');
             }
 
             // Get week data with dynamic calculations
@@ -100,7 +218,7 @@ class CustomerController extends BaseController
         
         } catch (\Exception $e) {
             log_message('error', 'Customer dashboard error: ' . $e->getMessage());
-            return redirect()->to('/reward')->with('error', 'Unable to load dashboard');
+            return redirect()->to('/customer')->with('error', 'Unable to load dashboard');
         }
     }
 

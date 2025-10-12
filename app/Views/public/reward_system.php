@@ -82,39 +82,21 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                         </div>
 
                     <?php else: ?>
-                        <!-- Not Logged In - Show Login/Register Options -->
+                        <!-- Not Logged In - Show Registration Options -->
                         <div id="authContainer">
-                            <!-- Login Form (Initially Hidden) -->
-                            <div id="loginForm" style="display: none;">
-                                <h5 class="text-center text-warning mb-3">Login to Your Account</h5>
-                                <form id="customerLoginForm">
-                                    <div class="mb-3">
-                                        <input type="text" class="form-control" id="loginUsername" name="username" 
-                                               placeholder="Enter your username" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <input type="password" class="form-control" id="loginPassword" name="password" 
-                                               placeholder="Enter your password" required>
-                                    </div>
-                                    <div class="d-grid gap-2">
-                                        <button type="submit" class="btn btn-claim">
-                                            <i class="bi bi-box-arrow-in-right"></i> Login
-                                        </button>
-                                        <button type="button" class="btn btn-platform" onclick="showRegistration()">
-                                            <i class="bi bi-arrow-left"></i> Back to Registration
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-
                             <!-- Registration Options (Initially Visible) -->
                             <div id="registrationOptions">
                                 <h5 class="text-center text-warning mb-3">Create Account to Claim</h5>
                                 <p class="text-center text-dark mb-4">We'll create an instant account for you!</p>
                                 
-                                <button type="button" class="btn btn-claim" onclick="autoRegister()">
-                                    <i class="bi bi-lightning-fill"></i> Create New Account
-                                </button>
+                                <div class="d-grid gap-2">
+                                    <button type="button" class="btn btn-claim" onclick="autoRegister()">
+                                        <i class="bi bi-lightning-fill"></i> Create New Account
+                                    </button>
+                                    <a href="<?= base_url('customer') ?>" class="btn btn-platform">
+                                        <i class="bi bi-box-arrow-in-right"></i> Already have an account? Login
+                                    </a>
+                                </div>
                             </div>
                             
                             <!-- Account Created Step (Hidden Initially) -->
@@ -183,43 +165,17 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                 <?php else: ?>
                     <!-- Not Logged In - Show Login Options -->
                     <div id="authContainer">
-                        <!-- Login Form (Initially Hidden) -->
-                        <div id="loginForm" style="display: none;">
-                            <h5 class="text-center text-warning mb-3">Login to Your Account</h5>
-                            <form id="customerLoginForm">
-                                <div class="mb-3">
-                                    <input type="text" class="form-control" id="loginUsername" name="username" 
-                                           placeholder="Enter your username" required>
-                                </div>
-                                <div class="mb-3">
-                                    <input type="password" class="form-control" id="loginPassword" name="password" 
-                                           placeholder="Enter your password" required>
-                                </div>
-                                <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-claim">
-                                        <i class="bi bi-box-arrow-in-right"></i> Login
-                                    </button>
-                                    <button type="button" class="btn btn-platform" onclick="showRegistration()">
-                                        <i class="bi bi-arrow-left"></i> Back
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <!-- Default Options -->
-                        <div id="registrationOptions">
-                            <div class="no-prize-message">
-                                <h3><i class="bi bi-person-circle"></i> Account Access</h3>
-                                <p>Login to access your dashboard or create a new account.</p>
-                                
-                                <div class="d-grid gap-2 mt-4">
-                                    <button type="button" class="btn btn-claim" onclick="showLogin()">
-                                        <i class="bi bi-box-arrow-in-right"></i> Login to Account
-                                    </button>
-                                    <button type="button" class="btn btn-platform" onclick="autoRegister()">
-                                        <i class="bi bi-person-plus-fill"></i> Create New Account
-                                    </button>
-                                </div>
+                        <div class="no-prize-message">
+                            <h3><i class="bi bi-person-circle"></i> Account Access</h3>
+                            <p>Login to access your dashboard or create a new account.</p>
+                            
+                            <div class="d-grid gap-2 mt-4">
+                                <a href="<?= base_url('customer') ?>" class="btn btn-claim">
+                                    <i class="bi bi-box-arrow-in-right"></i> Login to Account
+                                </a>
+                                <button type="button" class="btn btn-platform" onclick="autoRegister()">
+                                    <i class="bi bi-person-plus-fill"></i> Create New Account
+                                </button>
                             </div>
                         </div>
                         
@@ -247,9 +203,9 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                             </div>
 
                             <div class="d-grid gap-2 mt-3">
-                                <button type="button" class="btn btn-claim" onclick="autoLoginAfterRegister()">
-                                    <i class="bi bi-box-arrow-in-right"></i> Login
-                                </button>
+                                <a href="<?= base_url('customer') ?>" class="btn btn-claim">
+                                    <i class="bi bi-box-arrow-in-right"></i> Go to Login Page
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -292,61 +248,6 @@ $isLoggedIn = isset($logged_in) && $logged_in;
             spinner.classList.toggle('active', show);
         }
 
-        // Toggle between login and registration
-        function showLogin() {
-            document.getElementById('registrationOptions').style.display = 'none';
-            document.getElementById('loginForm').style.display = 'block';
-        }
-
-        function showRegistration() {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('registrationOptions').style.display = 'block';
-        }
-
-        // Customer login
-        document.getElementById('customerLoginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            formData.append(csrfName, csrfToken);
-            showLoading(true);
-            
-            fetch('<?= base_url('reward/login') ?>', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                showLoading(false);
-                
-                if (data.success) {
-                    showAlert(data.message, 'success');
-                    
-                    // CHANGE THIS PART: Check if redirect URL exists
-                    if (data.redirect) {
-                        // Redirect to dashboard
-                        setTimeout(() => {
-                            window.location.href = data.redirect;
-                        }, 1000);
-                    } else {
-                        // Fallback: reload page
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1500);
-                    }
-                } else {
-                    showAlert(data.message, 'danger');
-                }
-            })
-            .catch(error => {
-                showLoading(false);
-                showAlert('Login failed. Please try again.', 'danger');
-                console.error('Error:', error);
-            });
-        });
 
         function autoRegister() {
             showLoading(true);
@@ -484,47 +385,6 @@ $isLoggedIn = isset($logged_in) && $logged_in;
             });
         });
 
-        function autoLoginAfterRegister() {
-        const username = document.getElementById('displayUsername')?.textContent?.trim();
-        const password = document.getElementById('displayPassword')?.textContent?.trim();
-
-        if (!username || !password) {
-            showAlert('Missing credentials. Please try again.', 'danger');
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('username', username);
-        formData.append('password', password);
-        formData.append(csrfName, csrfToken);
-
-        showLoading(true);
-
-        fetch('<?= base_url('reward/login') ?>', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            showLoading(false);
-            if (data.success) {
-                showAlert(data.message, 'success');
-                setTimeout(() => {
-                    window.location.href = data.redirect;
-                }, 1000);
-            } else {
-                showAlert(data.message || 'Login failed.', 'danger');
-            }
-        })
-        .catch(error => {
-            showLoading(false);
-            showAlert('Login error. Please try again.', 'danger');
-            console.error('Auto login error:', error);
-        });
-    }
 
         // Debug: Log session data on page load
         console.log('Reward page loaded');

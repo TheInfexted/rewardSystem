@@ -42,7 +42,6 @@ $routes->group('reward', function($routes) {
     $routes->match(['get', 'post'], '/', 'RewardController::index');
     $routes->get('test', 'RewardController::test');
     $routes->post('auto-register', 'RewardController::autoRegister');
-    $routes->post('login', 'RewardController::login');
     $routes->get('logout', 'RewardController::logout');
     $routes->post('logout', 'RewardController::logout');
     $routes->post('claim-reward', 'RewardController::claimReward'); 
@@ -50,6 +49,8 @@ $routes->group('reward', function($routes) {
 
 // Customer routes
 $routes->group('customer', function($routes) {
+    $routes->match(['get', 'post'], '/', 'CustomerController::login');
+    $routes->post('login', 'CustomerController::attemptLogin');
     $routes->get('dashboard', 'CustomerController::dashboard');
     $routes->post('checkin', 'CustomerController::checkin');
     $routes->post('updateDashboardColor', 'CustomerController::updateDashboardColor');
