@@ -552,7 +552,7 @@
                 <!-- Image-based Fortune Wheel -->
                 <section class="wrap-fortuneWheel pb-5">
                     <section class="wrap-text-frame text-center">
-                        <p class="m-0 glow">Free <span id="freeSpinsText">3</span> Spins!</p>
+                        <p class="m-0 glow">Free <span id="freeSpinsText"><?= $max_daily_spins ?></span> Spins!</p>
                         <p class="m-0"><?= esc($page_data['free_spins_subtitle'] ?? 'Try your luck now and win up to 120% BONUS!') ?></p>
                     </section>
                 

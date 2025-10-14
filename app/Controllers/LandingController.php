@@ -82,6 +82,7 @@ class LandingController extends BaseController
             'page_data' => $this->landingPageModel->getActiveData(),
             'wheel_items' => $this->wheelItemsModel->getWheelItems(),
             'spins_remaining' => $spinsRemaining,
+            'max_daily_spins' => $maxSpinsPerDay,
             'recent_wins' => [],
             'bonus_settings' => $bonusSettings,
             'music_data' => $this->landingPageMusicModel->getActiveMusic(),

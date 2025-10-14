@@ -327,7 +327,7 @@
                                   class="form-control bg-secondary text-light border-0" 
                                   rows="2"
                                   placeholder="<?= t('Admin.landing.fields.free_spins_subtitle_placeholder', [], 'Try your luck now and win up to 120% BONUS!') ?>"><?= esc($landing_data['free_spins_subtitle'] ?? 'Try your luck now and win up to 120% BONUS!') ?></textarea>
-                        <small class="text-muted"><?= t('Admin.landing.fields.free_spins_subtitle_help') ?></small>
+                        <small class="text-muted"><?= t('Admin.landing.fields.free_spins_subtitle_help', ['spins' => $max_daily_spins]) ?></small>
                     </div>
                 </div>
             </div>

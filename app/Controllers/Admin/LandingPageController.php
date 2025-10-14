@@ -14,6 +14,8 @@ use \App\Models\WheelSoundModel;
 class LandingPageController extends BaseController
 {
     protected $landingPageModel;
+    protected $wheelItemsModel;
+    protected $landingPageMusicModel;
     protected $wheelSoundModel;
     protected $adminSettingsModel;
     protected $seoModel;
@@ -60,12 +62,16 @@ class LandingPageController extends BaseController
             
             // Get bonus settings for the modal
             $bonusSettings = $this->adminSettingsModel->getBonusSettings();
+            
+            // Get max daily spins for dynamic help text
+            $maxDailySpins = $this->adminSettingsModel->getSetting('max_daily_spins', 3);
 
             $data = [
                 'title' => 'Landing Page Builder',
                 'landing_data' => $landingData ?: [],
                 'seo_data' => $seoData ?: [],
                 'bonus_settings' => $bonusSettings,
+                'max_daily_spins' => $maxDailySpins,
             ];
 
             return view('admin/landing_page/builder', $data);

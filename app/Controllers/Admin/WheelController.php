@@ -4,14 +4,17 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Models\WheelItemsModel;
+use App\Models\AdminSettingsModel;
 
 class WheelController extends BaseController
 {
     protected $wheelItemsModel;
+    protected $adminSettingsModel;
 
     public function __construct()
     {
         $this->wheelItemsModel = new WheelItemsModel();
+        $this->adminSettingsModel = new AdminSettingsModel();
     }
 
     /**
@@ -155,5 +158,77 @@ class WheelController extends BaseController
             'total' => $total,
             'valid' => ($total <= 100)
         ]);
+    }
+
+    /**
+     * Get wheel settings
+     */
+    public function getSettings()
+    {
+        try {
+            $maxDailySpins = $this->adminSettingsModel->getSetting('max_daily_spins', 3);
+            
+            return $this->response->setJSON([
+                'success' => true,
+                'settings' => [
+                    'max_daily_spins' => (int)$maxDailySpins
+                ]
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'Error getting wheel settings: ' . $e->getMessage());
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to load settings'
+            ]);
+        }
+    }
+
+    /**
+     * Update wheel settings
+     */
+    public function updateSettings()
+    {
+        try {
+            $rules = [
+                'max_daily_spins' => 'required|integer|greater_than[0]'
+            ];
+
+            if ($this->validate($rules)) {
+                $maxDailySpins = $this->request->getPost('max_daily_spins');
+                
+                // Update the setting
+                $success = $this->adminSettingsModel->setSetting(
+                    'max_daily_spins', 
+                    $maxDailySpins,
+                    'Maximum number of free spins users can get per day'
+                );
+
+                if ($success) {
+                    return $this->response->setJSON([
+                        'success' => true,
+                        'message' => 'Settings updated successfully'
+                    ]);
+                } else {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'Failed to update settings'
+                    ]);
+                }
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Invalid input data',
+                    'errors' => $this->validator->getErrors()
+                ]);
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Error updating wheel settings: ' . $e->getMessage());
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'An error occurred while updating settings'
+            ]);
+        }
     }
 }

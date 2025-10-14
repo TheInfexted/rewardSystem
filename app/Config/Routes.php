@@ -138,7 +138,9 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
         $routes->get('edit/(:num)', 'Admin\WheelController::edit/$1');
         $routes->post('edit/(:num)', 'Admin\WheelController::edit/$1');
         $routes->get('delete/(:num)', 'Admin\WheelController::delete/$1');
-        $routes->get('check-rates', 'Admin\WheelController::checkRates'); 
+        $routes->get('check-rates', 'Admin\WheelController::checkRates');
+        $routes->get('get-settings', 'Admin\WheelController::getSettings');
+        $routes->post('update-settings', 'Admin\WheelController::updateSettings');
     });
     
     // Bonus management routes

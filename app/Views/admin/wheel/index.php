@@ -6,9 +6,14 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
                 <h1 class="text-gold"><?= t('Admin.wheel.title') ?></h1>
-                <a href="<?= base_url('admin/wheel/add') ?>" class="btn btn-gold">
-                    <i class="bi bi-plus-circle"></i> <?= t('Admin.wheel.add_item') ?>
-                </a>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-gold" data-bs-toggle="modal" data-bs-target="#wheelSettingsModal">
+                        <i class="bi bi-gear"></i> <?= t('Admin.wheel.settings.button') ?>
+                    </button>
+                    <a href="<?= base_url('admin/wheel/add') ?>" class="btn btn-gold">
+                        <i class="bi bi-plus-circle"></i> <?= t('Admin.wheel.add_item') ?>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -135,10 +140,52 @@
     </div>
 </div>
 
+<!-- Wheel Settings Modal -->
+<div class="modal fade" id="wheelSettingsModal" tabindex="-1" aria-labelledby="wheelSettingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark border-gold">
+            <div class="modal-header bg-black border-gold">
+                <h5 class="modal-title text-gold" id="wheelSettingsModalLabel">
+                    <i class="bi bi-gear"></i> <?= t('Admin.wheel.settings.modal_title') ?>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="wheelSettingsForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="maxDailySpins" class="form-label text-light">
+                            <i class="bi bi-arrow-clockwise"></i> <?= t('Admin.wheel.settings.max_daily_spins') ?>
+                        </label>
+                        <input type="number" 
+                               class="form-control bg-dark text-light border-gold" 
+                               id="maxDailySpins" 
+                               name="max_daily_spins" 
+                               min="1" 
+                               required>
+                        <div class="form-text text-muted">
+                            <?= t('Admin.wheel.settings.max_daily_spins_help') ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-black border-gold">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= t('Admin.wheel.settings.cancel') ?></button>
+                    <button type="submit" class="btn btn-gold">
+                        <i class="bi bi-check-circle"></i> <?= t('Admin.wheel.settings.save_settings') ?>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
 const translations = {
     confirmDelete: '<?= t('Admin.wheel.confirm_delete') ?>',
-    totalRateWarning: '<?= t('Admin.wheel.total_rate_warning', [], 'Total winning rate is {rate}%. Should be 100% for balanced odds.') ?>'
+    totalRateWarning: '<?= t('Admin.wheel.total_rate_warning', [], 'Total winning rate is {rate}%. Should be 100% for balanced odds.') ?>',
+    settingsSaved: '<?= t('Admin.wheel.settings.settings_saved') ?>',
+    settingsFailed: '<?= t('Admin.wheel.settings.settings_failed') ?>',
+    settingsError: '<?= t('Admin.wheel.settings.settings_error') ?>',
+    savingSettings: '<?= t('Admin.wheel.settings.saving_settings') ?>'
 };
 
 function confirmDelete(id) {
@@ -163,7 +210,93 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.warn(translations.totalRateWarning.replace('{rate}', data.total));
             }
         });
+    
+    // Load current settings when modal is opened
+    document.getElementById('wheelSettingsModal').addEventListener('show.bs.modal', function () {
+        loadWheelSettings();
+    });
+    
+    // Handle settings form submission
+    document.getElementById('wheelSettingsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveWheelSettings();
+    });
 });
+
+// Load current wheel settings
+function loadWheelSettings() {
+    fetch('<?= base_url('admin/wheel/get-settings') ?>')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('maxDailySpins').value = data.settings.max_daily_spins || 3;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading settings:', error);
+        });
+}
+
+// Save wheel settings
+function saveWheelSettings() {
+    const formData = new FormData(document.getElementById('wheelSettingsForm'));
+    const submitButton = document.querySelector('#wheelSettingsForm button[type="submit"]');
+    const originalText = submitButton.innerHTML;
+    
+    // Disable button and show loading
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<i class="bi bi-hourglass-split"></i> ' + translations.savingSettings;
+    
+    fetch('<?= base_url('admin/wheel/update-settings') ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            showAlert(translations.settingsSaved, 'success');
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('wheelSettingsModal'));
+            modal.hide();
+        } else {
+            showAlert(data.message || translations.settingsFailed, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error saving settings:', error);
+        showAlert(translations.settingsError, 'error');
+    })
+    .finally(() => {
+        // Re-enable button
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalText;
+    });
+}
+
+// Show alert message
+function showAlert(message, type) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    // Insert alert at the top of the page
+    const container = document.querySelector('.container-fluid');
+    container.insertAdjacentHTML('afterbegin', alertHtml);
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        const alert = container.querySelector('.alert');
+        if (alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }
+    }, 5000);
+}
 </script>
 
 <style>
