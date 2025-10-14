@@ -292,11 +292,13 @@
                         <small>For spinning the wheel</small>
                     </button>
                     
+                    <!-- Temporarily hidden User Wallet option
                     <button class="btn btn-wallet-option" onclick="selectWallet('user')">
                         <i class="bi bi-cash-coin"></i>
                         <span>User Wallet</span>
                         <small>Main balance</small>
                     </button>
+                    -->
                 </div>
             </div>
         </div>
@@ -828,14 +830,25 @@ function selectWallet(walletType) {
 
 // Contact customer service with dynamic settings
 function contactCustomerService(platform) {
+    // Get contact details from dynamic config (loaded from admin_settings)
+    const whatsappNumber = dashboardPhpConfig.whatsappNumber;
+    const telegramUsername = dashboardPhpConfig.telegramUsername;
+    
+    // Validate that contact details are properly configured
+    if (platform === 'whatsapp' && (!whatsappNumber || whatsappNumber.trim() === '')) {
+        alert('WhatsApp contact is not configured. Please contact administrator.');
+        return;
+    }
+    
+    if (platform === 'telegram' && (!telegramUsername || telegramUsername.trim() === '')) {
+        alert('Telegram contact is not configured. Please contact administrator.');
+        return;
+    }
+    
     // Prepare the message based on wallet type
     const walletName = selectedWalletType === 'spin' ? 'Spin Wallet' : 'User Wallet';
     const message = `Hi, I want to deposit into my ${walletName}.\nMy User ID is: ${dashboardPhpConfig.username}`;
     const encodedMessage = encodeURIComponent(message);
-    
-    // Get contact details from dynamic config (loaded from admin_settings)
-    const whatsappNumber = dashboardPhpConfig.whatsappNumber;
-    const telegramUsername = dashboardPhpConfig.telegramUsername;
     
     // Create platform URLs
     let redirectUrl = '';

@@ -286,25 +286,25 @@ class CustomerController extends BaseController
                 $contactSettings = $db->query("
                     SELECT setting_key, setting_value 
                     FROM admin_settings 
-                    WHERE setting_key IN ('whatsapp_number', 'telegram_username')
+                    WHERE setting_key IN ('reward_whatsapp_number', 'reward_telegram_username')
                 ")->getResultArray();
                 
-                $whatsappNumber = '60102763672'; // Default
-                $telegramUsername = 'brendxn1127'; // Default
+                $whatsappNumber = null;
+                $telegramUsername = null;
                 
                 foreach ($contactSettings as $setting) {
-                    if ($setting['setting_key'] === 'whatsapp_number') {
+                    if ($setting['setting_key'] === 'reward_whatsapp_number') {
                         $whatsappNumber = $setting['setting_value'];
-                    } elseif ($setting['setting_key'] === 'telegram_username') {
+                    } elseif ($setting['setting_key'] === 'reward_telegram_username') {
                         $telegramUsername = $setting['setting_value'];
                     }
                 }
                 
             } catch (\Exception $e) {
                 log_message('error', 'Failed to get contact settings: ' . $e->getMessage());
-                // Fallback to defaults if admin settings fail
-                $whatsappNumber = '60102763672';
-                $telegramUsername = 'brendxn1127';
+                // No fallback values - configuration must be properly set
+                $whatsappNumber = null;
+                $telegramUsername = null;
             }
             
             $data = [
