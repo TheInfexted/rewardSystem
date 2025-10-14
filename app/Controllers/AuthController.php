@@ -47,7 +47,9 @@ class AuthController extends BaseController
             $user = $this->UserModel->findUserByEmail(['email'=>$email]);
             // echo json_encode($user);
 
-            if (!$user) {
+            // Check if user exists and has valid data (not an error array/string)
+            if (!$user || !is_array($user) || !isset($user['password']) || !isset($user['email'])) {
+                log_message('error', 'Login failed - User not found or invalid data for: ' . $email);
                 return redirect()->back()->withInput()->with('error', 'Invalid email or password');
             }
 

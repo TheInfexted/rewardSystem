@@ -1122,17 +1122,17 @@
             }
             
             // Validate file size
-            const maxImageSize = 5 * 1024 * 1024; // 5MB for images
-            const maxVideoSize = 50 * 1024 * 1024; // 50MB for videos
+            const maxImageSize = 1 * 1024 * 1024; // 1MB for images
+            const maxVideoSize = 5 * 1024 * 1024; // 5MB for videos
             
             if (isImage && file.size > maxImageSize) {
-                showAlert('error', 'Image file too large. Maximum size is 5MB.');
+                showAlert('error', 'Image file too large. Maximum size is 1MB.');
                 input.value = '';
                 return;
             }
             
             if (isVideo && file.size > maxVideoSize) {
-                showAlert('error', 'Video file too large. Maximum size is 50MB.');
+                showAlert('error', 'Video file too large. Maximum size is 5MB.');
                 input.value = '';
                 return;
             }

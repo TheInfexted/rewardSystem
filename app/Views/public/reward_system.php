@@ -133,11 +133,6 @@ $isLoggedIn = isset($logged_in) && $logged_in;
                                         <span>Telegram</span>
                                     </div>
                                 </div>
-                                <div class="text-center mt-3">
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="debugSession()">
-                                        <i class="bi bi-bug"></i> Debug Session
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     <?php endif; ?>

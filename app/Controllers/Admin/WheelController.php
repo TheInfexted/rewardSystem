@@ -32,16 +32,17 @@ class WheelController extends BaseController
      */
     public function add()
     {
-        // Count current active items
-        $activeItemCount = $this->wheelItemsModel->where('is_active', 1)->countAllResults();
+        // Count current active items - use findAll() to avoid query builder caching issues
+        $activeItems = $this->wheelItemsModel->where('is_active', 1)->findAll();
+        $activeItemCount = count($activeItems);
     
         // Prevent adding more than 8
-        if ($activeItemCount >= 8 && $this->request->getMethod() !== 'post') {
+        if ($activeItemCount >= 8 && strtolower($this->request->getMethod()) !== 'post') {
             return redirect()->to('/admin/wheel')
                              ->with('error', 'You already have 8 active wheel items. Remove one to add a new item.');
         }
         
-        if ($this->request->getMethod() === 'post') {
+        if (strtolower($this->request->getMethod()) === 'post') {
             $rules = [
                 'item_name' => 'required|max_length[100]',
                 'item_prize' => 'required|numeric|greater_than_equal_to[0]',

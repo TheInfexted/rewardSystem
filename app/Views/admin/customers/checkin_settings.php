@@ -418,22 +418,33 @@
 }
 </style>
 
-<!-- JavaScript for Check-in Settings -->
+<!-- Include the external JavaScript file -->
+<script src="<?= base_url('js/checkin-settings.js') ?>"></script>
+
+<!-- Initialize the check-in settings manager -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the check-in settings manager
+    if (typeof CheckinSettingsManager !== 'undefined') {
+        window.checkinManager = new CheckinSettingsManager();
+    }
+    
     // Handle settings form submission
     const settingsForm = document.getElementById('checkinSettingsForm');
     if (settingsForm) {
         settingsForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            updateCheckinSettings();
+            if (window.checkinManager) {
+                window.checkinManager.updateSettings();
+            } else {
+                // Fallback to inline function if external script fails
+                updateCheckinSettings();
+            }
         });
     }
 });
 
-/**
- * Update check-in settings
- */
+// Fallback functions in case external script fails to load
 function updateCheckinSettings() {
     const formData = new FormData(document.getElementById('checkinSettingsForm'));
     
@@ -473,14 +484,17 @@ function updateCheckinSettings() {
     });
 }
 
-/**
- * Reset check-in progress
- */
 function resetCheckinProgress(resetType) {
+    if (window.checkinManager) {
+        window.checkinManager.resetProgress(resetType);
+        return;
+    }
+    
+    // Fallback implementation
     const messages = {
-        'current_streak': '<?= t('Admin.customers.checkin.confirm_reset_streak') ?>',
-        'monthly_progress': '<?= t('Admin.customers.checkin.confirm_reset_monthly') ?>',
-        'all_history': '<?= t('Admin.customers.checkin.confirm_reset_all') ?>'
+        'current_streak': 'Are you sure you want to reset the current streak?',
+        'monthly_progress': 'Are you sure you want to reset this month\'s progress?',
+        'all_history': 'Are you sure you want to reset ALL check-in history? This cannot be undone!'
     };
     
     if (!confirm(messages[resetType] || 'Are you sure you want to proceed?')) {
@@ -516,9 +530,6 @@ function resetCheckinProgress(resetType) {
     });
 }
 
-/**
- * Show toast notification
- */
 function showToast(type, message) {
     // Create toast element
     const toast = document.createElement('div');

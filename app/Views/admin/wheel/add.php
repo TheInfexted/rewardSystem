@@ -77,10 +77,10 @@
                                    class="form-control bg-dark text-light border-gold" 
                                    value="<?= old('winning_rate', 12.5) ?>" 
                                    step="0.01"
-                                   min="0.01"
+                                   min="0"
                                    max="100"
                                    required>
-                            <small class="text-muted"><?= t('Admin.wheel.form.rate_help') ?></small>
+                            <small class="text-muted"><?= t('Admin.wheel.form.rate_help_special', [], 'Percentage chance of winning this item (0 for special items)') ?></small>
                         </div>
                     </div>
                     
