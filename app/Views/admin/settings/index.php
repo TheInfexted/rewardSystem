@@ -176,7 +176,7 @@
                                     </label>
                                     <input type="text" name="contact_link_1_name" 
                                            class="form-control form-control-sm bg-dark text-light border-gold" 
-                                           value="<?= esc($contact_settings['contact_link_1_name'] ?? 'WhatsApp Support') ?>"
+                                           value="<?= esc($contact_settings['contact_link_1_name'] ?? 'Email Support') ?>"
                                            placeholder="<?= t('Admin.settings.landing_contact.display_name_help') ?>" 
                                            maxlength="50">
                                 </div>
