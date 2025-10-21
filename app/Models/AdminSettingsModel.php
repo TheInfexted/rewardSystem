@@ -213,8 +213,8 @@ class AdminSettingsModel extends Model
                     continue;
                 }
                 
-                // Skip WhatsApp links since we handle them separately above
-                if (strpos(strtolower($name), 'whatsapp') !== false || strpos(strtolower($url), 'wa.me') !== false) {
+                // Skip only actual WhatsApp URLs (wa.me) since we handle WhatsApp separately above
+                if (strpos(strtolower($url), 'wa.me') !== false) {
                     continue;
                 }
                 
