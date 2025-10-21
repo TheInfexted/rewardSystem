@@ -186,8 +186,8 @@
                                     </label>
                                     <input type="url" name="contact_link_1_url" 
                                            class="form-control form-control-sm bg-dark text-light border-gold" 
-                                           value="<?= esc($contact_settings['contact_link_1_url'] ?? 'https://wa.me/601159599022') ?>"
-                                           placeholder="<?= t('Admin.settings.landing_contact.url_placeholder_whatsapp') ?>">
+                                           value="<?= esc($contact_settings['contact_link_1_url'] ?? 'mailto:mail@example.com') ?>"
+                                           placeholder="<?= t('Admin.settings.landing_contact.url_placeholder_email') ?>">
                                 </div>
                             </div>
                         </div>
@@ -355,14 +355,14 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="text-gold mb-0">
                             <i class="bi bi-whatsapp"></i> 
-                            WhatsApp Numbers Management
+                            <?= t('Admin.settings.whatsapp_numbers.title') ?>
                         </h5>
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" name="whatsapp_numbers_enabled" 
                                    id="whatsapp_numbers_enabled" value="1" 
                                    <?= ($whatsapp_numbers_enabled ?? '1') === '1' ? 'checked' : '' ?>>
                             <label class="form-check-label text-light" for="whatsapp_numbers_enabled">
-                                Enable
+                                <?= t('Admin.settings.whatsapp_numbers.global_enable') ?>
                             </label>
                         </div>
                     </div>
@@ -371,15 +371,14 @@
                     <div id="whatsappAlert"></div>
                     
                     <p class="text-muted small mb-3">
-                        Manage WhatsApp numbers for random selection on the landing page. 
-                        When customers click WhatsApp contact, a random number will be selected from the active list.
+                        <?= t('Admin.settings.whatsapp_numbers.description') ?>
                     </p>
                     
                     <!-- Add New Number Form -->
                     <div class="card bg-secondary border-gold mb-3">
                         <div class="card-header py-2">
                             <h6 class="text-gold mb-0">
-                                <i class="bi bi-plus-circle"></i> Add New WhatsApp Number
+                                <i class="bi bi-plus-circle"></i> <?= t('Admin.settings.whatsapp_numbers.add_new') ?>
                             </h6>
                         </div>
                         <div class="card-body py-2">
@@ -388,24 +387,24 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-2">
-                                            <label class="form-label text-light small">Phone Number</label>
+                                            <label class="form-label text-light small"><?= t('Admin.settings.whatsapp_numbers.phone_number') ?></label>
                                             <input type="text" name="phone_number" 
                                                    class="form-control form-control-sm bg-dark text-light border-gold" 
                                                    placeholder="60123456789" required>
-                                            <small class="text-muted">Include country code (e.g., 60123456789)</small>
+                                            <small class="text-muted"><?= t('Admin.settings.whatsapp_numbers.phone_number_help') ?></small>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-2">
-                                            <label class="form-label text-light small">Display Name (Optional)</label>
+                                            <label class="form-label text-light small"><?= t('Admin.settings.whatsapp_numbers.display_name') ?></label>
                                             <input type="text" name="display_name" 
                                                    class="form-control form-control-sm bg-dark text-light border-gold" 
-                                                   placeholder="Support Agent 1" maxlength="100">
+                                                   placeholder="<?= t('Admin.settings.whatsapp_numbers.display_name_placeholder') ?>" maxlength="100">
                                         </div>
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-gold btn-sm">
-                                    <i class="bi bi-plus"></i> Add Number
+                                    <i class="bi bi-plus"></i> <?= t('Admin.settings.whatsapp_numbers.add_button') ?>
                                 </button>
                             </form>
                         </div>
@@ -415,21 +414,21 @@
                     <div class="card bg-secondary border-gold">
                         <div class="card-header py-2">
                             <h6 class="text-gold mb-0">
-                                <i class="bi bi-list"></i> Existing WhatsApp Numbers
+                                <i class="bi bi-list"></i> <?= t('Admin.settings.whatsapp_numbers.existing_numbers') ?>
                             </h6>
                         </div>
                         <div class="card-body py-2">
                             <?php if (empty($whatsapp_numbers)): ?>
-                                <p class="text-muted text-center mb-0">No WhatsApp numbers added yet.</p>
+                                <p class="text-muted text-center mb-0"><?= t('Admin.settings.whatsapp_numbers.no_numbers') ?></p>
                             <?php else: ?>
                                 <div class="table-responsive">
                                     <table class="table table-dark table-sm mb-0">
                                         <thead>
                                             <tr>
-                                                <th>Phone Number</th>
-                                                <th>Display Name</th>
-                                                <th>Status</th>
-                                                <th>Actions</th>
+                                                <th><?= t('Admin.settings.whatsapp_numbers.table.phone_number') ?></th>
+                                                <th><?= t('Admin.settings.whatsapp_numbers.table.display_name') ?></th>
+                                                <th><?= t('Admin.settings.whatsapp_numbers.table.status') ?></th>
+                                                <th><?= t('Admin.settings.whatsapp_numbers.table.actions') ?></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -448,7 +447,7 @@
                                                               style="cursor: pointer; transition: all 0.3s ease;"
                                                               onmouseover="this.style.opacity='0.8'; this.style.transform='scale(1.1)'"
                                                               onmouseout="this.style.opacity='1'; this.style.transform='scale(1)'">
-                                                            Active
+                                                            <?= t('Admin.settings.whatsapp_numbers.status.active') ?>
                                                         </span>
                                                     <?php else: ?>
                                                         <span class="badge bg-secondary clickable-status" 
@@ -456,18 +455,20 @@
                                                               style="cursor: pointer; transition: all 0.3s ease;"
                                                               onmouseover="this.style.opacity='0.8'; this.style.transform='scale(1.1)'"
                                                               onmouseout="this.style.opacity='1'; this.style.transform='scale(1)'">
-                                                            Inactive
+                                                            <?= t('Admin.settings.whatsapp_numbers.status.inactive') ?>
                                                         </span>
                                                     <?php endif; ?>
                                                 </td>
                                                 <td>
                                                     <div class="btn-group btn-group-sm" role="group">
                                                         <button type="button" class="btn btn-outline-gold btn-sm" 
-                                                                onclick="editWhatsAppNumber(<?= $number['id'] ?>, '<?= esc($number['phone_number']) ?>', '<?= esc($number['display_name']) ?>', <?= $number['is_active'] ?>)">
+                                                                onclick="editWhatsAppNumber(<?= $number['id'] ?>, '<?= esc($number['phone_number']) ?>', '<?= esc($number['display_name']) ?>', <?= $number['is_active'] ?>)"
+                                                                title="<?= t('Admin.settings.whatsapp_numbers.actions.edit') ?>">
                                                             <i class="bi bi-pencil"></i>
                                                         </button>
                                                         <button type="button" class="btn btn-outline-danger btn-sm" 
-                                                                onclick="deleteWhatsAppNumber(<?= $number['id'] ?>, '<?= esc($number['phone_number']) ?>')">
+                                                                onclick="deleteWhatsAppNumber(<?= $number['id'] ?>, '<?= esc($number['phone_number']) ?>')"
+                                                                title="<?= t('Admin.settings.whatsapp_numbers.actions.delete') ?>">
                                                             <i class="bi bi-trash"></i>
                                                         </button>
                                                     </div>
@@ -848,7 +849,8 @@ function showToast(type, message) {
     }
 
     function deleteWhatsAppNumber(id, phoneNumber) {
-        if (!confirm(`Are you sure you want to delete WhatsApp number ${phoneNumber}?`)) {
+        const confirmMessage = '<?= t('Admin.settings.whatsapp_numbers.messages.delete_confirm') ?>'.replace('{phone}', phoneNumber);
+        if (!confirm(confirmMessage)) {
             return;
         }
         

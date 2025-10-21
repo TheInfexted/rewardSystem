@@ -296,14 +296,14 @@ class SettingsController extends BaseController
             ];
 
             if ($this->whatsappNumbersModel->insert($data)) {
-                return $this->response->setJSON([
-                    'success' => true,
-                    'message' => 'WhatsApp number added successfully!'
-                ]);
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => t('Admin.settings.whatsapp_numbers.messages.add_success')
+            ]);
             } else {
                 return $this->response->setJSON([
                     'success' => false,
-                    'message' => 'Failed to add WhatsApp number.'
+                    'message' => t('Admin.settings.whatsapp_numbers.messages.add_failed')
                 ]);
             }
 
@@ -312,7 +312,7 @@ class SettingsController extends BaseController
             
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Failed to add WhatsApp number. Please try again.'
+                'message' => t('Admin.settings.whatsapp_numbers.messages.add_failed')
             ]);
         }
     }
@@ -363,15 +363,15 @@ class SettingsController extends BaseController
             ];
 
             if ($this->whatsappNumbersModel->update($id, $data)) {
-                return $this->response->setJSON([
-                    'success' => true,
-                    'message' => 'WhatsApp number updated successfully!'
-                ]);
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => t('Admin.settings.whatsapp_numbers.messages.update_success')
+            ]);
             } else {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Failed to update WhatsApp number.'
-                ]);
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => t('Admin.settings.whatsapp_numbers.messages.update_failed')
+            ]);
             }
 
         } catch (\Exception $e) {
@@ -379,7 +379,7 @@ class SettingsController extends BaseController
             
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Failed to update WhatsApp number. Please try again.'
+                'message' => t('Admin.settings.whatsapp_numbers.messages.update_failed')
             ]);
         }
     }
@@ -409,15 +409,15 @@ class SettingsController extends BaseController
             $id = $this->request->getPost('id');
 
             if ($this->whatsappNumbersModel->delete($id)) {
-                return $this->response->setJSON([
-                    'success' => true,
-                    'message' => 'WhatsApp number deleted successfully!'
-                ]);
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => t('Admin.settings.whatsapp_numbers.messages.delete_success')
+            ]);
             } else {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Failed to delete WhatsApp number.'
-                ]);
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => t('Admin.settings.whatsapp_numbers.messages.delete_failed')
+            ]);
             }
 
         } catch (\Exception $e) {
@@ -425,7 +425,7 @@ class SettingsController extends BaseController
             
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Failed to delete WhatsApp number. Please try again.'
+                'message' => t('Admin.settings.whatsapp_numbers.messages.delete_failed')
             ]);
         }
     }
@@ -447,7 +447,7 @@ class SettingsController extends BaseController
         if (!$validation->withRequest($this->request)->run()) {
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Invalid toggle value.'
+                'message' => t('Admin.settings.whatsapp_numbers.messages.invalid_toggle')
             ]);
         }
 
@@ -460,7 +460,7 @@ class SettingsController extends BaseController
                 if (empty($activeNumbers)) {
                     return $this->response->setJSON([
                         'success' => false,
-                        'message' => 'Cannot enable WhatsApp numbers. Please add at least one active number first.'
+                        'message' => t('Admin.settings.whatsapp_numbers.messages.global_enable_failed')
                     ]);
                 }
             }
@@ -469,7 +469,7 @@ class SettingsController extends BaseController
 
             return $this->response->setJSON([
                 'success' => true,
-                'message' => 'WhatsApp numbers setting updated successfully!'
+                'message' => t('Admin.settings.whatsapp_numbers.messages.global_update_success')
             ]);
 
         } catch (\Exception $e) {
@@ -477,7 +477,7 @@ class SettingsController extends BaseController
             
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Failed to update WhatsApp setting. Please try again.'
+                'message' => t('Admin.settings.whatsapp_numbers.messages.global_update_failed')
             ]);
         }
     }
@@ -500,7 +500,7 @@ class SettingsController extends BaseController
         if (!$validation->withRequest($this->request)->run()) {
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Invalid parameters provided.'
+                'message' => t('Admin.settings.whatsapp_numbers.messages.invalid_parameters')
             ]);
         }
 
@@ -509,15 +509,15 @@ class SettingsController extends BaseController
             $isActive = $this->request->getPost('is_active');
 
             if ($this->whatsappNumbersModel->update($id, ['is_active' => $isActive])) {
-                $statusText = $isActive ? 'activated' : 'deactivated';
+                $statusText = $isActive ? t('Admin.settings.whatsapp_numbers.status.active') : t('Admin.settings.whatsapp_numbers.status.inactive');
                 return $this->response->setJSON([
                     'success' => true,
-                    'message' => "WhatsApp number {$statusText} successfully!"
+                    'message' => str_replace('{status}', $statusText, t('Admin.settings.whatsapp_numbers.messages.toggle_success'))
                 ]);
             } else {
                 return $this->response->setJSON([
                     'success' => false,
-                    'message' => 'Failed to update WhatsApp number status.'
+                    'message' => t('Admin.settings.whatsapp_numbers.messages.toggle_failed')
                 ]);
             }
 
@@ -526,7 +526,7 @@ class SettingsController extends BaseController
             
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Failed to update WhatsApp number status. Please try again.'
+                'message' => t('Admin.settings.whatsapp_numbers.messages.toggle_failed')
             ]);
         }
     }
