@@ -188,7 +188,14 @@ $routes->group('admin', ['filter' => 'auth'], function($routes) {
         $routes->post('general', 'Admin\SettingsController::updateGeneral');
         $routes->post('customer-service', 'Admin\SettingsController::updateCustomerService');
         $routes->post('swiper', 'Admin\SettingsController::updateSwiperSettings');
-        $routes->post('update-landing-contact', 'Admin\SettingsController::updateLandingPageContact'); // NEW ROUTE ADDED
+        $routes->post('update-landing-contact', 'Admin\SettingsController::updateLandingPageContact');
+        
+        // WhatsApp numbers management
+        $routes->post('add-whatsapp-number', 'Admin\SettingsController::addWhatsAppNumber');
+        $routes->post('update-whatsapp-number', 'Admin\SettingsController::updateWhatsAppNumber');
+        $routes->post('delete-whatsapp-number', 'Admin\SettingsController::deleteWhatsAppNumber');
+        $routes->post('update-whatsapp-global-toggle', 'Admin\SettingsController::updateWhatsAppGlobalToggle');
+        $routes->post('toggle-whatsapp-status', 'Admin\SettingsController::toggleWhatsAppStatus');
     });
     
     // Language management

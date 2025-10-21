@@ -179,4 +179,69 @@ class AdminSettingsModel extends Model
 
         return $enabledLinks;
     }
+
+    /**
+     * Get enabled contact links with random WhatsApp selection
+     */
+    public function getEnabledContactLinksWithRandomWhatsApp()
+    {
+        $contactSettings = $this->getContactSettings();
+        $enabledLinks = [];
+
+        // Check if WhatsApp numbers are globally enabled
+        $whatsappEnabled = $this->getSetting('whatsapp_numbers_enabled', '1');
+        
+        // First, add WhatsApp contact if globally enabled
+        if ($whatsappEnabled === '1') {
+            $whatsappUrl = $this->getRandomWhatsAppUrl();
+            if ($whatsappUrl) {
+                $enabledLinks[] = [
+                    'name' => 'WhatsApp Support',
+                    'url' => $whatsappUrl
+                ];
+            }
+        }
+        
+        // Then add other enabled contact links (excluding WhatsApp ones)
+        for ($i = 1; $i <= 3; $i++) {
+            if (($contactSettings["contact_link_{$i}_enabled"] ?? '0') === '1') {
+                $name = $contactSettings["contact_link_{$i}_name"] ?? '';
+                $url = $contactSettings["contact_link_{$i}_url"] ?? '';
+                
+                // Skip if name or URL is empty
+                if (empty($name) || empty($url)) {
+                    continue;
+                }
+                
+                // Skip WhatsApp links since we handle them separately above
+                if (strpos(strtolower($name), 'whatsapp') !== false || strpos(strtolower($url), 'wa.me') !== false) {
+                    continue;
+                }
+                
+                $enabledLinks[] = [
+                    'name' => $name,
+                    'url' => $url
+                ];
+            }
+        }
+
+        return $enabledLinks;
+    }
+
+    /**
+     * Get random WhatsApp URL from active numbers
+     */
+    public function getRandomWhatsAppUrl()
+    {
+        $whatsappModel = new \App\Models\WhatsAppNumbersModel();
+        $randomNumber = $whatsappModel->getRandomActiveNumber();
+        
+        if ($randomNumber) {
+            return $whatsappModel->generateWhatsAppUrl($randomNumber['phone_number']);
+        }
+        
+        // Fallback to default WhatsApp number if no active numbers
+        $defaultNumber = $this->getSetting('reward_whatsapp_number', '601159599022');
+        return 'https://wa.me/' . $defaultNumber;
+    }
 }

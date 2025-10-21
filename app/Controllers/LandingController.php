@@ -76,7 +76,7 @@ class LandingController extends BaseController
         $bonusSettings = $this->adminSettingsModel->getBonusSettings();
         
         // Get enabled contact links for the contact modal
-        $contactLinks = $this->adminSettingsModel->getEnabledContactLinks();
+        $contactLinks = $this->adminSettingsModel->getEnabledContactLinksWithRandomWhatsApp();
         
         $data = [
             'page_data' => $this->landingPageModel->getActiveData(),

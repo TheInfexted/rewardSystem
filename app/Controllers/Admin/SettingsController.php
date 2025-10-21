@@ -5,16 +5,19 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\UserModel;
 use App\Models\AdminSettingsModel;
+use App\Models\WhatsAppNumbersModel;
 
 class SettingsController extends BaseController
 {
     protected $userModel;
     protected $adminSettingsModel;
+    protected $whatsappNumbersModel;
 
     public function __construct()
     {
         $this->userModel = new UserModel();
         $this->adminSettingsModel = new AdminSettingsModel();
+        $this->whatsappNumbersModel = new WhatsAppNumbersModel();
     }
 
     /**
@@ -40,12 +43,25 @@ class SettingsController extends BaseController
 
         // Get contact settings for landing page
         $contactSettings = $this->adminSettingsModel->getContactSettings();
+        
+        // Get WhatsApp numbers for management
+        $whatsappNumbers = $this->whatsappNumbersModel->getNumbersForAdmin();
+        
+        // Get WhatsApp global enable setting
+        $whatsappNumbersEnabled = $this->adminSettingsModel->getSetting('whatsapp_numbers_enabled', '1');
+        
+        // Auto-disable if no numbers exist
+        if (empty($whatsappNumbers)) {
+            $whatsappNumbersEnabled = '0';
+        }
     
         $data = [
             'title' => 'Settings',
             'user' => $user,
             'customer_service_settings' => $customerServiceSettings,
-            'contact_settings' => $contactSettings
+            'contact_settings' => $contactSettings,
+            'whatsapp_numbers' => $whatsappNumbers,
+            'whatsapp_numbers_enabled' => $whatsappNumbersEnabled
         ];
     
         return view('admin/settings/index', $data);
@@ -205,16 +221,16 @@ class SettingsController extends BaseController
         }
 
         try {
-            // Save contact settings
+            // Save contact settings - allow empty values
             $contactSettings = [
-                'contact_link_1_name' => $this->request->getPost('contact_link_1_name') ?: 'WhatsApp Support',
-                'contact_link_1_url' => $this->request->getPost('contact_link_1_url') ?: 'https://wa.me/601159599022',
+                'contact_link_1_name' => $this->request->getPost('contact_link_1_name') ?? '',
+                'contact_link_1_url' => $this->request->getPost('contact_link_1_url') ?? '',
                 'contact_link_1_enabled' => $this->request->getPost('contact_link_1_enabled') ? '1' : '0',
-                'contact_link_2_name' => $this->request->getPost('contact_link_2_name') ?: 'Telegram Support',
-                'contact_link_2_url' => $this->request->getPost('contact_link_2_url') ?: 'https://t.me/harryford19',
+                'contact_link_2_name' => $this->request->getPost('contact_link_2_name') ?? '',
+                'contact_link_2_url' => $this->request->getPost('contact_link_2_url') ?? '',
                 'contact_link_2_enabled' => $this->request->getPost('contact_link_2_enabled') ? '1' : '0',
-                'contact_link_3_name' => $this->request->getPost('contact_link_3_name') ?: 'Email Support',
-                'contact_link_3_url' => $this->request->getPost('contact_link_3_url') ?: 'mailto:support@yourcompany.com',
+                'contact_link_3_name' => $this->request->getPost('contact_link_3_name') ?? '',
+                'contact_link_3_url' => $this->request->getPost('contact_link_3_url') ?? '',
                 'contact_link_3_enabled' => $this->request->getPost('contact_link_3_enabled') ? '1' : '0'
             ];
 
@@ -234,6 +250,283 @@ class SettingsController extends BaseController
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Failed to update contact settings. Please try again.'
+            ]);
+        }
+    }
+
+    /**
+     * Add new WhatsApp number
+     */
+    public function addWhatsAppNumber()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back()->with('error', 'Invalid request method.');
+        }
+
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'phone_number' => 'required|regex_match[/^[\d\+\-\s\(\)]+$/]|max_length[20]',
+            'display_name' => 'permit_empty|max_length[100]'
+        ]);
+
+        if (!$validation->withRequest($this->request)->run()) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors' => $validation->getErrors()
+            ]);
+        }
+
+        try {
+            $phoneNumber = $this->request->getPost('phone_number');
+            $displayName = $this->request->getPost('display_name') ?: null;
+
+            // Check if phone number already exists
+            if ($this->whatsappNumbersModel->phoneNumberExists($phoneNumber)) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'This phone number already exists.'
+                ]);
+            }
+
+            $data = [
+                'phone_number' => $phoneNumber,
+                'display_name' => $displayName,
+                'is_active' => 1
+            ];
+
+            if ($this->whatsappNumbersModel->insert($data)) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'WhatsApp number added successfully!'
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Failed to add WhatsApp number.'
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            log_message('error', 'Failed to add WhatsApp number: ' . $e->getMessage());
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to add WhatsApp number. Please try again.'
+            ]);
+        }
+    }
+
+    /**
+     * Update WhatsApp number
+     */
+    public function updateWhatsAppNumber()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back()->with('error', 'Invalid request method.');
+        }
+
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'id' => 'required|integer',
+            'phone_number' => 'required|regex_match[/^[\d\+\-\s\(\)]+$/]|max_length[20]',
+            'display_name' => 'permit_empty|max_length[100]',
+            'is_active' => 'permit_empty|in_list[0,1]'
+        ]);
+
+        if (!$validation->withRequest($this->request)->run()) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Validation failed.',
+                'errors' => $validation->getErrors()
+            ]);
+        }
+
+        try {
+            $id = $this->request->getPost('id');
+            $phoneNumber = $this->request->getPost('phone_number');
+            $displayName = $this->request->getPost('display_name') ?: null;
+            $isActive = $this->request->getPost('is_active') ? 1 : 0;
+
+            // Check if phone number already exists (excluding current record)
+            if ($this->whatsappNumbersModel->phoneNumberExists($phoneNumber, $id)) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'This phone number already exists.'
+                ]);
+            }
+
+            $data = [
+                'phone_number' => $phoneNumber,
+                'display_name' => $displayName,
+                'is_active' => $isActive
+            ];
+
+            if ($this->whatsappNumbersModel->update($id, $data)) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'WhatsApp number updated successfully!'
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Failed to update WhatsApp number.'
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            log_message('error', 'Failed to update WhatsApp number: ' . $e->getMessage());
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to update WhatsApp number. Please try again.'
+            ]);
+        }
+    }
+
+    /**
+     * Delete WhatsApp number
+     */
+    public function deleteWhatsAppNumber()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back()->with('error', 'Invalid request method.');
+        }
+
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'id' => 'required|integer'
+        ]);
+
+        if (!$validation->withRequest($this->request)->run()) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Invalid ID provided.'
+            ]);
+        }
+
+        try {
+            $id = $this->request->getPost('id');
+
+            if ($this->whatsappNumbersModel->delete($id)) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'WhatsApp number deleted successfully!'
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Failed to delete WhatsApp number.'
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            log_message('error', 'Failed to delete WhatsApp number: ' . $e->getMessage());
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to delete WhatsApp number. Please try again.'
+            ]);
+        }
+    }
+
+    /**
+     * Update WhatsApp global enable toggle
+     */
+    public function updateWhatsAppGlobalToggle()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back()->with('error', 'Invalid request method.');
+        }
+
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'whatsapp_numbers_enabled' => 'required|in_list[0,1]'
+        ]);
+
+        if (!$validation->withRequest($this->request)->run()) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Invalid toggle value.'
+            ]);
+        }
+
+        try {
+            $isEnabled = $this->request->getPost('whatsapp_numbers_enabled');
+            
+            // Check if there are any WhatsApp numbers before enabling
+            if ($isEnabled === '1') {
+                $activeNumbers = $this->whatsappNumbersModel->getActiveNumbers();
+                if (empty($activeNumbers)) {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'Cannot enable WhatsApp numbers. Please add at least one active number first.'
+                    ]);
+                }
+            }
+
+            $this->adminSettingsModel->setSetting('whatsapp_numbers_enabled', $isEnabled);
+
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'WhatsApp numbers setting updated successfully!'
+            ]);
+
+        } catch (\Exception $e) {
+            log_message('error', 'Failed to update WhatsApp global toggle: ' . $e->getMessage());
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to update WhatsApp setting. Please try again.'
+            ]);
+        }
+    }
+
+    /**
+     * Toggle WhatsApp number status
+     */
+    public function toggleWhatsAppStatus()
+    {
+        if (!$this->request->isAJAX()) {
+            return redirect()->back()->with('error', 'Invalid request method.');
+        }
+
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'id' => 'required|integer',
+            'is_active' => 'required|in_list[0,1]'
+        ]);
+
+        if (!$validation->withRequest($this->request)->run()) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Invalid parameters provided.'
+            ]);
+        }
+
+        try {
+            $id = $this->request->getPost('id');
+            $isActive = $this->request->getPost('is_active');
+
+            if ($this->whatsappNumbersModel->update($id, ['is_active' => $isActive])) {
+                $statusText = $isActive ? 'activated' : 'deactivated';
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => "WhatsApp number {$statusText} successfully!"
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Failed to update WhatsApp number status.'
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            log_message('error', 'Failed to toggle WhatsApp number status: ' . $e->getMessage());
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Failed to update WhatsApp number status. Please try again.'
             ]);
         }
     }

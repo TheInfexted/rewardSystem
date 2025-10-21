@@ -292,15 +292,15 @@ class LandingPageController extends BaseController
         $img = $this->request->getFile($fieldName);
         
         if ($img && $img->isValid() && !$img->hasMoved()) {
-            // Validate file type
-            $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            // Validate file type - now includes MOV support
+            $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'video/quicktime'];
             if (!in_array($img->getMimeType(), $allowedTypes)) {
-                throw new \Exception('Invalid image type. Only JPEG, PNG, GIF, and WebP are allowed.');
+                throw new \Exception('Invalid file type. Only JPEG, PNG, GIF, WebP, and MOV files are allowed.');
             }
 
-            // Validate file size (max 1MB)
-            if ($img->getSize() > 1 * 1024 * 1024) {
-                throw new \Exception('Image file too large. Maximum size is 5MB.');
+            // Validate file size (max 3MB)
+            if ($img->getSize() > 3 * 1024 * 1024) {
+                throw new \Exception('File too large. Maximum size is 3MB.');
             }
 
             // Create directory if it doesn't exist
