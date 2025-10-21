@@ -385,7 +385,7 @@ class RewardController extends BaseController
                 $session->remove(['winner_data', 'winner_storage_id']);
 
                 // Get platform settings dynamically from admin settings
-                $whatsappNumber = $this->adminSettingsModel->getSetting('reward_whatsapp_number', '601159599022');
+                $whatsappUrl = $this->adminSettingsModel->getCustomerServiceWhatsAppUrl();
                 $telegramUsername = $this->adminSettingsModel->getSetting('reward_telegram_username', 'harryford19');
 
                 // Create message for platform
@@ -393,10 +393,17 @@ class RewardController extends BaseController
                 $encodedMessage = urlencode($message);
                 
                 // Platform URLs
-                $whatsappUrl = "https://wa.me/{$whatsappNumber}?text={$encodedMessage}";
                 $telegramUrl = "https://t.me/{$telegramUsername}?text={$encodedMessage}";
                 
-                $redirectUrl = $platform === 'telegram' ? $telegramUrl : $whatsappUrl;
+                // Determine redirect URL based on platform and availability
+                if ($platform === 'whatsapp' && $whatsappUrl) {
+                    $redirectUrl = $whatsappUrl . "?text=" . $encodedMessage;
+                } elseif ($platform === 'telegram') {
+                    $redirectUrl = $telegramUrl;
+                } else {
+                    // If WhatsApp is selected but not available, fallback to Telegram
+                    $redirectUrl = $telegramUrl;
+                }
                 
                 return $this->response->setJSON([
                     'success' => true,

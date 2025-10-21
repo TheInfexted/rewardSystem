@@ -59,9 +59,14 @@ class WhatsAppNumbersModel extends Model
      */
     public function getActiveNumbers()
     {
-        return $this->where('is_active', 1)
-                   ->orderBy('created_at', 'ASC')
-                   ->findAll();
+        try {
+            return $this->where('is_active', 1)
+                       ->orderBy('created_at', 'ASC')
+                       ->findAll();
+        } catch (\Exception $e) {
+            log_message('error', 'Error in getActiveNumbers: ' . $e->getMessage());
+            return [];
+        }
     }
 
     /**
@@ -69,15 +74,20 @@ class WhatsAppNumbersModel extends Model
      */
     public function getRandomActiveNumber()
     {
-        $activeNumbers = $this->getActiveNumbers();
-        
-        if (empty($activeNumbers)) {
+        try {
+            $activeNumbers = $this->getActiveNumbers();
+            
+            if (empty($activeNumbers)) {
+                return null;
+            }
+
+            // Get random index
+            $randomIndex = array_rand($activeNumbers);
+            return $activeNumbers[$randomIndex];
+        } catch (\Exception $e) {
+            log_message('error', 'Error in getRandomActiveNumber: ' . $e->getMessage());
             return null;
         }
-
-        // Get random index
-        $randomIndex = array_rand($activeNumbers);
-        return $activeNumbers[$randomIndex];
     }
 
     /**
@@ -113,7 +123,7 @@ class WhatsAppNumbersModel extends Model
         $cleanNumber = preg_replace('/[\s\-\(\)]/', '', $phoneNumber);
         
         // Ensure it starts with country code if not already
-        if (!str_starts_with($cleanNumber, '+')) {
+        if (substr($cleanNumber, 0, 1) !== '+') {
             // If it doesn't start with +, assume it's already formatted
             $cleanNumber = '+' . ltrim($cleanNumber, '+');
         }

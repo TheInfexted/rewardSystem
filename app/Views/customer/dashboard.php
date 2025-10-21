@@ -317,10 +317,12 @@
                 <p class="mb-4">Please choose your preferred platform to contact customer service:</p>
                 
                 <div class="platform-buttons">
+                    <?php if (!empty($whatsappUrl)): ?>
                     <button class="btn btn-platform whatsapp" onclick="contactCustomerService('whatsapp')">
                         <i class="bi bi-whatsapp"></i>
                         <span>WhatsApp</span>
                     </button>
+                    <?php endif; ?>
                     
                     <button class="btn btn-platform telegram" onclick="contactCustomerService('telegram')">
                         <i class="bi bi-telegram"></i>
@@ -378,19 +380,11 @@ const dashboardPhpConfig = {
     dashboardBgColor: '<?= $dashboard_bg_color ?? '#ffffff' ?>',
     profileBackground: '<?= $profile_background ?? 'default' ?>', 
     // Dynamic customer service settings from admin_settings
-    whatsappNumber: '<?= esc($whatsapp_number ?? '601159599022') ?>',  
+    whatsappUrl: '<?= esc($whatsappUrl ?? '') ?>',  
     telegramUsername: '<?= esc($telegram_username ?? 'harryford19') ?>',
     spinTokens: <?= $spin_tokens ?? 0 ?>,
-    <?php if (isset($weekly_progress) && is_array($weekly_progress)): ?>
-    weeklyProgress: <?= json_encode($weekly_progress) ?>,
-    <?php else: ?>
-    weeklyProgress: null,
-    <?php endif; ?>
-    <?php if (isset($recent_activities) && is_array($recent_activities)): ?>
-    recentActivities: <?= json_encode($recent_activities) ?>,
-    <?php else: ?>
-    recentActivities: null,
-    <?php endif; ?>
+    weeklyProgress: <?= isset($weekly_progress) && is_array($weekly_progress) ? json_encode($weekly_progress) : 'null' ?>,
+    recentActivities: <?= isset($recent_activities) && is_array($recent_activities) ? json_encode($recent_activities) : 'null' ?>,
     ads: <?= json_encode($ads ?? []) ?>,
 };
 
@@ -831,12 +825,12 @@ function selectWallet(walletType) {
 // Contact customer service with dynamic settings
 function contactCustomerService(platform) {
     // Get contact details from dynamic config (loaded from admin_settings)
-    const whatsappNumber = dashboardPhpConfig.whatsappNumber;
+    const whatsappUrl = dashboardPhpConfig.whatsappUrl;
     const telegramUsername = dashboardPhpConfig.telegramUsername;
     
     // Validate that contact details are properly configured
-    if (platform === 'whatsapp' && (!whatsappNumber || whatsappNumber.trim() === '')) {
-        alert('WhatsApp contact is not configured. Please contact administrator.');
+    if (platform === 'whatsapp' && (!whatsappUrl || whatsappUrl.trim() === '')) {
+        alert('WhatsApp contact is currently unavailable. Please use Telegram or contact administrator.');
         return;
     }
     
@@ -853,7 +847,7 @@ function contactCustomerService(platform) {
     // Create platform URLs
     let redirectUrl = '';
     if (platform === 'whatsapp') {
-        redirectUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+        redirectUrl = `${whatsappUrl}?text=${encodedMessage}`;
     } else {
         redirectUrl = `https://t.me/${telegramUsername}?text=${encodedMessage}`;
     }

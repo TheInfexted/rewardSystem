@@ -229,19 +229,44 @@ class AdminSettingsModel extends Model
     }
 
     /**
+     * Get random WhatsApp URL for customer service contact
+     * Returns null if no active WhatsApp numbers are available
+     */
+    public function getCustomerServiceWhatsAppUrl()
+    {
+        try {
+            // Check if WhatsApp numbers are globally enabled
+            $whatsappEnabled = $this->getSetting('whatsapp_numbers_enabled', '1');
+            
+            if ($whatsappEnabled !== '1') {
+                return null;
+            }
+            
+            return $this->getRandomWhatsAppUrl();
+        } catch (\Exception $e) {
+            log_message('error', 'Error in getCustomerServiceWhatsAppUrl: ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
      * Get random WhatsApp URL from active numbers
      */
     public function getRandomWhatsAppUrl()
     {
-        $whatsappModel = new \App\Models\WhatsAppNumbersModel();
-        $randomNumber = $whatsappModel->getRandomActiveNumber();
-        
-        if ($randomNumber) {
-            return $whatsappModel->generateWhatsAppUrl($randomNumber['phone_number']);
+        try {
+            $whatsappModel = new \App\Models\WhatsAppNumbersModel();
+            $randomNumber = $whatsappModel->getRandomActiveNumber();
+            
+            if ($randomNumber) {
+                return $whatsappModel->generateWhatsAppUrl($randomNumber['phone_number']);
+            }
+            
+            // Return null if no active numbers found (no fallback)
+            return null;
+        } catch (\Exception $e) {
+            log_message('error', 'Error in getRandomWhatsAppUrl: ' . $e->getMessage());
+            return null;
         }
-        
-        // Fallback to default WhatsApp number if no active numbers
-        $defaultNumber = $this->getSetting('reward_whatsapp_number', '601159599022');
-        return 'https://wa.me/' . $defaultNumber;
     }
 }

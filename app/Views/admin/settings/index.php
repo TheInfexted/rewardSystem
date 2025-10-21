@@ -307,16 +307,6 @@
                     <form id="customerServiceForm">
                         <?= csrf_field() ?>
                         
-                        <div class="mb-3">
-                            <label class="form-label text-gold">
-                                <i class="bi bi-whatsapp me-1"></i><?= t('Admin.settings.customer_service.whatsapp_number') ?>
-                            </label>
-                            <input type="text" name="reward_whatsapp_number" 
-                                   class="form-control bg-dark text-light border-gold"
-                                   value="<?= esc($customer_service_settings['reward_whatsapp_number'] ?? '601159599022') ?>" 
-                                   placeholder="60xxxxxxxxx" required>
-                            <small class="text-muted"><?= t('Admin.settings.customer_service.whatsapp_help') ?></small>
-                        </div>
                         
                         <div class="mb-3">
                             <label class="form-label text-gold">

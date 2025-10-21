@@ -291,7 +291,7 @@ class CustomerModel extends Model
         $color = trim($color);
         
         // Add # if missing
-        if (!str_starts_with($color, '#')) {
+        if (substr($color, 0, 1) !== '#') {
             $color = '#' . $color;
         }
         

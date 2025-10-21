@@ -282,28 +282,14 @@ class CustomerController extends BaseController
             
             // Get admin contact settings
             try {
-                $db = \Config\Database::connect();
-                $contactSettings = $db->query("
-                    SELECT setting_key, setting_value 
-                    FROM admin_settings 
-                    WHERE setting_key IN ('reward_whatsapp_number', 'reward_telegram_username')
-                ")->getResultArray();
-                
-                $whatsappNumber = null;
-                $telegramUsername = null;
-                
-                foreach ($contactSettings as $setting) {
-                    if ($setting['setting_key'] === 'reward_whatsapp_number') {
-                        $whatsappNumber = $setting['setting_value'];
-                    } elseif ($setting['setting_key'] === 'reward_telegram_username') {
-                        $telegramUsername = $setting['setting_value'];
-                    }
-                }
+                $adminSettingsModel = new \App\Models\AdminSettingsModel();
+                $whatsappUrl = $adminSettingsModel->getCustomerServiceWhatsAppUrl();
+                $telegramUsername = $adminSettingsModel->getSetting('reward_telegram_username', 'harryford19');
                 
             } catch (\Exception $e) {
                 log_message('error', 'Failed to get contact settings: ' . $e->getMessage());
                 // No fallback values - configuration must be properly set
-                $whatsappNumber = null;
+                $whatsappUrl = null;
                 $telegramUsername = null;
             }
             
@@ -324,7 +310,7 @@ class CustomerController extends BaseController
                 'total_points' => $customer['points'] ?? 0,
                 'recent_activities' => $recentActivities,
                 'monthly_checkins' => $monthlyCheckins,
-                'whatsapp_number' => $whatsappNumber,
+                'whatsappUrl' => $whatsappUrl,
                 'telegram_username' => $telegramUsername,
                 'ads' => $this->rewardSystemAdModel->getActiveAds(),
             ];

@@ -35,7 +35,6 @@ class SettingsController extends BaseController
         
         // Get current customer service settings
         $customerServiceSettings = $this->adminSettingsModel->getSettings([
-            'reward_whatsapp_number',
             'reward_telegram_username',
             'customer_service_hours',
             'customer_service_enabled'
@@ -150,7 +149,6 @@ class SettingsController extends BaseController
 
         $validation = \Config\Services::validation();
         $validation->setRules([
-            'reward_whatsapp_number' => 'required|regex_match[/^[\d\+\-\s\(\)]+$/]|max_length[20]',
             'reward_telegram_username' => 'required|alpha_dash|max_length[50]',
             'customer_service_hours' => 'permit_empty|max_length[100]',
             'customer_service_enabled' => 'permit_empty|in_list[0,1]'
@@ -167,7 +165,6 @@ class SettingsController extends BaseController
         try {
             // Get all the customer service settings from the form
             $settings = [
-                'reward_whatsapp_number' => $this->request->getPost('reward_whatsapp_number'),
                 'reward_telegram_username' => $this->request->getPost('reward_telegram_username'),
                 'customer_service_hours' => $this->request->getPost('customer_service_hours') ?: '9:00 AM - 6:00 PM (GMT+8)',
                 'customer_service_enabled' => $this->request->getPost('customer_service_enabled') ? '1' : '0'
