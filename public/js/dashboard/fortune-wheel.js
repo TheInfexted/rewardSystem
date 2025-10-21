@@ -513,6 +513,36 @@ class FortuneWheel {
         // Sort items by order first to ensure correct positioning
         const sortedItems = [...this.wheelItems].sort((a, b) => (a.order || 0) - (b.order || 0));
         
+        // Helper function to format text for multi-line display
+        const formatTextForWheel = (text, maxCharsPerLine = 15) => {
+            if (text.length <= maxCharsPerLine) {
+                return text;
+            }
+            
+            // Split by common separators and try to break at logical points
+            const words = text.split(/(\s+)/);
+            const lines = [];
+            let currentLine = '';
+            
+            for (let i = 0; i < words.length; i++) {
+                const word = words[i];
+                if ((currentLine + word).length <= maxCharsPerLine) {
+                    currentLine += word;
+                } else {
+                    if (currentLine.trim()) {
+                        lines.push(currentLine.trim());
+                    }
+                    currentLine = word;
+                }
+            }
+            
+            if (currentLine.trim()) {
+                lines.push(currentLine.trim());
+            }
+            
+            return lines.join('\n');
+        };
+
         // Create segments array for the wheel
         const segments = [];
         sortedItems.forEach((item, index) => {
@@ -520,7 +550,7 @@ class FortuneWheel {
             const textColor = useRedBackground ? "#f8b500" : "#000";
             
             segments.push({
-                'text': item.item_name,
+                'text': formatTextForWheel(item.item_name),
                 'textFillStyle': textColor,
                 'image': `${DashboardConfig.baseUrl}img/fortune_wheel/${useRedBackground ? 'red.png' : 'brown.png'}`,
                 'itemData': {
@@ -535,7 +565,7 @@ class FortuneWheel {
         });
 
         try {
-            // Create the wheel with ORIGINAL properties from landing page
+            // Create the wheel with multi-line text support
             this.wheel = new Winwheel({
                 'canvasId': 'fortuneWheelModal',
                 'numSegments': segments.length,
@@ -543,12 +573,12 @@ class FortuneWheel {
                 'responsive': true,
                 'drawMode': 'segmentImage',
                 'drawText': true,
-                'textFontSize': 16,  // ORIGINAL value
+                'textFontSize': 14,  // Reduced for multi-line support
                 'textFontWeight': 'bold',
                 'textOrientation': 'horizontal',
                 'textAlignment': 'center',
                 'textDirection': 'reversed',
-                'textMargin': 15,  // ORIGINAL value
+                'textMargin': 12,  // Reduced margin for better spacing
                 'textFontFamily': 'Arial, sans-serif',
                 'segments': segments,
                 'pins': {

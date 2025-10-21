@@ -232,7 +232,7 @@
                             </div>
                         </div>
 
-                        <!-- Contact Link 3 -->
+                        <!-- Contact Link 3 
                         <div class="card bg-secondary border-gold mb-3">
                             <div class="card-header py-2">
                                 <div class="d-flex justify-content-between align-items-center">
@@ -270,7 +270,7 @@
                                            placeholder="<?= t('Admin.settings.landing_contact.url_placeholder_email') ?>">
                                 </div>
                             </div>
-                        </div>
+                        </div>-->
 
                         <div class="alert alert-info">
                             <small>
@@ -344,6 +344,142 @@
                             <i class="bi bi-save"></i> <?= t('Admin.settings.customer_service.update') ?>
                         </button>
                     </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- WhatsApp Numbers Management -->
+        <div class="col-md-6">
+            <div class="card bg-dark border-gold mb-4">
+                <div class="card-header bg-black border-gold">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="text-gold mb-0">
+                            <i class="bi bi-whatsapp"></i> 
+                            WhatsApp Numbers Management
+                        </h5>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="whatsapp_numbers_enabled" 
+                                   id="whatsapp_numbers_enabled" value="1" 
+                                   <?= ($whatsapp_numbers_enabled ?? '1') === '1' ? 'checked' : '' ?>>
+                            <label class="form-check-label text-light" for="whatsapp_numbers_enabled">
+                                Enable
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="whatsappAlert"></div>
+                    
+                    <p class="text-muted small mb-3">
+                        Manage WhatsApp numbers for random selection on the landing page. 
+                        When customers click WhatsApp contact, a random number will be selected from the active list.
+                    </p>
+                    
+                    <!-- Add New Number Form -->
+                    <div class="card bg-secondary border-gold mb-3">
+                        <div class="card-header py-2">
+                            <h6 class="text-gold mb-0">
+                                <i class="bi bi-plus-circle"></i> Add New WhatsApp Number
+                            </h6>
+                        </div>
+                        <div class="card-body py-2">
+                            <form id="addWhatsAppForm">
+                                <?= csrf_field() ?>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-2">
+                                            <label class="form-label text-light small">Phone Number</label>
+                                            <input type="text" name="phone_number" 
+                                                   class="form-control form-control-sm bg-dark text-light border-gold" 
+                                                   placeholder="60123456789" required>
+                                            <small class="text-muted">Include country code (e.g., 60123456789)</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-2">
+                                            <label class="form-label text-light small">Display Name (Optional)</label>
+                                            <input type="text" name="display_name" 
+                                                   class="form-control form-control-sm bg-dark text-light border-gold" 
+                                                   placeholder="Support Agent 1" maxlength="100">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-gold btn-sm">
+                                    <i class="bi bi-plus"></i> Add Number
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Existing Numbers List -->
+                    <div class="card bg-secondary border-gold">
+                        <div class="card-header py-2">
+                            <h6 class="text-gold mb-0">
+                                <i class="bi bi-list"></i> Existing WhatsApp Numbers
+                            </h6>
+                        </div>
+                        <div class="card-body py-2">
+                            <?php if (empty($whatsapp_numbers)): ?>
+                                <p class="text-muted text-center mb-0">No WhatsApp numbers added yet.</p>
+                            <?php else: ?>
+                                <div class="table-responsive">
+                                    <table class="table table-dark table-sm mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Phone Number</th>
+                                                <th>Display Name</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($whatsapp_numbers as $number): ?>
+                                            <tr>
+                                                <td>
+                                                    <span class="text-light"><?= esc($number['phone_number']) ?></span>
+                                                </td>
+                                                <td>
+                                                    <span class="text-light"><?= esc($number['display_name'] ?: 'N/A') ?></span>
+                                                </td>
+                                                <td>
+                                                    <?php if ($number['is_active']): ?>
+                                                        <span class="badge bg-success clickable-status" 
+                                                              onclick="toggleWhatsAppStatus(<?= $number['id'] ?>, 0)"
+                                                              style="cursor: pointer; transition: all 0.3s ease;"
+                                                              onmouseover="this.style.opacity='0.8'; this.style.transform='scale(1.1)'"
+                                                              onmouseout="this.style.opacity='1'; this.style.transform='scale(1)'">
+                                                            Active
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span class="badge bg-secondary clickable-status" 
+                                                              onclick="toggleWhatsAppStatus(<?= $number['id'] ?>, 1)"
+                                                              style="cursor: pointer; transition: all 0.3s ease;"
+                                                              onmouseover="this.style.opacity='0.8'; this.style.transform='scale(1.1)'"
+                                                              onmouseout="this.style.opacity='1'; this.style.transform='scale(1)'">
+                                                            Inactive
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm" role="group">
+                                                        <button type="button" class="btn btn-outline-gold btn-sm" 
+                                                                onclick="editWhatsAppNumber(<?= $number['id'] ?>, '<?= esc($number['phone_number']) ?>', '<?= esc($number['display_name']) ?>', <?= $number['is_active'] ?>)">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-outline-danger btn-sm" 
+                                                                onclick="deleteWhatsAppNumber(<?= $number['id'] ?>, '<?= esc($number['phone_number']) ?>')">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -591,6 +727,230 @@ function showToast(type, message) {
                     bsAlert.close();
                 }
             }, 3000);
+        });
+    }
+
+    // WhatsApp Numbers Management
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle add WhatsApp form submission
+        const addWhatsAppForm = document.getElementById('addWhatsAppForm');
+        if (addWhatsAppForm) {
+            addWhatsAppForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                addWhatsAppNumber();
+            });
+        }
+
+        // Handle global WhatsApp toggle
+        const whatsappGlobalToggle = document.getElementById('whatsapp_numbers_enabled');
+        if (whatsappGlobalToggle) {
+            whatsappGlobalToggle.addEventListener('change', function() {
+                updateWhatsAppGlobalToggle();
+            });
+        }
+    });
+
+    function addWhatsAppNumber() {
+        const form = document.getElementById('addWhatsAppForm');
+        const formData = new FormData(form);
+        const alertDiv = document.getElementById('whatsappAlert');
+        const submitBtn = form.querySelector('button[type="submit"]');
+        
+        // Show loading state
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="bi bi-spinner bi-spin"></i> Adding...';
+        submitBtn.disabled = true;
+        
+        // Clear previous alerts
+        alertDiv.innerHTML = '';
+        
+        fetch('<?= base_url('admin/settings/add-whatsapp-number') ?>', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(alertDiv, 'success', data.message);
+                form.reset();
+                // Reload page to show updated list
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                showAlert(alertDiv, 'danger', data.message);
+                if (data.errors) {
+                    let errorList = '<ul class="mb-0">';
+                    for (let field in data.errors) {
+                        errorList += `<li>${data.errors[field]}</li>`;
+                    }
+                    errorList += '</ul>';
+                    showAlert(alertDiv, 'danger', 'Validation errors:<br>' + errorList);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert(alertDiv, 'danger', 'Failed to add WhatsApp number. Please try again.');
+        })
+        .finally(() => {
+            // Restore button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        });
+    }
+
+    function editWhatsAppNumber(id, phoneNumber, displayName, isActive) {
+        const newPhoneNumber = prompt('Edit Phone Number:', phoneNumber);
+        if (newPhoneNumber === null) return;
+        
+        const newDisplayName = prompt('Edit Display Name:', displayName || '');
+        if (newDisplayName === null) return;
+        
+        const newIsActive = confirm('Is this number active?') ? 1 : 0;
+        
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('phone_number', newPhoneNumber);
+        formData.append('display_name', newDisplayName);
+        formData.append('is_active', newIsActive);
+        formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+        
+        const alertDiv = document.getElementById('whatsappAlert');
+        alertDiv.innerHTML = '';
+        
+        fetch('<?= base_url('admin/settings/update-whatsapp-number') ?>', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(alertDiv, 'success', data.message);
+                // Reload page to show updated list
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                showAlert(alertDiv, 'danger', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert(alertDiv, 'danger', 'Failed to update WhatsApp number. Please try again.');
+        });
+    }
+
+    function deleteWhatsAppNumber(id, phoneNumber) {
+        if (!confirm(`Are you sure you want to delete WhatsApp number ${phoneNumber}?`)) {
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+        
+        const alertDiv = document.getElementById('whatsappAlert');
+        alertDiv.innerHTML = '';
+        
+        fetch('<?= base_url('admin/settings/delete-whatsapp-number') ?>', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(alertDiv, 'success', data.message);
+                // Reload page to show updated list
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                showAlert(alertDiv, 'danger', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert(alertDiv, 'danger', 'Failed to delete WhatsApp number. Please try again.');
+        });
+    }
+
+    function updateWhatsAppGlobalToggle() {
+        const toggle = document.getElementById('whatsapp_numbers_enabled');
+        const isEnabled = toggle.checked ? 1 : 0;
+        
+        const formData = new FormData();
+        formData.append('whatsapp_numbers_enabled', isEnabled);
+        formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+        
+        const alertDiv = document.getElementById('whatsappAlert');
+        alertDiv.innerHTML = '';
+        
+        fetch('<?= base_url('admin/settings/update-whatsapp-global-toggle') ?>', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(alertDiv, 'success', data.message);
+            } else {
+                showAlert(alertDiv, 'danger', data.message);
+                // Revert toggle if failed
+                toggle.checked = !toggle.checked;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert(alertDiv, 'danger', 'Failed to update WhatsApp settings. Please try again.');
+            // Revert toggle if failed
+            toggle.checked = !toggle.checked;
+        });
+    }
+
+    function toggleWhatsAppStatus(id, newStatus) {
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('is_active', newStatus);
+        formData.append('<?= csrf_token() ?>', '<?= csrf_hash() ?>');
+        
+        const alertDiv = document.getElementById('whatsappAlert');
+        alertDiv.innerHTML = '';
+        
+        fetch('<?= base_url('admin/settings/toggle-whatsapp-status') ?>', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert(alertDiv, 'success', data.message);
+                // Reload page to show updated status
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                showAlert(alertDiv, 'danger', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert(alertDiv, 'danger', 'Failed to update WhatsApp number status. Please try again.');
         });
     }
 </script>

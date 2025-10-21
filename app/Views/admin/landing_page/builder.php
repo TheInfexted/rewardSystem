@@ -347,8 +347,19 @@
                             <?php if (!empty($landing_data['welcome_image'])): ?>
                                 <div class="current-image mb-2">
                                     <div class="current-image-card">
-                                        <img src="<?= base_url('uploads/landing/' . $landing_data['welcome_image']) ?>" 
-                                             class="img-thumbnail preview-image" alt="Welcome Image">
+                                        <?php 
+                                        $fileExtension = strtolower(pathinfo($landing_data['welcome_image'], PATHINFO_EXTENSION));
+                                        $isVideo = in_array($fileExtension, ['mov', 'mp4', 'webm', 'ogg', 'avi']);
+                                        ?>
+                                        <?php if ($isVideo): ?>
+                                            <video src="<?= base_url('uploads/landing/' . $landing_data['welcome_image']) ?>" 
+                                                   class="img-thumbnail preview-image" controls style="max-height: 150px;">
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        <?php else: ?>
+                                            <img src="<?= base_url('uploads/landing/' . $landing_data['welcome_image']) ?>" 
+                                                 class="img-thumbnail preview-image" alt="Welcome Image">
+                                        <?php endif; ?>
                                         <div class="image-actions mt-2">
                                             <button type="button" class="btn btn-sm btn-danger" 
                                                     onclick="removeImage('welcome_image')">
@@ -361,7 +372,7 @@
                                         </div>
                                         <div class="image-filename">
                                             <small class="text-success">
-                                                <i class="bi bi-file-image"></i> <?= $landing_data['welcome_image'] ?>
+                                                <i class="bi bi-<?= $isVideo ? 'file-play' : 'file-image' ?>"></i> <?= $landing_data['welcome_image'] ?>
                                             </small>
                                         </div>
                                     </div>
@@ -369,7 +380,7 @@
                             <?php endif; ?>
                             <div class="image-upload-area">
                                 <input type="file" name="welcome_image" class="form-control bg-secondary text-light border-0" 
-                                       accept="image/*" onchange="previewImage(this, 'welcome_image')">
+                                       accept="image/*,video/quicktime" onchange="previewImage(this, 'welcome_image')">
                                 <small class="text-muted d-block">
                                     <?= !empty($landing_data['welcome_image']) ? t('Admin.landing.image.upload_new') : t('Admin.landing.fields.welcome_image_upload', [], 'Upload welcome screen image') ?>
                                 </small>
@@ -1179,51 +1190,74 @@
         }
     }
     
-    // Image preview functionality
+    // Image preview functionality (now supports MOV files)
     function previewImage(input, fieldName) {
         if (input.files && input.files[0]) {
             const file = input.files[0];
             
-            // Validate file type
-            if (!file.type.startsWith('image/')) {
-                showAlert('error', translations.fileError);
+            // Validate file type - now includes MOV support
+            const isImage = file.type.startsWith('image/');
+            const isMov = file.type === 'video/quicktime';
+            
+            if (!isImage && !isMov) {
+                showAlert('error', 'Please select a valid image or MOV file.');
                 input.value = '';
                 return;
             }
             
-            // Validate file size (1MB)
-            if (file.size > 1 * 1024 * 1024) {
-                showAlert('error', translations.fileTooLarge);
+            // Validate file size (3MB)
+            if (file.size > 3 * 1024 * 1024) {
+                showAlert('error', 'File too large. Maximum size is 3MB.');
                 input.value = '';
                 return;
             }
             
             const reader = new FileReader();
             reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const container = input.closest('.image-upload-container');
-                    let previewContainer = container.querySelector('.new-image-preview');
-                    
-                    if (!previewContainer) {
-                        previewContainer = document.createElement('div');
-                        previewContainer.className = 'new-image-preview mt-2';
-                        container.appendChild(previewContainer);
-                    }
-                    
-                    previewContainer.innerHTML = `
+                const container = input.closest('.image-upload-container');
+                let previewContainer = container.querySelector('.new-image-preview');
+                
+                if (!previewContainer) {
+                    previewContainer = document.createElement('div');
+                    previewContainer.className = 'new-image-preview mt-2';
+                    container.appendChild(previewContainer);
+                }
+                
+                // Handle different file types
+                let previewContent = '';
+                if (isImage) {
+                    const img = new Image();
+                    img.onload = function() {
+                        previewContent = `
+                            <div class="alert alert-info">
+                                <strong>New image selected:</strong><br>
+                                <img src="${e.target.result}" class="img-thumbnail mt-2" style="max-height: 100px;" alt="Preview">
+                                <div class="mt-2">
+                                    <small class="text-muted">${file.name} (${(file.size / 1024).toFixed(1)} KB)</small><br>
+                                    <small class="text-muted">Dimensions: ${img.width} × ${img.height} pixels</small><br>
+                                    <small class="text-warning">This will replace the current image when saved.</small>
+                                </div>
+                            </div>
+                        `;
+                        previewContainer.innerHTML = previewContent;
+                    };
+                    img.src = e.target.result;
+                } else if (isMov) {
+                    previewContent = `
                         <div class="alert alert-info">
-                            <strong>${translations.newImageSelected}</strong><br>
-                            <img src="${e.target.result}" class="img-thumbnail mt-2" style="max-height: 100px;" alt="Preview">
+                            <strong>New MOV file selected:</strong><br>
+                            <video src="${e.target.result}" class="img-thumbnail mt-2" style="max-height: 100px;" controls>
+                                Your browser does not support the video tag.
+                            </video>
                             <div class="mt-2">
                                 <small class="text-muted">${file.name} (${(file.size / 1024).toFixed(1)} KB)</small><br>
-                                <small class="text-muted">${translations.dimensions}: ${img.width} × ${img.height} pixels</small><br>
-                                <small class="text-warning">${translations.replaceNote}</small>
+                                <small class="text-muted">File type: MOV Video</small><br>
+                                <small class="text-warning">This will replace the current image when saved.</small>
                             </div>
                         </div>
                     `;
-                };
-                img.src = e.target.result;
+                    previewContainer.innerHTML = previewContent;
+                }
             };
             reader.readAsDataURL(file);
         }

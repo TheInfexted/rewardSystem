@@ -476,8 +476,20 @@
         <div class="welcome-content">
             <div class="welcome-logo">
                 <?php if (!empty($page_data['welcome_image'])): ?>
-                    <img src="<?= base_url('uploads/landing/' . $page_data['welcome_image']) ?>" 
-                         alt="Welcome" class="mb-3" style="max-width: 200px;">
+                    <?php 
+                    $fileExtension = strtolower(pathinfo($page_data['welcome_image'], PATHINFO_EXTENSION));
+                    $isVideo = in_array($fileExtension, ['mov', 'mp4', 'webm', 'ogg', 'avi']);
+                    ?>
+                    <?php if ($isVideo): ?>
+                        <video src="<?= base_url('uploads/landing/' . $page_data['welcome_image']) ?>" 
+                               autoplay muted loop playsinline
+                               class="mb-3" style="max-width: 200px; max-height: 200px;">
+                            Your browser does not support the video tag.
+                        </video>
+                    <?php else: ?>
+                        <img src="<?= base_url('uploads/landing/' . $page_data['welcome_image']) ?>" 
+                             alt="Welcome" class="mb-3" style="max-width: 200px;">
+                    <?php endif; ?>
                 <?php else: ?>
                     <img src="<?= base_url('img/taptapwin.png') ?>" 
                          alt="TapTapWin" class="mb-3" style="max-width: 200px;">
@@ -793,7 +805,7 @@
                 icon.classList.remove('bi-music-note-beamed');
                 toggleBtn.classList.add('pulse-animation');
             }).catch(() => {
-                console.log('Autoplay blocked, waiting for user interaction');
+                // Autoplay blocked, waiting for user interaction
             });
         }
     
@@ -846,7 +858,7 @@
             const startGameBtn = document.getElementById('startGameBtn');
             if (startGameBtn) {
                 startGameBtn.addEventListener('click', function() {
-                    console.log('Start button clicked');
+                    // Start button clicked
                     
                     // Initialize audio contexts
                     if (typeof AudioContext !== 'undefined') {
@@ -859,27 +871,29 @@
                     // Start background music if it exists
                     const bgMusic = document.getElementById('bgMusic');
                     if (bgMusic) {
-                        bgMusic.play().catch(e => console.log('BGM autoplay failed:', e));
+                        bgMusic.play().catch(e => {
+                            // BGM autoplay failed
+                        });
                     }
                     
-                    // Fade out welcome screen
+                    // Initialize wheel immediately for faster response
+                    initializeTickSound();
+                    initializeWinSound();
+                    
+                    if (typeof initializeWheel === 'function') {
+                        initializeWheel();
+                    }
+                    
+                    // Fade out welcome screen with reduced delay
                     const overlay = document.getElementById('welcomeOverlay');
                     if (overlay) {
-                        overlay.style.animation = 'fadeOut 0.5s ease-out forwards';
+                        overlay.style.animation = 'fadeOut 0.3s ease-out forwards';
                         
                         setTimeout(() => {
                             overlay.style.display = 'none';
                             document.body.classList.remove('welcome-active');
-                            
-                            console.log('Welcome overlay hidden, wheel should be visible now');
-                            
-                            initializeTickSound();
-                            initializeWinSound();
-                            
-                            if (typeof initializeWheel === 'function') {
-                                initializeWheel();
-                            }
-                        }, 500);
+                            // Welcome overlay hidden, wheel should be visible now
+                        }, 300);
                     }
                 });
             } else {
@@ -907,51 +921,61 @@
         `;
         document.head.appendChild(welcomeStyle);
 
-        function initializeTickSound() {
-        <?php if (isset($spin_sound) && !empty($spin_sound['sound_file']) && $spin_sound['enabled']): ?>
-        try {
-            if (!tickSoundContext) {
-                tickSoundContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            
+        // Preload sounds in background for faster loading
+        function preloadSounds() {
+            <?php if (isset($spin_sound) && !empty($spin_sound['sound_file']) && $spin_sound['enabled']): ?>
+            // Preload tick sound
             fetch('<?= base_url('uploads/sounds/' . $spin_sound['sound_file']) ?>')
                 .then(response => response.arrayBuffer())
-                .then(data => tickSoundContext.decodeAudioData(data))
+                .then(data => {
+                    if (!tickSoundContext) {
+                        tickSoundContext = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                    return tickSoundContext.decodeAudioData(data);
+                })
                 .then(buffer => {
                     tickSoundBuffer = buffer;
-                    console.log('Tick sound loaded successfully');
+                    // Tick sound preloaded successfully
                 })
                 .catch(error => {
-                    console.error('Error loading tick sound:', error);
+                    console.error('Error preloading tick sound:', error);
                 });
-        } catch (error) {
-            console.error('Web Audio API not supported:', error);
-        }
-        <?php endif; ?>
-    }
+            <?php endif; ?>
 
-    function initializeWinSound() {
-        <?php if (isset($win_sound) && !empty($win_sound['sound_file']) && $win_sound['enabled']): ?>
-        try {
+            <?php if (isset($win_sound) && !empty($win_sound['sound_file']) && $win_sound['enabled']): ?>
+            // Preload win sound
+            fetch('<?= base_url('uploads/sounds/' . $win_sound['sound_file']) ?>')
+                .then(response => response.arrayBuffer())
+                .then(data => {
+                    if (!tickSoundContext) {
+                        tickSoundContext = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                    return tickSoundContext.decodeAudioData(data);
+                })
+                .then(buffer => {
+                    winSoundBuffer = buffer;
+                    // Win sound preloaded successfully
+                })
+                .catch(error => {
+                    console.error('Error preloading win sound:', error);
+                });
+            <?php endif; ?>
+        }
+
+        // Legacy sound initialization functions (kept for compatibility)
+        function initializeTickSound() {
+            // Sounds are now preloaded, just ensure context exists
             if (!tickSoundContext) {
                 tickSoundContext = new (window.AudioContext || window.webkitAudioContext)();
             }
-            
-            fetch('<?= base_url('uploads/sounds/' . $win_sound['sound_file']) ?>')
-                .then(response => response.arrayBuffer())
-                .then(data => tickSoundContext.decodeAudioData(data))
-                .then(buffer => {
-                    winSoundBuffer = buffer;
-                    console.log('Win sound loaded successfully');
-                })
-                .catch(error => {
-                    console.error('Error loading win sound:', error);
-                });
-        } catch (error) {
-            console.error('Win sound initialization error:', error);
         }
-        <?php endif; ?>
-    }
+
+        function initializeWinSound() {
+            // Sounds are now preloaded, just ensure context exists
+            if (!tickSoundContext) {
+                tickSoundContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
 
         // Store the wheel items from database
         const wheelItems = [
@@ -969,7 +993,10 @@
 
         // Initialize wheel when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Initializing wheel with items:', wheelItems);
+            // Preload sounds in background for faster button response
+            preloadSounds();
+            
+            // Initializing wheel with items
             initializeWheel();
             updateSpinsCounter();
             
@@ -986,6 +1013,36 @@
                 return;
             }
 
+            // Helper function to format text for multi-line display
+            const formatTextForWheel = (text, maxCharsPerLine = 15) => {
+                if (text.length <= maxCharsPerLine) {
+                    return text;
+                }
+                
+                // Split by common separators and try to break at logical points
+                const words = text.split(/(\s+)/);
+                const lines = [];
+                let currentLine = '';
+                
+                for (let i = 0; i < words.length; i++) {
+                    const word = words[i];
+                    if ((currentLine + word).length <= maxCharsPerLine) {
+                        currentLine += word;
+                    } else {
+                        if (currentLine.trim()) {
+                            lines.push(currentLine.trim());
+                        }
+                        currentLine = word;
+                    }
+                }
+                
+                if (currentLine.trim()) {
+                    lines.push(currentLine.trim());
+                }
+                
+                return lines.join('\n');
+            };
+
             // Create segments array for the wheel
             const segments = [];
             wheelItems.forEach((item, index) => {
@@ -993,16 +1050,16 @@
                 const textColor = useRedBackground ? "#f8b500" : "#000";
                 
                 segments.push({
-                    'text': item.name,
+                    'text': formatTextForWheel(item.name),
                     'textFillStyle': textColor,
                     'image': `<?= base_url("img/fortune_wheel/") ?>${useRedBackground ? 'red.png' : 'brown.png'}`,
                     'itemData': item
                 });
             });
 
-            console.log('Creating wheel with segments:', segments);
+            // Creating wheel with segments
 
-            // Create the wheel WITHOUT sound configuration (we'll handle it manually)
+            // Create the wheel with multi-line text support
             theWheel = new Winwheel({
                 'canvasId': 'fortuneWheel',
                 'numSegments': segments.length,
@@ -1010,12 +1067,12 @@
                 'responsive': true,
                 'drawMode': 'segmentImage',
                 'drawText': true,
-                'textFontSize': 20,
+                'textFontSize': 16,  // Reduced for multi-line support
                 'textFontWeight': 'bold',
                 'textOrientation': 'horizontal',
                 'textAlignment': 'center',
                 'textDirection': 'reversed',
-                'textMargin': 15,
+                'textMargin': 12,  // Reduced margin for better spacing
                 'textFontFamily': 'Arial, sans-serif',
                 'segments': segments,
                 'pins': {
@@ -1039,7 +1096,7 @@
                 }
             });
 
-            console.log('Wheel created successfully:', theWheel);
+            // Wheel created successfully
         }
 
         // Animation callbacks for manual sound handling
@@ -1064,7 +1121,7 @@
                     spinsRemaining = data.spins_remaining;
                     updateSpinsCounter();
                     updateSpinButton();
-                    console.log('Spin status updated:', spinsRemaining);
+                    // Spin status updated
                 }
             })
             .catch(error => {
@@ -1074,17 +1131,15 @@
 
         // Main spin function - UPDATED
         function startSpin() {
-            console.log('startSpin() called');
-            console.log('wheelSpinning:', wheelSpinning);
-            console.log('spinsRemaining:', spinsRemaining);
+            // startSpin() called
             
             if (wheelSpinning === true) {
-                console.log('Wheel already spinning');
+                // Wheel already spinning
                 return;
             }
             
             if (spinsRemaining <= 0) {
-                console.log('No spins remaining');
+                // No spins remaining
                 showNoSpinsModal();
                 return;
             }
@@ -1097,7 +1152,7 @@
             
             wheelSpinning = true;
             lastPinNumber = 0; // Reset pin tracking
-            console.log('Starting spin...');
+            // Starting spin...
             
             // Update button state immediately
             const spinButton = document.getElementById('spinButton');
@@ -1124,7 +1179,7 @@
                 if (data.success) {
                     // Update spins remaining from server response
                     spinsRemaining = data.spins_remaining;
-                    console.log('Server updated spins remaining to:', spinsRemaining);
+                    // Server updated spins remaining
                     
                     // Continue with wheel spin animation
                     performWheelSpin();
@@ -1157,7 +1212,7 @@
             const winnerIndex = winnerResult.winnerIndex;
             const winnerItem = winnerResult.winnerItem;
             
-            console.log('Winner determined:', winnerItem);
+            // Winner determined
             
             // Calculate the exact angle to land on the predetermined segment
             const segmentAngle = 360 / theWheel.numSegments;
@@ -1209,7 +1264,7 @@
 
         // Handle prize alert when wheel stops
         function alertPrize(indicatedSegment) {
-            console.log('alertPrize called with:', indicatedSegment);
+            // alertPrize called
             
             // Clear any tick interval
             if (tickInterval) {
@@ -1225,7 +1280,7 @@
                 return;
             }
 
-            console.log('Processing winner:', winner);
+            // Processing winner
 
             // Play win sound for actual prizes (not "Try Again")
             if (winner.name !== 'Try Again' && winSoundEnabled) {
@@ -1251,7 +1306,7 @@
 
         // Store winner data and redirect to reward system
         function storeWinnerDataAndRedirect(winner) {
-            console.log('Storing winner data and showing modal:', winner);
+            // Storing winner data and showing modal
             
             // Store winner data in session via AJAX
             const formData = new FormData();
@@ -1267,7 +1322,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Store winner response:', data);
+                // Store winner response
                 if (data.success) {
                     // Store redirect data for later use
                     window.rewardRedirectData = {
@@ -1374,10 +1429,7 @@
 
         // Redirect to external site with POST data
         function redirectToExternalSite(redirectUrl, apiToken, apiUrl, sessionData) {
-            console.log('Redirecting to external domain:', redirectUrl);
-            console.log('API Token:', apiToken ? apiToken.substring(0, 10) + '...' : 'null');
-            console.log('API URL:', apiUrl);
-            console.log('Session Data:', sessionData);
+            // Redirecting to external domain
             
             // Create a form to POST data to external URL
             const form = document.createElement('form');
@@ -1536,6 +1588,22 @@
             updateSpinButton();
         }
 
+        // Check if sounds are ready
+        function areSoundsReady() {
+            let tickReady = true;
+            let winReady = true;
+            
+            <?php if (isset($spin_sound) && !empty($spin_sound['sound_file']) && $spin_sound['enabled']): ?>
+            tickReady = tickSoundBuffer !== null;
+            <?php endif; ?>
+            
+            <?php if (isset($win_sound) && !empty($win_sound['sound_file']) && $win_sound['enabled']): ?>
+            winReady = winSoundBuffer !== null;
+            <?php endif; ?>
+            
+            return tickReady && winReady;
+        }
+
         // Sound functions
         function playTickSound() {
             if (!tickSoundEnabled || !tickSoundBuffer || !tickSoundContext) return;
@@ -1592,14 +1660,8 @@
 
         // Debug functions
         function testSpin() {
-            console.log('Test spin triggered');
-            console.log('Current state:', {
-                wheelSpinning: wheelSpinning,
-                spinsRemaining: spinsRemaining,
-                theWheel: theWheel,
-                wheelItems: wheelItems,
-                tickSoundEnabled: tickSoundEnabled
-            });
+            // Test spin triggered
+            // Current state
             startSpin();
         }
 
