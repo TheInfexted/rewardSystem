@@ -663,33 +663,44 @@ class FortuneWheel {
 
     // Determine winner based on winning rates
     determineWinner() {
-        // Calculate total winning rate to normalize if needed
-        let totalRate = 0;
-        this.wheelItems.forEach(item => {
-            totalRate += parseFloat(item.winning_rate || 0);
-        });
+        // Filter items with winning rate > 0
+        const winnableItems = this.wheelItems
+            .map((item, index) => ({ item, index }))
+            .filter(({ item }) => parseFloat(item.winning_rate || 0) > 0);
         
-        // Generate random number between 0 and total rate (or 100 if total is 100)
-        const rand = Math.random() * (totalRate > 0 ? totalRate : 100);
+        // If no winnable items, return first item
+        if (winnableItems.length === 0) {
+            const firstItem = this.wheelItems[0];
+            return {
+                winnerIndex: 0,
+                winnerItem: {
+                    name: firstItem.item_name,
+                    prize: firstItem.item_prize,
+                    type: firstItem.item_types,
+                    winningRate: firstItem.winning_rate,
+                    order: firstItem.order,
+                    id: firstItem.item_id
+                }
+            };
+        }
         
+        // Calculate total winning rate from winnable items only
+        const totalRate = winnableItems.reduce((sum, { item }) => 
+            sum + parseFloat(item.winning_rate || 0), 0
+        );
+        
+        // Generate random number between 0 and total rate
+        const rand = Math.random() * totalRate;
         let cumulativeRate = 0;
         
-        // Sort items by order to ensure correct positioning
-        const sortedItems = [...this.wheelItems].sort((a, b) => (a.order || 0) - (b.order || 0));
-        
-        // Use the actual ORDER from database, not array index
-        for (let i = 0; i < sortedItems.length; i++) {
-            const item = sortedItems[i];
+        // Find winner based on weighted probability
+        for (const { item, index } of winnableItems) {
             const itemRate = parseFloat(item.winning_rate || 0);
             cumulativeRate += itemRate;
             
-            if (rand <= cumulativeRate && itemRate > 0) {
-                // Find the original index in unsorted array for wheel positioning
-                const originalIndex = this.wheelItems.findIndex(originalItem => 
-                    originalItem.item_id === item.item_id
-                );
+            if (rand <= cumulativeRate) {
                 return {
-                    winnerIndex: originalIndex >= 0 ? originalIndex : i,
+                    winnerIndex: index,
                     winnerItem: {
                         name: item.item_name,
                         prize: item.item_prize,
@@ -702,35 +713,17 @@ class FortuneWheel {
             }
         }
         
-        // Fallback to first item with winning rate > 0
-        for (let i = 0; i < this.wheelItems.length; i++) {
-            const item = this.wheelItems[i];
-            if (parseFloat(item.winning_rate || 0) > 0) {
-                return {
-                    winnerIndex: i,
-                    winnerItem: {
-                        name: item.item_name,
-                        prize: item.item_prize,
-                        type: item.item_types,
-                        winningRate: item.winning_rate,
-                        order: item.order,
-                        id: item.item_id
-                    }
-                };
-            }
-        }
-        
-        // Final fallback to first item
-        const firstItem = this.wheelItems[0];
+        // Fallback to first winnable item
+        const { item, index } = winnableItems[0];
         return {
-            winnerIndex: 0,
+            winnerIndex: index,
             winnerItem: {
-                name: firstItem.item_name,
-                prize: firstItem.item_prize,
-                type: firstItem.item_types,
-                winningRate: firstItem.winning_rate,
-                order: firstItem.order,
-                id: firstItem.item_id
+                name: item.item_name,
+                prize: item.item_prize,
+                type: item.item_types,
+                winningRate: item.winning_rate,
+                order: item.order,
+                id: item.item_id
             }
         };
     }

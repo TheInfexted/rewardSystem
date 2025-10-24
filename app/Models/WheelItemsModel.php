@@ -60,30 +60,47 @@ class WheelItemsModel extends Model
      */
     public function calculateWinner($items)
     {
+        // Filter items with winning_rate > 0
+        $winnableItems = [];
+        $winnableKeys = [];
+        
+        foreach ($items as $key => $item) {
+            if (isset($item['winning_rate']) && floatval($item['winning_rate']) > 0) {
+                $winnableItems[] = $item;
+                $winnableKeys[] = $key;
+            }
+        }
+        
+        // If no winnable items, return first item
+        if (empty($winnableItems)) {
+            return 0;
+        }
+        
         $totalRate = 0;
         $ranges = [];
         
-        // Calculate ranges for each item
-        foreach ($items as $key => $item) {
-            $ranges[$key] = [
+        // Calculate ranges for winnable items only
+        foreach ($winnableItems as $index => $item) {
+            $ranges[$index] = [
                 'start' => $totalRate,
-                'end' => $totalRate + $item['winning_rate']
+                'end' => $totalRate + floatval($item['winning_rate']),
+                'original_key' => $winnableKeys[$index]
             ];
-            $totalRate += $item['winning_rate'];
+            $totalRate += floatval($item['winning_rate']);
         }
         
         // Generate random number
         $random = mt_rand(0, $totalRate * 100) / 100;
         
         // Find winner
-        foreach ($ranges as $key => $range) {
+        foreach ($ranges as $range) {
             if ($random >= $range['start'] && $random < $range['end']) {
-                return $key;
+                return $range['original_key'];
             }
         }
         
-        // Default to first item if no match
-        return 0;
+        // Default to first winnable item if no match
+        return $winnableKeys[0] ?? 0;
     }
     
     public function testDirectUpdate($id)

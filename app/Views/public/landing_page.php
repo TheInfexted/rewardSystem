@@ -1241,24 +1241,45 @@
 
         // Determine winner based on winning rates
         function determineWinner() {
-            const rand = Math.random() * 100;
-            let cumulativeRate = 0;
+            // Filter items with winning rate > 0
+            const winnableItems = [];
+            const winnableIndices = [];
             
             for (let i = 0; i < wheelItems.length; i++) {
-                cumulativeRate += parseFloat(wheelItems[i].winningRate);
+                const winRate = parseFloat(wheelItems[i].winningRate);
+                if (winRate > 0) {
+                    winnableItems.push(wheelItems[i]);
+                    winnableIndices.push(i);
+                }
+            }
+            
+            // If no winnable items, return the first item
+            if (winnableItems.length === 0) {
+                return {
+                    winnerIndex: 0,
+                    winnerItem: wheelItems[0]
+                };
+            }
+            
+            // Calculate total winning rate
+            const totalRate = winnableItems.reduce((sum, item) => sum + parseFloat(item.winningRate), 0);
+            const rand = Math.random() * totalRate;
+            let cumulativeRate = 0;
+            
+            for (let i = 0; i < winnableItems.length; i++) {
+                cumulativeRate += parseFloat(winnableItems[i].winningRate);
                 if (rand <= cumulativeRate) {
                     return {
-                        winnerIndex: i,
-                        winnerItem: wheelItems[i]
+                        winnerIndex: winnableIndices[i],
+                        winnerItem: winnableItems[i]
                     };
                 }
             }
             
-            // Fallback to random if rates don't add up to 100%
-            const randomIndex = Math.floor(Math.random() * wheelItems.length);
+            // Fallback to first winnable item
             return {
-                winnerIndex: randomIndex,
-                winnerItem: wheelItems[randomIndex]
+                winnerIndex: winnableIndices[0],
+                winnerItem: winnableItems[0]
             };
         }
 

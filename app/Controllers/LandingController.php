@@ -199,14 +199,20 @@ class LandingController extends BaseController
             return $items[0] ?? null; // Fallback to first item
         }
         
-        // Calculate total probability/weight
+        // Filter items that have a winning rate > 0
+        $winnableItems = array_filter($activeItems, function($item) {
+            return isset($item['winning_rate']) && floatval($item['winning_rate']) > 0;
+        });
+        
+        // If no winnable items, return the first active item (0% win rate for all)
+        if (empty($winnableItems)) {
+            return reset($activeItems);
+        }
+        
+        // Calculate total probability/weight from winnable items only
         $totalWeight = 0;
-        foreach ($activeItems as $item) {
-            // Use winning_rate if available, otherwise equal probability
-            $weight = isset($item['winning_rate']) && $item['winning_rate'] > 0 
-                    ? floatval($item['winning_rate']) 
-                    : 1;
-            $totalWeight += $weight;
+        foreach ($winnableItems as $item) {
+            $totalWeight += floatval($item['winning_rate']);
         }
         
         // Generate random number
@@ -214,10 +220,8 @@ class LandingController extends BaseController
         
         // Find winner based on weighted probability
         $cumulative = 0;
-        foreach ($activeItems as $item) {
-            $weight = isset($item['winning_rate']) && $item['winning_rate'] > 0 
-                    ? floatval($item['winning_rate']) 
-                    : 1;
+        foreach ($winnableItems as $item) {
+            $weight = floatval($item['winning_rate']);
             $cumulative += $weight;
             
             if ($random <= $cumulative) {
@@ -225,8 +229,8 @@ class LandingController extends BaseController
             }
         }
         
-        // Fallback to last active item
-        return end($activeItems);
+        // Fallback to last winnable item
+        return end($winnableItems);
     }
 
     /**
