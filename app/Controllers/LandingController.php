@@ -687,12 +687,8 @@ class LandingController extends BaseController
                 // Get redirect URL from bonus settings
                 $redirectUrl = $this->adminSettingsModel->getSetting('bonus_redirect_url', base_url('reward'));
                 
-                // Check if this is a bonus/product that needs external redirect
-                $isProduct = ($winnerData['type'] === 'product');
-                $hasBonus = (strpos($winnerData['name'], 'BONUS') !== false);
-                $has120 = (strpos($winnerData['name'], '120%') !== false);
-                
-                $needsExternalRedirect = ($isProduct || $hasBonus || $has120);
+                // All prizes except "Try Again" need external redirect
+                $needsExternalRedirect = (stripos($winnerData['name'], 'Try Again') === false);
                 
                 // Check if redirect URL is different from current domain
                 $currentDomain = $this->request->getServer('HTTP_HOST');

@@ -729,14 +729,14 @@
     </div> <!-- End of portrait-container -->
 
     <!-- Win Modal -->
-    <div class="modal fade" id="winModal" tabindex="-1">
+    <div class="modal fade" id="winModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content bg-dark border-0">
                 <div class="modal-body text-center py-4">
                     <div class="win-animation">
                         <h5 class="win-title mb-3">🎉 You Won! 🎉</h5>
                         <div class="win-prize mb-3" id="modalPrize"></div>
-                        <button type="button" class="btn btn-gold btn-sm" data-bs-dismiss="modal">Collect Your Prize</button>
+                        <button type="button" class="btn btn-gold btn-sm" id="collectPrizeBtn">Collect Your Prize</button>
                     </div>
                 </div>
             </div>
@@ -1290,12 +1290,9 @@
             // Handle different types of wins
             if (winner.name === 'Try Again') {
                 showTryAgainModal();
-            } else if (winner.name.includes('120%') || winner.name.includes('BONUS') || winner.type === 'product') {
-                // Redirect to reward system for bonus prizes
-                storeWinnerDataAndRedirect(winner);
             } else {
-                // Regular prize
-                showRegularWinModal(winner);
+                // All prizes except "Try Again" redirect to reward system
+                storeWinnerDataAndRedirect(winner);
             }
 
             // Reset button after delay
@@ -1350,33 +1347,38 @@
             const modalContent = document.querySelector('#winModal .modal-content');
             const modalPrize = document.getElementById('modalPrize');
             const winTitle = document.querySelector('.win-title');
-            const collectButton = document.querySelector('#winModal .btn');
+            const collectButton = document.getElementById('collectPrizeBtn');
             
             winTitle.innerHTML = '🎉 CONGRATULATIONS! 🎉';
             modalPrize.textContent = `You Won: ${winner.name}${winner.prize > 0 ? ' - ¥' + parseFloat(winner.prize).toLocaleString() : ''}`;
             collectButton.textContent = 'Claim Reward';
             collectButton.className = 'btn btn-success btn-sm';
             
-            // Style the modal
+            // Style the modal - use same dark background as regular modal
             winTitle.style.color = '#ffd700';
             modalPrize.style.color = '#28a745';
-            modalContent.style.background = 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)';
-            modalContent.style.border = '3px solid #ffd700';
+            modalContent.style.background = '';
+            modalContent.style.border = '';
             
-            // Set click handler for claim button
+            // Set click handler for claim button - IMPORTANT: Must handle modal close AND redirect
             collectButton.onclick = function() {
-                // Hide modal
+                // Hide modal first
                 const modal = bootstrap.Modal.getInstance(document.getElementById('winModal'));
                 if (modal) {
                     modal.hide();
                 }
                 
-                // Now redirect to claim page
-                handlePrizeRedirect(winner);
+                // Redirect to claim page after a short delay to allow modal to close
+                setTimeout(() => {
+                    handlePrizeRedirect(winner);
+                }, 300);
             };
             
-            // Show modal
-            const winModal = new bootstrap.Modal(document.getElementById('winModal'));
+            // Show modal with static backdrop
+            const winModal = new bootstrap.Modal(document.getElementById('winModal'), {
+                backdrop: 'static',
+                keyboard: false
+            });
             winModal.show();
         }
 
@@ -1468,7 +1470,7 @@
             const modalContent = document.querySelector('#winModal .modal-content');
             const modalPrize = document.getElementById('modalPrize');
             const winTitle = document.querySelector('.win-title');
-            const collectButton = document.querySelector('#winModal .btn');
+            const collectButton = document.getElementById('collectPrizeBtn');
             
             winTitle.textContent = '🎉 You Won! 🎉';
             modalPrize.textContent = `${winner.name}${winner.prize > 0 ? ' - ¥' + parseFloat(winner.prize).toLocaleString() : ''}`;
@@ -1484,7 +1486,10 @@
                 bootstrap.Modal.getInstance(document.getElementById('winModal')).hide();
             };
             
-            const winModal = new bootstrap.Modal(document.getElementById('winModal'));
+            const winModal = new bootstrap.Modal(document.getElementById('winModal'), {
+                backdrop: 'static',
+                keyboard: false
+            });
             winModal.show();
         }
 
@@ -1493,7 +1498,7 @@
             const modalContent = document.querySelector('#winModal .modal-content');
             const modalPrize = document.getElementById('modalPrize');
             const winTitle = document.querySelector('.win-title');
-            const collectButton = document.querySelector('#winModal .btn');
+            const collectButton = document.getElementById('collectPrizeBtn');
             
             winTitle.textContent = '😔 Try Again!';
             modalPrize.textContent = 'Better luck next time!';
@@ -1509,7 +1514,10 @@
                 bootstrap.Modal.getInstance(document.getElementById('winModal')).hide();
             };
             
-            const winModal = new bootstrap.Modal(document.getElementById('winModal'));
+            const winModal = new bootstrap.Modal(document.getElementById('winModal'), {
+                backdrop: 'static',
+                keyboard: false
+            });
             winModal.show();
         }
 
@@ -1518,7 +1526,7 @@
             const modalContent = document.querySelector('#winModal .modal-content');
             const modalPrize = document.getElementById('modalPrize');
             const winTitle = document.querySelector('.win-title');
-            const collectButton = document.querySelector('#winModal .btn');
+            const collectButton = document.getElementById('collectPrizeBtn');
             
             winTitle.textContent = '⏰ No Spins Left!';
             modalPrize.textContent = 'Come back tomorrow for more free spins!';
@@ -1534,7 +1542,10 @@
                 bootstrap.Modal.getInstance(document.getElementById('winModal')).hide();
             };
             
-            const winModal = new bootstrap.Modal(document.getElementById('winModal'));
+            const winModal = new bootstrap.Modal(document.getElementById('winModal'), {
+                backdrop: 'static',
+                keyboard: false
+            });
             winModal.show();
         }
 
